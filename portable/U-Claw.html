@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>U-Claw - Launch Navigator</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, "Microsoft YaHei", sans-serif; background: #0a0a0a; color: #e0e0e0; min-height: 100vh; }
+.container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+.header { text-align: center; margin-bottom: 40px; }
+.header h1 { font-size: 2.5em; margin-bottom: 8px; }
+.header h1 span { color: #ff6b35; }
+.header p { color: #888; font-size: 1.1em; }
+.version { display: inline-block; background: #ff6b35; color: #fff; padding: 2px 10px; border-radius: 12px; font-size: 0.8em; margin-left: 8px; }
+
+.os-tabs { display: flex; justify-content: center; gap: 12px; margin-bottom: 30px; }
+.os-tab { padding: 12px 32px; border: 2px solid #333; border-radius: 8px; cursor: pointer; font-size: 1.1em; background: transparent; color: #aaa; transition: all 0.2s; }
+.os-tab:hover { border-color: #666; color: #fff; }
+.os-tab.active { border-color: #ff6b35; color: #ff6b35; background: rgba(255,107,53,0.1); }
+
+.panel { display: none; }
+.panel.active { display: block; }
+
+.card { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 24px; margin-bottom: 16px; }
+.card h3 { color: #ff6b35; margin-bottom: 12px; font-size: 1.2em; }
+.card p { color: #bbb; line-height: 1.6; }
+
+.step { display: flex; align-items: flex-start; gap: 16px; margin: 12px 0; }
+.step-num { background: #ff6b35; color: #fff; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
+.step-text { flex: 1; }
+.step-text strong { color: #fff; }
+.step-text code { background: #2a2a2a; padding: 2px 8px; border-radius: 4px; color: #ff6b35; font-size: 0.95em; }
+
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+.grid-item { background: #222; border: 1px solid #333; border-radius: 8px; padding: 16px; }
+.grid-item h4 { color: #fff; margin-bottom: 6px; }
+.grid-item p { color: #999; font-size: 0.9em; }
+
+.status-bar { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 16px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
+.status-dot { width: 12px; height: 12px; border-radius: 50%; }
+.status-dot.off { background: #666; }
+.status-dot.on { background: #4caf50; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+.status-link { color: #ff6b35; text-decoration: none; margin-left: auto; }
+.status-link:hover { text-decoration: underline; }
+
+.section-title { color: #888; font-size: 0.9em; text-transform: uppercase; letter-spacing: 2px; margin: 30px 0 12px; }
+
+.footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #222; color: #666; }
+.footer a { color: #ff6b35; text-decoration: none; }
+
+/* Language toggle */
+#langToggle {
+  position: fixed; top: 16px; right: 16px; z-index: 9999;
+  background: #333; color: #ccc; border: 1px solid #555;
+  border-radius: 8px; padding: 6px 28px 6px 14px; cursor: pointer;
+  font-size: 0.85em; font-weight: 600; transition: all 0.2s;
+  -webkit-appearance: none; -moz-appearance: none; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ccc' d='M3 5l3 3 3-3z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center;
+}
+#langToggle:hover { background-color: #ff6b35; color: #fff; border-color: #ff6b35; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23fff' d='M3 5l3 3 3-3z'/%3E%3C/svg%3E"); }
+#langToggle option { background: #222; color: #ccc; }
+</style>
+</head>
+<body>
+
+<select id="langToggle" onchange="setLang(this.value)">
+  <option value="en">EN</option>
+  <option value="zh">中文</option>
+  <option value="th">ไทย</option>
+  <option value="vi">Tiếng Việt</option>
+  <option value="id">Bahasa Indonesia</option>
+  <option value="ms">Bahasa Melayu</option>
+</select>
+
+<div class="container">
+
+<div class="header">
+    <h1>🦞 <span>U-Claw</span> <span class="version">v1.1</span></h1>
+    <p data-i18n="headerSubtitle">Portable AI Agent — Plug in and use instantly</p>
+</div>
+
+<!-- Status Bar -->
+<div class="status-bar">
+    <div class="status-dot off" id="statusDot"></div>
+    <span id="statusText" data-i18n="statusNotRunning">OpenClaw not running</span>
+    <a href="#" id="statusLink" class="status-link" style="display:none" target="_blank" data-i18n="openConsole">Open Console →</a>
+</div>
+
+<!-- OS Tabs -->
+<div class="os-tabs">
+    <div class="os-tab active" onclick="switchOS('mac')">🍎 Mac</div>
+    <div class="os-tab" onclick="switchOS('win')">🪟 Windows</div>
+</div>
+
+<!-- Mac Panel -->
+<div class="panel active" id="panel-mac">
+    <div class="card">
+        <h3 data-i18n="quickStart">🚀 Quick Start</h3>
+        <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-text" data-i18n="macStep1">Double-click <code>Mac-Start.command</code></div>
+        </div>
+        <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-text" data-i18n="macStep2">First run auto-opens the <b>config page</b> — select a model and enter your API Key</div>
+        </div>
+        <p style="margin-top:12px; color:#999;" data-i18n="macSecurityTip">⚠️ If you see "cannot verify developer" on first run: Right-click → Open</p>
+        <p style="margin-top:8px;" data-i18n="macConfigHint">📝 You can also double-click <code>Config.html</code> to open the config page directly</p>
+    </div>
+
+    <div class="card">
+        <h3 data-i18n="allFeatures">⚙️ All Features (Config / Diagnose / Backup)</h3>
+        <p data-i18n="macMenuHint">Double-click <code>Mac-Menu.command</code> to open the full menu:</p>
+        <div class="grid">
+            <div class="grid-item"><h4 data-i18n="gridConfig">Config Page</h4><p data-i18n="gridConfigDesc">Config.html — Select model, enter Key, connect QQ</p></div>
+            <div class="grid-item"><h4 data-i18n="gridQQ">QQ Bot</h4><p data-i18n="gridQQDesc">Pre-installed, just need AppID + Secret</p></div>
+            <div class="grid-item"><h4 data-i18n="gridDiagnose">Diagnostics</h4><p data-i18n="gridDiagnoseDesc">openclaw doctor one-click check</p></div>
+            <div class="grid-item"><h4 data-i18n="gridBackup">Backup & Restore</h4><p data-i18n="gridBackupDesc">One-click backup of config and memory</p></div>
+            <div class="grid-item"><h4 data-i18n="gridSkills">Skills Browser</h4><p data-i18n="gridSkillsDesc">52 pre-installed skills</p></div>
+            <div class="grid-item"><h4 data-i18n="gridSystemInfo">System Info</h4><p data-i18n="gridSystemInfoDesc">Version, ports, running status</p></div>
+        </div>
+    </div>
+</div>
+
+<!-- Windows Panel -->
+<div class="panel" id="panel-win">
+    <div class="card">
+        <h3 data-i18n="quickStart">🚀 Quick Start</h3>
+        <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-text" data-i18n="winStep1">Double-click <code>Windows-Start.bat</code></div>
+        </div>
+        <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-text" data-i18n="winStep2">First run auto-opens the <b>config page</b> — select a model and enter your API Key</div>
+        </div>
+        <p style="margin-top:12px; color:#999;" data-i18n="winSecurityTip">⚠️ If you see a security warning: Click "More info" → "Run anyway"</p>
+    </div>
+
+    <div class="card">
+        <h3 data-i18n="allFeatures">⚙️ All Features (Config / Diagnose / Backup)</h3>
+        <p data-i18n="winMenuHint">Double-click <code>Windows-Menu.bat</code> to open the full menu:</p>
+        <div class="grid">
+            <div class="grid-item"><h4 data-i18n="gridWizard">Config Wizard</h4><p data-i18n="gridWizardDesc">Select model, enter API Key, choose platform</p></div>
+            <div class="grid-item"><h4 data-i18n="gridQQ">QQ Bot</h4><p data-i18n="gridQQDescWin">Official QQ, 3 commands to set up</p></div>
+            <div class="grid-item"><h4 data-i18n="gridDiagnose">Diagnostics</h4><p data-i18n="gridDiagnoseDesc">openclaw doctor one-click check</p></div>
+            <div class="grid-item"><h4 data-i18n="gridBackup">Backup & Restore</h4><p data-i18n="gridBackupDesc">One-click backup of config and memory</p></div>
+            <div class="grid-item"><h4 data-i18n="gridSkills">Skills Browser</h4><p data-i18n="gridSkillsDesc">52 pre-installed skills</p></div>
+            <div class="grid-item"><h4 data-i18n="gridMirror">Mirror Config</h4><p data-i18n="gridMirrorDesc">npm Taobao mirror</p></div>
+        </div>
+    </div>
+</div>
+
+<!-- Common sections -->
+<div class="section-title" data-i18n="supportedModels">🤖 Supported AI Models</div>
+<div class="card">
+    <div class="grid">
+        <div class="grid-item"><h4>DeepSeek</h4><p data-i18n="modelDeepseek">Best for coding, great value</p></div>
+        <div class="grid-item"><h4>Kimi K2.5</h4><p data-i18n="modelKimi">256K context, long documents</p></div>
+        <div class="grid-item"><h4>Qwen</h4><p data-i18n="modelQwen">Generous free tier</p></div>
+        <div class="grid-item"><h4>GLM (Zhipu)</h4><p data-i18n="modelGLM">Academic, Chinese NLP</p></div>
+        <div class="grid-item"><h4>MiniMax</h4><p data-i18n="modelMiniMax">Voice, multimodal</p></div>
+        <div class="grid-item"><h4>Doubao</h4><p data-i18n="modelDoubao">ByteDance, Volcengine</p></div>
+    </div>
+</div>
+
+<div class="section-title" data-i18n="moreResources">📖 More Resources</div>
+<div class="card">
+    <div class="grid">
+        <div class="grid-item" onclick="window.open('帮助文档.html')" style="cursor:pointer"><h4 data-i18n="resHelp">📖 Help Docs</h4><p data-i18n="resHelpDesc">Complete user guide</p></div>
+        <div class="grid-item" onclick="window.open('技能市场.html')" style="cursor:pointer"><h4 data-i18n="resSkills">🎯 Skill Marketplace</h4><p data-i18n="resSkillsDesc">39 curated skills</p></div>
+        <div class="grid-item"><h4 data-i18n="resContact">💬 Contact Us</h4><p data-i18n="resContactDesc">WeChat: hecare888</p></div>
+        <div class="grid-item"><h4 data-i18n="resWebsite">🌐 Website</h4><p><a href="https://u-claw.org" target="_blank" style="color:#ff6b35">u-claw.org</a></p></div>
+    </div>
+</div>
+
+<div class="footer">
+    <p>Made with 🦞 by <a href="https://github.com/dongsheng123132">dongsheng</a> · <a href="https://u-claw.org">u-claw.org</a></p>
+</div>
+
+</div>
+
+<script>
+// ── i18n ──────────────────────────────────────────────────────
+const i18n = {
+  en: {
+    pageTitle: 'U-Claw - Launch Navigator',
+    headerSubtitle: 'Portable AI Agent — Plug in and use instantly',
+    statusNotRunning: 'OpenClaw not running',
+    statusRunning: 'OpenClaw running (port {port})',
+    openConsole: 'Open Console →',
+    quickStart: '🚀 Quick Start',
+    macStep1: 'Double-click <code>Mac-Start.command</code>',
+    macStep2: 'First run auto-opens the <b>config page</b> — select a model and enter your API Key',
+    macSecurityTip: '⚠️ If you see "cannot verify developer" on first run: Right-click → Open',
+    macConfigHint: '📝 You can also double-click <code>Config.html</code> to open the config page directly',
+    allFeatures: '⚙️ All Features (Config / Diagnose / Backup)',
+    macMenuHint: 'Double-click <code>Mac-Menu.command</code> to open the full menu:',
+    winStep1: 'Double-click <code>Windows-Start.bat</code>',
+    winStep2: 'First run auto-opens the <b>config page</b> — select a model and enter your API Key',
+    winSecurityTip: '⚠️ If you see a security warning: Click "More info" → "Run anyway"',
+    winMenuHint: 'Double-click <code>Windows-Menu.bat</code> to open the full menu:',
+    gridConfig: 'Config Page', gridConfigDesc: 'Config.html — Select model, enter Key, connect QQ',
+    gridQQ: 'QQ Bot', gridQQDesc: 'Pre-installed, just need AppID + Secret', gridQQDescWin: 'Official QQ, 3 commands to set up',
+    gridDiagnose: 'Diagnostics', gridDiagnoseDesc: 'openclaw doctor one-click check',
+    gridBackup: 'Backup & Restore', gridBackupDesc: 'One-click backup of config and memory',
+    gridSkills: 'Skills Browser', gridSkillsDesc: '52 pre-installed skills',
+    gridSystemInfo: 'System Info', gridSystemInfoDesc: 'Version, ports, running status',
+    gridWizard: 'Config Wizard', gridWizardDesc: 'Select model, enter API Key, choose platform',
+    gridMirror: 'Mirror Config', gridMirrorDesc: 'npm Taobao mirror',
+    supportedModels: '🤖 Supported AI Models',
+    modelDeepseek: 'Best for coding, great value', modelKimi: '256K context, long documents',
+    modelQwen: 'Generous free tier', modelGLM: 'Academic, Chinese NLP',
+    modelMiniMax: 'Voice, multimodal', modelDoubao: 'ByteDance, Volcengine',
+    moreResources: '📖 More Resources',
+    resHelp: '📖 Help Docs', resHelpDesc: 'Complete user guide',
+    resSkills: '🎯 Skill Marketplace', resSkillsDesc: '39 curated skills',
+    resContact: '💬 Contact Us', resContactDesc: 'WeChat: hecare888',
+    resWebsite: '🌐 Website'
+  },
+  zh: {
+    pageTitle: 'U-Claw 虾盘 - 启动导航',
+    headerSubtitle: 'Portable AI Agent — 插上就能用的 AI 助手',
+    statusNotRunning: 'OpenClaw 未运行',
+    statusRunning: 'OpenClaw 运行中 (端口 {port})',
+    openConsole: '打开控制台 →',
+    quickStart: '🚀 快速启动',
+    macStep1: '双击 <code>Mac-Start.command</code>',
+    macStep2: '首次运行自动打开<b>配置页面</b>，选模型、填 API Key 即可',
+    macSecurityTip: '⚠️ 首次运行如果提示"无法验证开发者"：右键点击 → 打开',
+    macConfigHint: '📝 也可以直接双击 <code>Config.html</code> 打开配置页面',
+    allFeatures: '⚙️ 全部功能（配置/诊断/备份）',
+    macMenuHint: '双击 <code>Mac-Menu.command</code> 打开全功能菜单：',
+    winStep1: '双击 <code>Windows-Start.bat</code>',
+    winStep2: '首次运行自动打开<b>配置页面</b>，选模型、填 API Key 即可',
+    winSecurityTip: '⚠️ 如果弹出安全警告：点击"更多信息" → "仍要运行"',
+    winMenuHint: '双击 <code>Windows-Menu.bat</code> 打开全功能菜单：',
+    gridConfig: '中文配置页面', gridConfigDesc: 'Config.html — 选模型、填 Key、接 QQ',
+    gridQQ: 'QQ Bot 接入', gridQQDesc: '已预装，只需 AppID + Secret', gridQQDescWin: '腾讯官方，3条命令搞定',
+    gridDiagnose: '诊断修复', gridDiagnoseDesc: 'openclaw doctor 一键检测',
+    gridBackup: '备份恢复', gridBackupDesc: '配置和记忆一键备份',
+    gridSkills: '技能浏览', gridSkillsDesc: '52 个预装技能',
+    gridSystemInfo: '系统信息', gridSystemInfoDesc: '版本、端口、运行状态',
+    gridWizard: '配置向导', gridWizardDesc: '选模型、填 API Key、选平台',
+    gridMirror: '镜像配置', gridMirrorDesc: 'npm 淘宝镜像',
+    supportedModels: '🤖 支持的 AI 模型（国内免翻墙）',
+    modelDeepseek: '编程首选，性价比最高', modelKimi: '256K 上下文，长文档',
+    modelQwen: '免费额度大', modelGLM: '学术、中文 NLP',
+    modelMiniMax: '语音、多模态', modelDoubao: '字节跳动，火山引擎',
+    moreResources: '📖 更多资料',
+    resHelp: '📖 帮助文档', resHelpDesc: '完整使用指南',
+    resSkills: '🎯 技能市场', resSkillsDesc: '39 个精选技能',
+    resContact: '💬 联系我们', resContactDesc: '微信: hecare888',
+    resWebsite: '🌐 官网'
+  },
+  th: {
+    pageTitle: 'U-Claw - ตัวนำทางเปิดใช้',
+    headerSubtitle: 'ตัวแทน AI แบบพกพา — เสียบแล้วใช้ได้ทันที',
+    statusNotRunning: 'OpenClaw ยังไม่เปิดใช้',
+    statusRunning: 'OpenClaw กำลังทำงาน (พอร์ต {port})',
+    openConsole: 'เปิดคอนโซล →',
+    quickStart: '🚀 เริ่มต้นอย่างรวดเร็ว',
+    macStep1: 'ดับเบิลคลิก <code>Mac-Start.command</code>',
+    macStep2: 'การเริ่มต้นครั้งแรกจะเปิด<b>หน้ากำหนดค่า</b>อัตโนมัติ — เลือกโมเดลและป้อน API Key',
+    macSecurityTip: '⚠️ ถ้าเห็น "ไม่สามารถยืนยันผู้พัฒนา" ในการรันครั้งแรก: คลิกขวา → เปิด',
+    macConfigHint: '📝 คุณสามารถดับเบิลคลิก <code>Config.html</code> เพื่อเปิดหน้ากำหนดค่าโดยตรง',
+    allFeatures: '⚙️ ฟีเจอร์ทั้งหมด (กำหนดค่า/วินิจฉัย/สำรองข้อมูล)',
+    macMenuHint: 'ดับเบิลคลิก <code>Mac-Menu.command</code> เพื่อเปิดเมนูเต็ม:',
+    winStep1: 'ดับเบิลคลิก <code>Windows-Start.bat</code>',
+    winStep2: 'การเริ่มต้นครั้งแรกจะเปิด<b>หน้ากำหนดค่า</b>อัตโนมัติ — เลือกโมเดลและป้อน API Key',
+    winSecurityTip: '⚠️ ถ้าเห็นคำเตือนความปลอดภัย: คลิก "ข้อมูลเพิ่มเติม" → "ยังเรียกใช้"',
+    winMenuHint: 'ดับเบิลคลิก <code>Windows-Menu.bat</code> เพื่อเปิดเมนูเต็ม:',
+    gridConfig: 'หน้ากำหนดค่า', gridConfigDesc: 'Config.html — เลือกโมเดล ป้อน Key เชื่อมต่อ QQ',
+    gridQQ: 'QQ Bot', gridQQDesc: 'ติดตั้งล่วงหน้าแล้ว เพียงใช้ AppID + Secret', gridQQDescWin: 'QQ ทางการ ตั้งค่า 3 คำสั่ง',
+    gridDiagnose: 'วินิจฉัย', gridDiagnoseDesc: 'openclaw doctor ตรวจสอบคลิกเดียว',
+    gridBackup: 'สำรองและกู้คืน', gridBackupDesc: 'สำรองการตั้งค่าและข้อมูลคลิกเดียว',
+    gridSkills: 'เบราว์เซอร์ Skills', gridSkillsDesc: '52 ทักษะติดตั้งล่วงหน้า',
+    gridSystemInfo: 'ข้อมูลระบบ', gridSystemInfoDesc: 'เวอร์ชัน พอร์ต สถานะการทำงาน',
+    gridWizard: 'ตัวช่วยกำหนดค่า', gridWizardDesc: 'เลือกโมเดล ป้อน API Key เลือกแพลตฟอร์ม',
+    gridMirror: 'การกำหนดค่ามิเรอร์', gridMirrorDesc: 'npm กระจก Taobao',
+    supportedModels: '🤖 AI Model ที่รองรับ',
+    modelDeepseek: 'ดีที่สุดสำหรับการเขียนโค้ด คุ้มค่า', modelKimi: 'บริบท 256K เอกสารยาว',
+    modelQwen: 'โควต้าฟรีมาก', modelGLM: 'วิชาการ NLP ภาษาจีน',
+    modelMiniMax: 'เสียง มัลติโมดัล', modelDoubao: 'ByteDance, Volcengine',
+    moreResources: '📖 ทรัพยากรเพิ่มเติม',
+    resHelp: '📖 เอกสารช่วยเหลือ', resHelpDesc: 'คู่มือผู้ใช้งานครบถ้วน',
+    resSkills: '🎯 ตลาด Skills', resSkillsDesc: '39 ทักษะคัดสรร',
+    resContact: '💬 ติดต่อเรา', resContactDesc: 'WeChat: hecare888',
+    resWebsite: '🌐 เว็บไซต์'
+  },
+  vi: {
+    pageTitle: 'U-Claw - Điều hướng Khởi chạy',
+    headerSubtitle: 'Trợ lý AI di động — Cắm vào và sử dụng ngay',
+    statusNotRunning: 'OpenClaw chưa chạy',
+    statusRunning: 'OpenClaw đang chạy (cổng {port})',
+    openConsole: 'Mở bảng điều khiển →',
+    quickStart: '🚀 Bắt đầu nhanh',
+    macStep1: 'Nhấp đúp <code>Mac-Start.command</code>',
+    macStep2: 'Lần chạy đầu tiên tự động mở <b>trang cấu hình</b> — chọn model và nhập API Key',
+    macSecurityTip: '⚠️ Nếu thấy "không thể xác minh nhà phát triển" lần đầu: Nhấp chuột phải → Mở',
+    macConfigHint: '📝 Bạn cũng có thể nhấp đúp <code>Config.html</code> để mở trang cấu hình',
+    allFeatures: '⚙️ Tất cả tính năng (Cấu hình / Chẩn đoán / Sao lưu)',
+    macMenuHint: 'Nhấp đúp <code>Mac-Menu.command</code> để mở menu đầy đủ:',
+    winStep1: 'Nhấp đúp <code>Windows-Start.bat</code>',
+    winStep2: 'Lần chạy đầu tiên tự động mở <b>trang cấu hình</b> — chọn model và nhập API Key',
+    winSecurityTip: '⚠️ Nếu thấy cảnh báo bảo mật: Nhấp "Thêm thông tin" → "Vẫn chạy"',
+    winMenuHint: 'Nhấp đúp <code>Windows-Menu.bat</code> để mở menu đầy đủ:',
+    gridConfig: 'Trang cấu hình', gridConfigDesc: 'Config.html — Chọn model, nhập Key, kết nối QQ',
+    gridQQ: 'QQ Bot', gridQQDesc: 'Đã cài sẵn, chỉ cần AppID + Secret', gridQQDescWin: 'QQ chính thức, 3 lệnh để thiết lập',
+    gridDiagnose: 'Chẩn đoán', gridDiagnoseDesc: 'openclaw doctor kiểm tra một nhấp',
+    gridBackup: 'Sao lưu & Khôi phục', gridBackupDesc: 'Sao lưu cấu hình và bộ nhớ một nhấp',
+    gridSkills: 'Trình duyệt Skills', gridSkillsDesc: '52 kỹ năng cài sẵn',
+    gridSystemInfo: 'Thông tin hệ thống', gridSystemInfoDesc: 'Phiên bản, cổng, trạng thái chạy',
+    gridWizard: 'Trình hướng dẫn cấu hình', gridWizardDesc: 'Chọn model, nhập API Key, chọn nền tảng',
+    gridMirror: 'Cấu hình gương', gridMirrorDesc: 'npm gương Taobao',
+    supportedModels: '🤖 AI Model được hỗ trợ',
+    modelDeepseek: 'Tốt nhất cho lập trình, giá trị cao', modelKimi: 'Bối cảnh 256K, tài liệu dài',
+    modelQwen: 'Hạn mức miễn phí lớn', modelGLM: 'Học thuật, NLP tiếng Trung',
+    modelMiniMax: 'Giọng nói, đa phương thức', modelDoubao: 'ByteDance, Volcengine',
+    moreResources: '📖 Tài nguyên khác',
+    resHelp: '📖 Tài liệu trợ giúp', resHelpDesc: 'Hướng dẫn người dùng đầy đủ',
+    resSkills: '🎯 Chợ kỹ năng', resSkillsDesc: '39 kỹ năng chọn lọc',
+    resContact: '💬 Liên hệ', resContactDesc: 'WeChat: hecare888',
+    resWebsite: '🌐 Trang web'
+  },
+  id: {
+    pageTitle: 'U-Claw - Navigator Peluncuran',
+    headerSubtitle: 'Agen AI Portabel — Colok dan gunakan langsung',
+    statusNotRunning: 'OpenClaw belum berjalan',
+    statusRunning: 'OpenClaw berjalan (port {port})',
+    openConsole: 'Buka Konsol →',
+    quickStart: '🚀 Mulai Cepat',
+    macStep1: 'Klik dua kali <code>Mac-Start.command</code>',
+    macStep2: 'Peluncuran pertama otomatis membuka <b>halaman konfigurasi</b> — pilih model dan masukkan API Key',
+    macSecurityTip: '⚠️ Jika melihat "tidak dapat memverifikasi pengembang" saat pertama: Klik kanan → Buka',
+    macConfigHint: '📝 Anda juga bisa klik dua kali <code>Config.html</code> untuk membuka halaman konfigurasi',
+    allFeatures: '⚙️ Semua Fitur (Konfigurasi / Diagnosa / Backup)',
+    macMenuHint: 'Klik dua kali <code>Mac-Menu.command</code> untuk membuka menu lengkap:',
+    winStep1: 'Klik dua kali <code>Windows-Start.bat</code>',
+    winStep2: 'Peluncuran pertama otomatis membuka <b>halaman konfigurasi</b> — pilih model dan masukkan API Key',
+    winSecurityTip: '⚠️ Jika melihat peringatan keamanan: Klik "Info lebih lanjut" → "Tetap jalankan"',
+    winMenuHint: 'Klik dua kali <code>Windows-Menu.bat</code> untuk membuka menu lengkap:',
+    gridConfig: 'Halaman Konfigurasi', gridConfigDesc: 'Config.html — Pilih model, masukkan Key, hubungkan QQ',
+    gridQQ: 'QQ Bot', gridQQDesc: 'Sudah terpasang, cukup AppID + Secret', gridQQDescWin: 'QQ resmi, 3 perintah untuk setup',
+    gridDiagnose: 'Diagnosa', gridDiagnoseDesc: 'openclaw doctor cek satu klik',
+    gridBackup: 'Backup & Restore', gridBackupDesc: 'Backup konfigurasi dan memori satu klik',
+    gridSkills: 'Browser Skills', gridSkillsDesc: '52 skill terpasang',
+    gridSystemInfo: 'Info Sistem', gridSystemInfoDesc: 'Versi, port, status berjalan',
+    gridWizard: 'Panduan Konfigurasi', gridWizardDesc: 'Pilih model, masukkan API Key, pilih platform',
+    gridMirror: 'Konfigurasi Mirror', gridMirrorDesc: 'npm mirror Taobao',
+    supportedModels: '🤖 AI Model yang Didukung',
+    modelDeepseek: 'Terbaik untuk coding, nilai tinggi', modelKimi: 'Konteks 256K, dokumen panjang',
+    modelQwen: 'Kuota gratis besar', modelGLM: 'Akademik, NLP Mandarin',
+    modelMiniMax: 'Suara, multimodal', modelDoubao: 'ByteDance, Volcengine',
+    moreResources: '📖 Sumber Daya Lainnya',
+    resHelp: '📖 Dokumen Bantuan', resHelpDesc: 'Panduan pengguna lengkap',
+    resSkills: '🎯 Pasar Skill', resSkillsDesc: '39 skill kurasi',
+    resContact: '💬 Hubungi Kami', resContactDesc: 'WeChat: hecare888',
+    resWebsite: '🌐 Website'
+  },
+  ms: {
+    pageTitle: 'U-Claw - Navigasi Pelancaran',
+    headerSubtitle: 'Agen AI Mudah Alih — Pasang dan gunakan serta-merta',
+    statusNotRunning: 'OpenClaw belum berjalan',
+    statusRunning: 'OpenClaw berjalan (port {port})',
+    openConsole: 'Buka Konsol →',
+    quickStart: '🚀 Mulakan Pantas',
+    macStep1: 'Klik dua kali <code>Mac-Start.command</code>',
+    macStep2: 'Pelancaran pertama membuka <b>halaman konfigurasi</b> secara automatik — pilih model dan masukkan API Key',
+    macSecurityTip: '⚠️ Jika melihat "tidak dapat mengesahkan pembangun" kali pertama: Klik kanan → Buka',
+    macConfigHint: '📝 Anda juga boleh klik dua kali <code>Config.html</code> untuk membuka halaman konfigurasi',
+    allFeatures: '⚙️ Semua Ciri (Konfigurasi / Diagnosa / Sandaran)',
+    macMenuHint: 'Klik dua kali <code>Mac-Menu.command</code> untuk membuka menu penuh:',
+    winStep1: 'Klik dua kali <code>Windows-Start.bat</code>',
+    winStep2: 'Pelancaran pertama membuka <b>halaman konfigurasi</b> secara automatik — pilih model dan masukkan API Key',
+    winSecurityTip: '⚠️ Jika melihat amaran keselamatan: Klik "Maklumat lanjut" → "Masih jalankan"',
+    winMenuHint: 'Klik dua kali <code>Windows-Menu.bat</code> untuk membuka menu penuh:',
+    gridConfig: 'Halaman Konfigurasi', gridConfigDesc: 'Config.html — Pilih model, masukkan Key, sambung QQ',
+    gridQQ: 'QQ Bot', gridQQDesc: 'Sudah dipasang, hanya perlu AppID + Secret', gridQQDescWin: 'QQ rasmi, 3 arahan untuk setup',
+    gridDiagnose: 'Diagnosa', gridDiagnoseDesc: 'openclaw doctor semak satu klik',
+    gridBackup: 'Sandaran & Pemulihan', gridBackupDesc: 'Sandar konfigurasi dan memori satu klik',
+    gridSkills: 'Pelayar Skills', gridSkillsDesc: '52 skill dipasang',
+    gridSystemInfo: 'Maklumat Sistem', gridSystemInfoDesc: 'Versi, port, status berjalan',
+    gridWizard: 'Panduan Konfigurasi', gridWizardDesc: 'Pilih model, masukkan API Key, pilih platform',
+    gridMirror: 'Konfigurasi Mirror', gridMirrorDesc: 'npm cermin Taobao',
+    supportedModels: '🤖 AI Model yang Disokong',
+    modelDeepseek: 'Terbaik untuk pengekodan, nilai tinggi', modelKimi: 'Konteks 256K, dokumen panjang',
+    modelQwen: 'Kuota percuma besar', modelGLM: 'Akademik, NLP Cina',
+    modelMiniMax: 'Suara, multimodal', modelDoubao: 'ByteDance, Volcengine',
+    moreResources: '📖 Sumber Lain',
+    resHelp: '📖 Dokumen Bantuan', resHelpDesc: 'Panduan pengguna lengkap',
+    resSkills: '🎯 Pasaran Skill', resSkillsDesc: '39 skill terpilih',
+    resContact: '💬 Hubungi Kami', resContactDesc: 'WeChat: hecare888',
+    resWebsite: '🌐 Laman web'
+  }
+};
+
+const SUPPORTED_LANGS = ['en', 'zh', 'th', 'vi', 'id', 'ms'];
+
+function getLang() {
+  const stored = localStorage.getItem('uclaw-lang');
+  if (stored && i18n[stored]) return stored;
+  return 'en';
+}
+function setLang(lang) { localStorage.setItem('uclaw-lang', lang); applyLang(lang); }
+function t(key, replacements) {
+  const lang = getLang();
+  let val = (i18n[lang] && i18n[lang][key]) || i18n['en'][key] || key;
+  if (replacements) { Object.keys(replacements).forEach(k => { val = val.replace('{' + k + '}', replacements[k]); }); }
+  return val;
+}
+function applyLang(lang) {
+  const dict = i18n[lang] || i18n.en;
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : lang;
+  document.title = dict.pageTitle || document.title;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (dict[key] !== undefined) el.textContent = dict[key];
+  });
+  const toggle = document.getElementById('langToggle');
+  if (toggle) toggle.value = lang;
+}
+document.addEventListener('DOMContentLoaded', () => { applyLang(getLang()); });
+
+// Auto-detect OS
+const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+if (!isMac) switchOS('win');
+
+function switchOS(os) {
+    document.querySelectorAll('.os-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelector('#panel-' + os).classList.add('active');
+    document.querySelectorAll('.os-tab')[os === 'mac' ? 0 : 1].classList.add('active');
+}
+
+// Check if gateway is running (scan 18789-18799)
+var _gwPort = null;
+async function checkStatus() {
+    var found = null;
+    if (_gwPort) {
+        try {
+            await fetch('http://127.0.0.1:' + _gwPort + '/', { mode: 'no-cors', cache: 'no-cache' });
+            found = _gwPort;
+        } catch(e) { _gwPort = null; }
+    }
+    if (!found) {
+        for (var p = 18789; p <= 18799; p++) {
+            try {
+                await fetch('http://127.0.0.1:' + p + '/', { mode: 'no-cors', cache: 'no-cache' });
+                found = p;
+                _gwPort = p;
+                break;
+            } catch(e) {}
+        }
+    }
+    if (found) {
+        document.getElementById('statusDot').className = 'status-dot on';
+        document.getElementById('statusText').textContent = t('statusRunning', { port: found });
+        var link = document.getElementById('statusLink');
+        link.style.display = 'inline';
+        link.href = 'http://127.0.0.1:' + found + '/#token=uclaw';
+    } else {
+        document.getElementById('statusDot').className = 'status-dot off';
+        document.getElementById('statusText').textContent = t('statusNotRunning');
+        document.getElementById('statusLink').style.display = 'none';
+    }
+}
+checkStatus();
+setInterval(checkStatus, 5000);
+</script>
+</body>
+</html>

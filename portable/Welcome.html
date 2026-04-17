@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>U-Claw User Guide</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: -apple-system, "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 30px 20px;
+}
+.container {
+    max-width: 700px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+h1 {
+    text-align: center;
+    color: #333;
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+h1 .emoji { font-size: 1.2em; }
+.subtitle {
+    text-align: center;
+    color: #666;
+    font-size: 1.1em;
+    margin-bottom: 40px;
+}
+.section {
+    margin-bottom: 35px;
+}
+.section-title {
+    color: #667eea;
+    font-size: 1.4em;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e0e0e0;
+}
+.steps {
+    counter-reset: step;
+}
+.step {
+    position: relative;
+    padding: 20px;
+    padding-left: 70px;
+    margin-bottom: 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border-left: 4px solid #667eea;
+}
+.step::before {
+    content: counter(step);
+    counter-increment: step;
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    background: #667eea;
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+.step-title {
+    font-weight: 600;
+    color: #333;
+    font-size: 1.1em;
+    margin-bottom: 8px;
+}
+.step-desc {
+    color: #666;
+    line-height: 1.6;
+}
+.step-desc code {
+    background: #e3e8ff;
+    padding: 3px 8px;
+    border-radius: 4px;
+    color: #667eea;
+    font-size: 0.95em;
+    font-family: "Consolas", monospace;
+}
+.tip-box {
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+.tip-box strong {
+    color: #856404;
+    display: block;
+    margin-bottom: 5px;
+}
+.tip-box p {
+    color: #856404;
+    margin: 0;
+    line-height: 1.6;
+}
+.success-box {
+    background: #d4edda;
+    border-left: 4px solid #28a745;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+.success-box p {
+    color: #155724;
+    margin: 0;
+}
+.model-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 15px;
+}
+.model-item {
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+.model-item strong {
+    color: #667eea;
+    display: block;
+    margin-bottom: 4px;
+}
+.model-item span {
+    color: #666;
+    font-size: 0.9em;
+}
+.btn {
+    display: inline-block;
+    padding: 12px 24px;
+    background: #667eea;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s;
+    margin-right: 10px;
+    margin-top: 10px;
+}
+.btn:hover {
+    background: #5568d3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+.footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
+    color: #999;
+}
+
+/* Language toggle */
+#langToggle {
+  position: fixed; top: 16px; right: 16px; z-index: 9999;
+  background: #5568d3; color: #fff; border: none;
+  border-radius: 8px; padding: 6px 28px 6px 14px; cursor: pointer;
+  font-size: 0.85em; font-weight: 600; transition: all 0.2s;
+  -webkit-appearance: none; -moz-appearance: none; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23fff' d='M3 5l3 3 3-3z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center;
+}
+#langToggle:hover { background: #4a5bc2; }
+#langToggle option { background: #222; color: #ccc; }
+</style>
+</head>
+<body>
+
+<select id="langToggle" onchange="setLang(this.value)">
+  <option value="en">EN</option>
+  <option value="zh">中文</option>
+  <option value="th">ไทย</option>
+  <option value="vi">Tiếng Việt</option>
+  <option value="id">Bahasa Indonesia</option>
+  <option value="ms">Bahasa Melayu</option>
+</select>
+
+<div class="container">
+    <h1><span class="emoji">🦞</span> U-Claw</h1>
+    <div class="subtitle" data-i18n="subtitle">Portable AI Assistant · 3 steps to get started</div>
+
+    <div class="section">
+        <div class="section-title" data-i18n="quickStart">Quick Start</div>
+        <div class="steps">
+            <div class="step">
+                <div class="step-title" data-i18n="step1Title">Step 1: Start the Service</div>
+                <div class="step-desc" data-i18n="step1Desc">
+                    Double-click the launcher for your system:<br><br>
+                    <strong>Windows users:</strong> Double-click <code>Windows-Start.bat</code><br>
+                    <strong>Mac users:</strong> Double-click <code>Mac-Start.command</code>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-title" data-i18n="step2Title">Step 2: Configure AI Model</div>
+                <div class="step-desc" data-i18n="step2Desc">
+                    First run auto-opens the config page. Follow the prompts:<br>
+                    1. Select an AI model (recommended: <strong>DeepSeek</strong> — cheap & powerful)<br>
+                    2. Enter your API Key (register at the model's website)<br>
+                    3. Click "Save Configuration"
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-title" data-i18n="step3Title">Step 3: Start Chatting</div>
+                <div class="step-desc" data-i18n="step3Desc">
+                    After configuration, the browser auto-opens the AI chat interface<br>
+                    URL: <code>http://127.0.0.1:18789</code><br>
+                    You can now chat with your AI assistant!
+                </div>
+            </div>
+        </div>
+
+        <div class="success-box">
+            <p data-i18n="storageNote">✅ All configuration and chat history is stored in the USB's <code>data/</code> directory, automatically shared between Mac and Windows!</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title" data-i18n="recommendedModels">Recommended AI Models</div>
+        <div class="model-grid">
+            <div class="model-item">
+                <strong data-i18n="recDeepseek">🔥 DeepSeek</strong>
+                <span data-i18n="recDeepseekDesc">Best for coding, ultra-low cost</span>
+            </div>
+            <div class="model-item">
+                <strong data-i18n="recKimi">📄 Kimi</strong>
+                <span data-i18n="recKimiDesc">Long document specialist</span>
+            </div>
+            <div class="model-item">
+                <strong data-i18n="recQwen">🆓 Qwen</strong>
+                <span data-i18n="recQwenDesc">Generous free tier</span>
+            </div>
+            <div class="model-item">
+                <strong data-i18n="recClaude">🌟 Claude</strong>
+                <span data-i18n="recClaudeDesc">Best comprehension ability</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title" data-i18n="troubleshooting">Troubleshooting?</div>
+        <div class="tip-box">
+            <strong data-i18n="runDiag">💡 Run Diagnostics Tool</strong>
+            <p data-i18n="diagDesc">
+                If startup fails, double-click the diagnostics tool:<br>
+                Windows: <code>Windows-Diagnose.bat</code><br>
+                Mac: <code>Mac-Diagnose.command</code>
+            </p>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 30px;">
+        <a href="Config.html" class="btn" data-i18n="openConfig">Open Config Page</a>
+        <a href="https://u-claw.org" class="btn" target="_blank" data-i18n="viewDocs">View Docs</a>
+    </div>
+
+    <div class="footer">
+        U-Claw v1.1 · MIT License · <a href="https://github.com/dongsheng123132/u-claw" target="_blank" style="color: #667eea;">GitHub</a>
+    </div>
+</div>
+
+<script>
+const i18n = {
+  en: {
+    pageTitle: 'U-Claw User Guide',
+    subtitle: 'Portable AI Assistant · 3 steps to get started',
+    quickStart: 'Quick Start',
+    step1Title: 'Step 1: Start the Service',
+    step1Desc: 'Double-click the launcher for your system:<br><br><strong>Windows users:</strong> Double-click <code>Windows-Start.bat</code><br><strong>Mac users:</strong> Double-click <code>Mac-Start.command</code>',
+    step2Title: 'Step 2: Configure AI Model',
+    step2Desc: 'First run auto-opens the config page. Follow the prompts:<br>1. Select an AI model (recommended: <strong>DeepSeek</strong> — cheap & powerful)<br>2. Enter your API Key (register at the model\'s website)<br>3. Click "Save Configuration"',
+    step3Title: 'Step 3: Start Chatting',
+    step3Desc: 'After configuration, the browser auto-opens the AI chat interface<br>URL: <code>http://127.0.0.1:18789</code><br>You can now chat with your AI assistant!',
+    storageNote: '✅ All configuration and chat history is stored in the USB\'s <code>data/</code> directory, automatically shared between Mac and Windows!',
+    recommendedModels: 'Recommended AI Models',
+    recDeepseek: '🔥 DeepSeek', recDeepseekDesc: 'Best for coding, ultra-low cost',
+    recKimi: '📄 Kimi', recKimiDesc: 'Long document specialist',
+    recQwen: '🆓 Qwen', recQwenDesc: 'Generous free tier',
+    recClaude: '🌟 Claude', recClaudeDesc: 'Best comprehension ability',
+    troubleshooting: 'Troubleshooting?',
+    runDiag: '💡 Run Diagnostics Tool',
+    diagDesc: 'If startup fails, double-click the diagnostics tool:<br>Windows: <code>Windows-Diagnose.bat</code><br>Mac: <code>Mac-Diagnose.command</code>',
+    openConfig: 'Open Config Page',
+    viewDocs: 'View Docs'
+  },
+  zh: {
+    pageTitle: 'U-Claw 使用指南',
+    subtitle: 'AI助手便携U盘 · 3步开始使用',
+    quickStart: '快速开始',
+    step1Title: '第1步：启动服务',
+    step1Desc: '根据您的系统，双击对应的启动文件：<br><br><strong>Windows 用户：</strong>双击 <code>Windows-Start.bat</code><br><strong>Mac 用户：</strong>双击 <code>Mac-Start.command</code>',
+    step2Title: '第2步：配置AI模型',
+    step2Desc: '首次启动会自动打开配置页面，按照提示操作：<br>1. 选择一个AI模型（推荐 <strong>DeepSeek</strong> - 便宜好用）<br>2. 填写API Key（去模型官网注册获取）<br>3. 点击"保存配置"',
+    step3Title: '第3步：开始对话',
+    step3Desc: '配置完成后，浏览器会自动打开AI对话界面<br>地址：<code>http://127.0.0.1:18789</code><br>现在可以和AI助手对话了！',
+    storageNote: '✅ 所有配置和对话记录保存在U盘的 <code>data/</code> 目录，Mac和Windows自动共享！',
+    recommendedModels: '推荐AI模型',
+    recDeepseek: '🔥 DeepSeek', recDeepseekDesc: '编程首选，极便宜',
+    recKimi: '📄 Kimi', recKimiDesc: '长文档处理专家',
+    recQwen: '🆓 通义千问', recQwenDesc: '免费额度大',
+    recClaude: '🌟 Claude', recClaudeDesc: '最强理解能力',
+    troubleshooting: '遇到问题？',
+    runDiag: '💡 运行诊断工具',
+    diagDesc: '如果启动失败，双击运行诊断工具：<br>Windows: <code>Windows-Diagnose.bat</code><br>Mac: <code>Mac-Diagnose.command</code>',
+    openConfig: '打开配置页面',
+    viewDocs: '查看文档'
+  },
+  th: {
+    pageTitle: 'คู่มือการใช้งาน U-Claw',
+    subtitle: 'AI助手便携U盘 · 3 ขั้นตอนเพื่อเริ่มต้นใช้งาน',
+    quickStart: 'เริ่มต้นอย่างรวดเร็ว',
+    step1Title: 'ขั้นตอนที่ 1: เริ่มบริการ',
+    step1Desc: 'ดับเบิลคลิกตัวเปิดใช้งานสำหรับระบบของคุณ:<br><br><strong>ผู้ใช้ Windows:</strong> ดับเบิลคลิก <code>Windows-Start.bat</code><br><strong>ผู้ใช้ Mac:</strong> ดับเบิลคลิก <code>Mac-Start.command</code>',
+    step2Title: 'ขั้นตอนที่ 2: กำหนดค่า AI Model',
+    step2Desc: 'การเริ่มต้นครั้งแรกจะเปิดหน้ากำหนดค่าอัตโนมัติ ทำตามขั้นตอน:<br>1. เลือก AI Model (แนะนำ: <strong>DeepSeek</strong> — ถูกและทรงพลัง)<br>2. ป้อน API Key (สมัครที่เว็บไซต์ของ model)<br>3. คลิก "บันทึกการกำหนดค่า"',
+    step3Title: 'ขั้นตอนที่ 3: เริ่มสนทนา',
+    step3Desc: 'หลังจากกำหนดค่า เบราว์เซอร์จะเปิดหน้าสนทนา AI อัตโนมัติ<br>URL: <code>http://127.0.0.1:18789</code><br>คุณสามารถสนทนากับผู้ช่วย AI ได้แล้ว!',
+    storageNote: '✅ การกำหนดค่าและประวัติการสนทนาทั้งหมดเก็บไว้ใน <code>data/</code> ของ USB ใช้งานร่วมกันระหว่าง Mac และ Windows อัตโนมัติ!',
+    recommendedModels: 'AI Model ที่แนะนำ',
+    recDeepseek: '🔥 DeepSeek', recDeepseekDesc: 'ดีที่สุดสำหรับการเขียนโค้ด ราคาถูกมาก',
+    recKimi: '📄 Kimi', recKimiDesc: 'เชี่ยวชาญด้านเอกสารยาว',
+    recQwen: '🆓 Qwen', recQwenDesc: 'โควต้าฟรีมาก',
+    recClaude: '🌟 Claude', recClaudeDesc: 'ความสามารถในการเข้าใจดีที่สุด',
+    troubleshooting: 'แก้ไขปัญหา?',
+    runDiag: '💡 เรียกใช้เครื่องมือวินิจฉัย',
+    diagDesc: 'ถ้าเริ่มต้นล้มเหลว ดับเบิลคลิกเครื่องมือวินิจฉัย:<br>Windows: <code>Windows-Diagnose.bat</code><br>Mac: <code>Mac-Diagnose.command</code>',
+    openConfig: 'เปิดหน้ากำหนดค่า',
+    viewDocs: 'ดูเอกสาร'
+  },
+  vi: {
+    pageTitle: 'Hướng dẫn sử dụng U-Claw',
+    subtitle: 'Trợ lý AI di động · 3 bước để bắt đầu',
+    quickStart: 'Bắt đầu nhanh',
+    step1Title: 'Bước 1: Khởi chạy dịch vụ',
+    step1Desc: 'Nhấp đúp vào trình khởi chạy cho hệ thống của bạn:<br><br><strong>Người dùng Windows:</strong> Nhấp đúp <code>Windows-Start.bat</code><br><strong>Người dùng Mac:</strong> Nhấp đúp <code>Mac-Start.command</code>',
+    step2Title: 'Bước 2: Cấu hình AI Model',
+    step2Desc: 'Lần chạy đầu tiên sẽ tự động mở trang cấu hình. Làm theo hướng dẫn:<br>1. Chọn AI Model (khuyến nghị: <strong>DeepSeek</strong> — rẻ & mạnh mẽ)<br>2. Nhập API Key (đăng ký tại website của model)<br>3. Nhấp "Lưu cấu hình"',
+    step3Title: 'Bước 3: Bắt đầu trò chuyện',
+    step3Desc: 'Sau khi cấu hình, trình duyệt sẽ tự động mở giao diện trò chuyện AI<br>URL: <code>http://127.0.0.1:18789</code><br>Bạn có thể trò chuyện với trợ lý AI rồi!',
+    storageNote: '✅ Tất cả cấu hình và lịch sử trò chuyện được lưu trong thư mục <code>data/</code> của USB, tự động chia sẻ giữa Mac và Windows!',
+    recommendedModels: 'AI Model được khuyến nghị',
+    recDeepseek: '🔥 DeepSeek', recDeepseekDesc: 'Tốt nhất cho lập trình, giá cực rẻ',
+    recKimi: '📄 Kimi', recKimiDesc: 'Chuyên gia tài liệu dài',
+    recQwen: '🆓 Qwen', recQwenDesc: 'Hạn mức miễn phí lớn',
+    recClaude: '🌟 Claude', recClaudeDesc: 'Khả năng hiểu tốt nhất',
+    troubleshooting: 'Khắc phục sự cố?',
+    runDiag: '💡 Chạy công cụ chẩn đoán',
+    diagDesc: 'Nếu khởi chạy thất bại, nhấp đúp vào công cụ chẩn đoán:<br>Windows: <code>Windows-Diagnose.bat</code><br>Mac: <code>Mac-Diagnose.command</code>',
+    openConfig: 'Mở trang cấu hình',
+    viewDocs: 'Xem tài liệu'
+  },
+  id: {
+    pageTitle: 'Panduan Penggunaan U-Claw',
+    subtitle: 'Asisten AI Portabel · 3 langkah untuk memulai',
+    quickStart: 'Mulai Cepat',
+    step1Title: 'Langkah 1: Mulai Layanan',
+    step1Desc: 'Klik dua kali peluncur untuk sistem Anda:<br><br><strong>Pengguna Windows:</strong> Klik dua kali <code>Windows-Start.bat</code><br><strong>Pengguna Mac:</strong> Klik dua kali <code>Mac-Start.command</code>',
+    step2Title: 'Langkah 2: Konfigurasi AI Model',
+    step2Desc: 'Peluncuran pertama akan otomatis membuka halaman konfigurasi. Ikuti petunjuk:<br>1. Pilih AI Model (direkomendasikan: <strong>DeepSeek</strong> — murah & kuat)<br>2. Masukkan API Key (daftar di website model)<br>3. Klik "Simpan Konfigurasi"',
+    step3Title: 'Langkah 3: Mulai Berchat',
+    step3Desc: 'Setelah konfigurasi, browser akan otomatis membuka antarmuka chat AI<br>URL: <code>http://127.0.0.1:18789</code><br>Anda sekarang bisa berbicara dengan asisten AI!',
+    storageNote: '✅ Semua konfigurasi dan riwayat chat disimpan di direktori <code>data/</code> USB, otomatis dibagikan antara Mac dan Windows!',
+    recommendedModels: 'AI Model yang Direkomendasikan',
+    recDeepseek: '🔥 DeepSeek', recDeepseekDesc: 'Terbaik untuk coding, sangat murah',
+    recKimi: '📄 Kimi', recKimiDesc: 'Ahli dokumen panjang',
+    recQwen: '🆓 Qwen', recQwenDesc: 'Kuota gratis besar',
+    recClaude: '🌟 Claude', recClaudeDesc: 'Kemampuan pemahaman terbaik',
+    troubleshooting: 'Pemecahan Masalah?',
+    runDiag: '💡 Jalankan Alat Diagnostik',
+    diagDesc: 'Jika gagal memulai, klik dua kali alat diagnostik:<br>Windows: <code>Windows-Diagnose.bat</code><br>Mac: <code>Mac-Diagnose.command</code>',
+    openConfig: 'Buka Halaman Konfigurasi',
+    viewDocs: 'Lihat Dokumentasi'
+  },
+  ms: {
+    pageTitle: 'Panduan Penggunaan U-Claw',
+    subtitle: 'Pembantu AI Mudah Alih · 3 langkah untuk bermula',
+    quickStart: 'Mulakan Pantas',
+    step1Title: 'Langkah 1: Mulakan Perkhidmatan',
+    step1Desc: 'Klik dua kali pelancar untuk sistem anda:<br><br><strong>Pengguna Windows:</strong> Klik dua kali <code>Windows-Start.bat</code><br><strong>Pengguna Mac:</strong> Klik dua kali <code>Mac-Start.command</code>',
+    step2Title: 'Langkah 2: Konfigurasi AI Model',
+    step2Desc: 'Pelancaran pertama akan membuka halaman konfigurasi secara automatik. Ikuti arahan:<br>1. Pilih AI Model (disyorkan: <strong>DeepSeek</strong> — murah & kuat)<br>2. Masukkan API Key (daftar di laman web model)<br>3. Klik "Simpan Konfigurasi"',
+    step3Title: 'Langkah 3: Mula Berbual',
+    step3Desc: 'Selepas konfigurasi, pelayar akan membuka antara muka sembang AI secara automatik<br>URL: <code>http://127.0.0.1:18789</code><br>Anda kini boleh bercakap dengan pembantu AI!',
+    storageNote: '✅ Semua konfigurasi dan sejarah sembang disimpan dalam direktori <code>data/</code> USB, dikongsi secara automatik antara Mac dan Windows!',
+    recommendedModels: 'AI Model yang Disyorkan',
+    recDeepseek: '🔥 DeepSeek', recDeepseekDesc: 'Terbaik untuk pengekodan, sangat murah',
+    recKimi: '📄 Kimi', recKimiDesc: 'Pakar dokumen panjang',
+    recQwen: '🆓 Qwen', recQwenDesc: 'Kuota percuma besar',
+    recClaude: '🌟 Claude', recClaudeDesc: 'Keupayaan pemahaman terbaik',
+    troubleshooting: 'Pengesanan Masalah?',
+    runDiag: '💡 Jalankan Alat Diagnostik',
+    diagDesc: 'Jika gagal bermula, klik dua kali alat diagnostik:<br>Windows: <code>Windows-Diagnose.bat</code><br>Mac: <code>Mac-Diagnose.command</code>',
+    openConfig: 'Buka Halaman Konfigurasi',
+    viewDocs: 'Lihat Dokumentasi'
+  }
+};
+
+const SUPPORTED_LANGS = ['en', 'zh', 'th', 'vi', 'id', 'ms'];
+
+function getLang() {
+  const stored = localStorage.getItem('uclaw-lang');
+  if (stored && i18n[stored]) return stored;
+  return 'en';
+}
+function setLang(lang) { localStorage.setItem('uclaw-lang', lang); applyLang(lang); }
+function applyLang(lang) {
+  const dict = i18n[lang] || i18n.en;
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : lang;
+  document.title = dict.pageTitle || document.title;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (dict[key] !== undefined) el.textContent = dict[key];
+  });
+  const toggle = document.getElementById('langToggle');
+  if (toggle) toggle.value = lang;
+}
+document.addEventListener('DOMContentLoaded', () => { applyLang(getLang()); });
+</script>
+</body>
+</html>

@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>U-Claw SkillHub - AI Skill Marketplace</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, "Microsoft YaHei", "PingFang SC", sans-serif; background: #0a0a0a; color: #e0e0e0; min-height: 100vh; }
+
+/* ── Language toggle ── */
+#langToggle {
+  position: fixed; top: 16px; right: 16px; z-index: 9999;
+  background: #333; color: #ccc; border: 1px solid #555;
+  border-radius: 8px; padding: 6px 28px 6px 14px; cursor: pointer;
+  font-size: 0.85em; font-weight: 600; transition: all 0.2s;
+  -webkit-appearance: none; -moz-appearance: none; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ccc' d='M3 5l3 3 3-3z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center;
+}
+#langToggle:hover { background-color: #ff6b35; color: #fff; border-color: #ff6b35; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23fff' d='M3 5l3 3 3-3z'/%3E%3C/svg%3E"); }
+#langToggle option { background: #222; color: #ccc; }
+
+/* ── Sidebar ── */
+.sidebar {
+  position: fixed; left: 0; top: 0; width: 220px; height: 100vh;
+  background: #111; border-right: 1px solid #222; padding: 24px 0;
+  display: flex; flex-direction: column; z-index: 100;
+}
+.sidebar-logo { padding: 0 20px 24px; border-bottom: 1px solid #222; }
+.sidebar-logo h2 { font-size: 1.3em; }
+.sidebar-logo h2 span { color: #ff6b35; }
+.sidebar-logo p { color: #666; font-size: 0.8em; margin-top: 4px; }
+.sidebar-nav { flex: 1; padding: 16px 0; overflow-y: auto; }
+.sidebar-nav a {
+  display: block; padding: 10px 20px; color: #999; text-decoration: none;
+  font-size: 0.95em; transition: all 0.2s; border-left: 3px solid transparent;
+}
+.sidebar-nav a:hover { color: #fff; background: rgba(255,255,255,0.03); }
+.sidebar-nav a.active { color: #ff6b35; border-left-color: #ff6b35; background: rgba(255,107,53,0.05); }
+.sidebar-nav .nav-divider { height: 1px; background: #222; margin: 12px 20px; }
+
+/* ── Main Content ── */
+.main { margin-left: 220px; }
+
+/* ── Hero ── */
+.hero {
+  background: linear-gradient(135deg, #1a0a00 0%, #0a0a0a 50%, #0a1020 100%);
+  padding: 60px 40px 50px; text-align: center;
+  border-bottom: 1px solid #222;
+}
+.hero h1 { font-size: 2.4em; margin-bottom: 12px; }
+.hero h1 .accent { color: #ff6b35; }
+.hero .subtitle { color: #999; font-size: 1.15em; max-width: 600px; margin: 0 auto 28px; line-height: 1.6; }
+.hero .stats {
+  display: flex; justify-content: center; gap: 40px; margin-bottom: 32px;
+}
+.hero .stat-item { text-align: center; }
+.hero .stat-num { font-size: 2em; font-weight: 700; color: #ff6b35; }
+.hero .stat-label { color: #666; font-size: 0.85em; margin-top: 2px; }
+
+/* ── Search ── */
+.search-bar {
+  max-width: 560px; margin: 0 auto; display: flex;
+  background: #1a1a1a; border: 1px solid #333; border-radius: 10px; overflow: hidden;
+}
+.search-bar input {
+  flex: 1; padding: 14px 20px; background: transparent; border: none;
+  color: #fff; font-size: 1em; outline: none;
+}
+.search-bar input::placeholder { color: #555; }
+.search-bar button {
+  padding: 14px 24px; background: #ff6b35; border: none; color: #fff;
+  font-size: 1em; cursor: pointer; transition: background 0.2s;
+}
+.search-bar button:hover { background: #e55a28; }
+
+/* ── Tab bar ── */
+.tab-bar {
+  display: flex; gap: 0; border-bottom: 1px solid #222;
+  padding: 0 40px; background: #0f0f0f; position: sticky; top: 0; z-index: 50;
+}
+.tab-bar a {
+  padding: 14px 20px; color: #888; text-decoration: none; font-size: 0.95em;
+  border-bottom: 2px solid transparent; transition: all 0.2s;
+}
+.tab-bar a:hover { color: #ccc; }
+.tab-bar a.active { color: #ff6b35; border-bottom-color: #ff6b35; }
+
+/* ── Content Area ── */
+.content { padding: 30px 40px 60px; max-width: 1100px; }
+
+/* ── Section ── */
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin: 32px 0 16px;
+}
+.section-header h2 { font-size: 1.3em; }
+.section-header .badge {
+  background: rgba(255,107,53,0.15); color: #ff6b35; padding: 3px 10px;
+  border-radius: 12px; font-size: 0.8em;
+}
+.section-header a { color: #ff6b35; text-decoration: none; font-size: 0.9em; }
+.section-header a:hover { text-decoration: underline; }
+
+/* ── Skill Card Grid ── */
+.skill-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+.skill-card {
+  background: #1a1a1a; border: 1px solid #282828; border-radius: 12px;
+  padding: 20px; cursor: pointer; transition: all 0.2s; position: relative;
+}
+.skill-card:hover { border-color: #ff6b35; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+.skill-card .card-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.skill-card .card-icon {
+  width: 44px; height: 44px; border-radius: 10px; display: flex;
+  align-items: center; justify-content: center; font-size: 1.5em; flex-shrink: 0;
+}
+.skill-card .card-title { font-size: 1.05em; font-weight: 600; color: #fff; }
+.skill-card .card-author { font-size: 0.8em; color: #666; margin-top: 2px; }
+.skill-card .card-desc { color: #999; font-size: 0.88em; line-height: 1.5; margin-bottom: 14px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.skill-card .card-footer { display: flex; align-items: center; gap: 16px; font-size: 0.8em; color: #666; }
+.skill-card .card-footer .downloads { color: #ff6b35; }
+.skill-card .card-tag {
+  display: inline-block; background: #222; padding: 2px 8px; border-radius: 4px;
+  font-size: 0.75em; color: #888;
+}
+.skill-card .featured-badge {
+  position: absolute; top: 12px; right: 12px;
+  background: linear-gradient(135deg, #ff6b35, #ff9500); color: #fff;
+  padding: 2px 8px; border-radius: 4px; font-size: 0.7em; font-weight: 600;
+}
+
+/* ── Category Grid ── */
+.cat-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+}
+.cat-card {
+  background: #1a1a1a; border: 1px solid #282828; border-radius: 10px;
+  padding: 16px; text-align: center; cursor: pointer; transition: all 0.2s;
+}
+.cat-card:hover { border-color: #ff6b35; background: rgba(255,107,53,0.05); }
+.cat-card .cat-icon { font-size: 1.8em; margin-bottom: 8px; }
+.cat-card .cat-name { font-size: 0.9em; color: #ddd; font-weight: 500; }
+.cat-card .cat-count { font-size: 0.75em; color: #666; margin-top: 4px; }
+
+/* ── Install Box ── */
+.install-box {
+  background: linear-gradient(135deg, #1a1200, #1a0a00);
+  border: 1px solid #333; border-radius: 12px; padding: 28px;
+  margin: 32px 0; display: flex; align-items: center; gap: 24px;
+}
+.install-box .install-left { flex: 1; }
+.install-box h3 { font-size: 1.2em; margin-bottom: 8px; }
+.install-box h3 span { color: #ff6b35; }
+.install-box p { color: #999; font-size: 0.9em; line-height: 1.5; }
+.install-box .install-cmd {
+  margin-top: 14px; background: #111; border: 1px solid #333; border-radius: 8px;
+  padding: 12px 16px; display: flex; align-items: center; gap: 12px;
+}
+.install-box .install-cmd code { flex: 1; color: #ff6b35; font-size: 0.9em; word-break: break-all; }
+.install-box .install-cmd button {
+  background: #ff6b35; border: none; color: #fff; padding: 6px 14px;
+  border-radius: 6px; cursor: pointer; font-size: 0.85em; white-space: nowrap;
+}
+.install-box .install-cmd button:hover { background: #e55a28; }
+
+/* ── Tabs for Agent / Human ── */
+.mode-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+.mode-tab {
+  padding: 8px 16px; border: 1px solid #333; border-radius: 6px;
+  background: transparent; color: #888; cursor: pointer; font-size: 0.9em;
+}
+.mode-tab.active { background: #ff6b35; color: #fff; border-color: #ff6b35; }
+
+/* ── Ranking Table ── */
+.rank-table { width: 100%; border-collapse: collapse; }
+.rank-table th {
+  text-align: left; padding: 10px 12px; color: #666; font-size: 0.8em;
+  border-bottom: 1px solid #222; font-weight: 500; text-transform: uppercase;
+}
+.rank-table td { padding: 12px; border-bottom: 1px solid #1a1a1a; }
+.rank-table tr:hover td { background: rgba(255,255,255,0.02); }
+.rank-num { color: #ff6b35; font-weight: 700; font-size: 1.1em; }
+.rank-name { color: #fff; font-weight: 500; }
+.rank-dl { color: #888; font-size: 0.85em; }
+
+/* ── Footer ── */
+.footer { text-align: center; padding: 30px 40px; border-top: 1px solid #222; color: #555; font-size: 0.85em; }
+.footer a { color: #ff6b35; text-decoration: none; }
+.footer a:hover { text-decoration: underline; }
+
+/* ── Mobile ── */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; }
+  .hero { padding: 40px 20px 30px; }
+  .hero h1 { font-size: 1.6em; }
+  .hero .stats { gap: 20px; }
+  .hero .stat-num { font-size: 1.4em; }
+  .content { padding: 20px 16px 40px; }
+  .tab-bar { padding: 0 16px; overflow-x: auto; }
+  .skill-grid { grid-template-columns: 1fr; }
+  .cat-grid { grid-template-columns: repeat(3, 1fr); }
+  .install-box { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<select id="langToggle" onchange="setLang(this.value)">
+  <option value="en">EN</option>
+  <option value="zh">中文</option>
+  <option value="th">ไทย</option>
+  <option value="vi">Tiếng Việt</option>
+  <option value="id">Bahasa Indonesia</option>
+  <option value="ms">Bahasa Melayu</option>
+</select>
+
+<!-- ── Sidebar ── -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <h2><span>U-Claw</span> SkillHub</h2>
+    <p data-i18n="sidebarSubtitle">AI Skill Marketplace</p>
+  </div>
+  <div class="sidebar-nav">
+    <a href="https://u-claw.org" target="_blank" data-i18n="navOfficialSite">U-Claw Official Site</a>
+    <a href="https://github.com/openclaw/openclaw" target="_blank" data-i18n="navDocs">OpenClaw Official Docs</a>
+    <a href="https://github.com/dongsheng123132/u-claw" target="_blank">GitHub</a>
+    <div class="nav-divider"></div>
+    <a href="#featured" class="active" data-i18n="navFeatured">Featured</a>
+    <a href="#categories" data-i18n="navCategories">All Categories</a>
+    <a href="#ranking" data-i18n="navRanking">Download Ranking</a>
+    <a href="#install" data-i18n="navInstall">Install Guide</a>
+    <div class="nav-divider"></div>
+    <a href="#guide" data-i18n="navGuide">Tutorials</a>
+    <a href="#contact" data-i18n="navContact">Contact Us</a>
+  </div>
+</nav>
+
+<!-- ── Main ── -->
+<div class="main">
+
+  <!-- Hero -->
+  <section class="hero">
+    <h1 data-i18n="heroTitle">Install Skills, <span class="accent">Unlock AI Superpowers</span></h1>
+    <p class="subtitle" data-i18n="heroSubtitle">Curated picks · Fast downloads · Easy discovery<br>13,000+ AI Skills on ClawHub, accelerated by U-Claw</p>
+    <div class="stats">
+      <div class="stat-item"><div class="stat-num">13,729</div><div class="stat-label" data-i18n="statTotal">Total Skills</div></div>
+      <div class="stat-item"><div class="stat-num">32</div><div class="stat-label" data-i18n="statCategories">Categories</div></div>
+      <div class="stat-item"><div class="stat-num">2,868</div><div class="stat-label" data-i18n="statFeatured">Curated</div></div>
+      <div class="stat-item"><div class="stat-num">52</div><div class="stat-label" data-i18n="statPreinstalled">U-Claw Pre-installed</div></div>
+    </div>
+    <div class="search-bar">
+      <input type="text" id="searchInput" data-i18n-placeholder="searchPlaceholder" placeholder="Search skills: e.g. github, email, weather, PDF..." />
+      <button onclick="handleSearch()" data-i18n="searchButton">Search</button>
+    </div>
+  </section>
+
+  <!-- Tabs -->
+  <div class="tab-bar">
+    <a href="#featured" class="active" data-tab="featured" data-i18n="tabFeatured">Featured</a>
+    <a href="#categories" data-tab="categories" data-i18n="tabCategories">All Categories</a>
+    <a href="#ranking" data-tab="ranking" data-i18n="tabRanking">Download Ranking</a>
+    <a href="#install" data-tab="install" data-i18n="tabInstall">Install Guide</a>
+    <a href="#guide" data-tab="guide" data-i18n="tabGuide">Tutorials</a>
+  </div>
+
+  <!-- ── Content Panels ── -->
+  <div class="content">
+
+    <!-- ══ Featured ══ -->
+    <div id="panel-featured" class="panel active">
+
+      <div class="section-header">
+        <h2 data-i18n="sectionTop5">U-Claw Must-Have Skills TOP 5</h2>
+        <span class="badge" data-i18n="badgeOfficial">Official Picks</span>
+      </div>
+      <div class="skill-grid">
+        <div class="skill-card" onclick="installSkill('github')">
+          <div class="featured-badge" data-i18n="badgeMustInstall">Must Install</div>
+          <div class="card-top">
+            <div class="card-icon" style="background:#1a1a2e;">🐙</div>
+            <div><div class="card-title">GitHub</div><div class="card-author">@openclaw</div></div>
+          </div>
+          <div class="card-desc" data-i18n="descGithub">Manage Issues, PRs, search repos, view code. The ultimate developer assistant.</div>
+          <div class="card-footer">
+            <span class="downloads" data-i18n="dlGithub">48,000+ installs</span>
+            <span class="card-tag" data-i18n="tagDev">Dev</span>
+          </div>
+        </div>
+        <div class="skill-card" onclick="installSkill('tavily-search')">
+          <div class="featured-badge" data-i18n="badgeMustInstall">Must Install</div>
+          <div class="card-top">
+            <div class="card-icon" style="background:#0a1a1a;">🔍</div>
+            <div><div class="card-title">Tavily Search</div><div class="card-author">@tavily</div></div>
+          </div>
+          <div class="card-desc" data-i18n="descTavily">AI-powered web search engine. Let your AI assistant search the internet in real time.</div>
+          <div class="card-footer">
+            <span class="downloads" data-i18n="dlTavily">52,000+ installs</span>
+            <span class="card-tag" data-i18n="tagSearch">Search</span>
+          </div>
+        </div>
+        <div class="skill-card" onclick="installSkill('summarize')">
+          <div class="featured-badge" data-i18n="badgeMustInstall">Must Install</div>
+          <div class="card-top">
+            <div class="card-icon" style="background:#1a1a00;">📝</div>
+            <div><div class="card-title">Summarize</div><div class="card-author">@openclaw</div></div>
+          </div>
+          <div class="card-desc" data-i18n="descSummarize">Summarize web pages, articles, PDFs, and videos. Extract key info with one click.</div>
+          <div class="card-footer">
+            <span class="downloads" data-i18n="dlSummarize">36,000+ installs</span>
+            <span class="card-tag" data-i18n="tagEfficiency">Efficiency</span>
+          </div>
+        </div>
+        <div class="skill-card" onclick="installSkill('himalaya')">
+          <div class="featured-badge" data-i18n="badgeMustInstall">Must Install</div>
+          <div class="card-top">
+            <div class="card-icon" style="background:#1a0a1a;">📧</div>
+            <div><div class="card-title">Himalaya</div><div class="card-author">@sostrovsky</div></div>
+          </div>
+          <div class="card-desc" data-i18n="descHimalaya">Send and receive emails, search mail, manage folders. Supports Gmail/Outlook/QQ Mail.</div>
+          <div class="card-footer">
+            <span class="downloads" data-i18n="dlHimalaya">21,000+ installs</span>
+            <span class="card-tag" data-i18n="tagEmail">Email</span>
+          </div>
+        </div>
+        <div class="skill-card" onclick="installSkill('browser-relay')">
+          <div class="featured-badge" data-i18n="badgeMustInstall">Must Install</div>
+          <div class="card-top">
+            <div class="card-icon" style="background:#0a0a1a;">🌐</div>
+            <div><div class="card-title">Browser Relay</div><div class="card-author">@nicosql</div></div>
+          </div>
+          <div class="card-desc" data-i18n="descBrowserRelay">AI controls the browser — auto-fill forms, take screenshots, scrape web data.</div>
+          <div class="card-footer">
+            <span class="downloads" data-i18n="dlBrowserRelay">29,000+ installs</span>
+            <span class="card-tag" data-i18n="tagAutomation">Automation</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header" style="margin-top:40px;">
+        <h2 data-i18n="sectionProductivity">Productivity Tools</h2>
+        <span class="badge" data-i18n="badgeDaily">Daily Essentials</span>
+      </div>
+      <div class="skill-grid">
+        <div class="skill-card" onclick="installSkill('weather')">
+          <div class="card-top">
+            <div class="card-icon" style="background:#0a1a2e;">🌤</div>
+            <div><div class="card-title">Weather</div><div class="card-author">@openclaw</div></div>
+          </div>
+          <div class="card-desc" data-i18n="descWeather">Check global weather forecasts. Supports multi-day and real-time weather.</div>
+          <div class="card-footer"><span class="downloads" data-i18n="dlWeather">18,000+ installs</span><span class="card-tag" data-i18n="tagLife">Life</span></div>
+        </div>
+        <div class="skill-card" onclick="installSkill('apple-notes')">
+          <div class="card-top">
+            <div class="card-icon" style="background:#1a1a00;">📒</div>
+            <div><div class="card-title">Apple Notes</div><div class="card-author">@openclaw</div></div>
+          </div>
+          <div class="card-desc" data-i18n="descAppleNotes">Read and write Apple Notes. Quickly capture ideas with voice or text.</div>
+          <div class="card-footer"><span class="downloads" data-i18n="dlAppleNotes">15,000+ installs</span><span class="card-tag" data-i18n="tagNotes">Notes</span></div>
+        </div>
+        <div class="skill-card" onclick="installSkill('apple-reminders')">
+          <div class="card-top">
+            <div class="card-icon" style="background:#2e0a0a;">⏰</div>
+            <div><div class="card-title">Apple Reminders</div><div class="card-author">@openclaw</div></div>
+          </div>
+          <div class="card-desc" data-i18n="descAppleReminders">Create and manage reminders. "Remind me to attend a meeting at 3pm tomorrow."</div>
+          <div class="card-footer"><span class="downloads" data-i18n="dlAppleReminders">12,000+ installs</span><span class="card-tag" data-i18n="tagEfficiency">Efficiency</span></div>
+        </div>
+        <div class="skill-card" onclick="installSkill('obsidian')">
+          <div class="card-top">
+            <div class="card-icon" style="background:#1a0a2e;">💎</div>
+            <div><div class="card-title">Obsidian</div><div class="card-author">@openclaw</div></div>
+          </div>
+          <div class="card-desc" data-i18n="descObsidian">Create, search, and manage notes in your Obsidian knowledge base.</div>
+          <div class="card-footer"><span class="downloads" data-i18n="dlObsidian">22,000+ installs</span><span class="card-tag" data-i18n="tagKnowledge">Knowledge</span></div>
+        </div>
+        <div class="skill-card" onclick="installSkill('notion')">
+          <div class="card-top">
+            <div class="card-icon" style="background:#1a1a1a;">📋</div>
+            <div><div class="card-title">Notion</div><div class="card-author">@openclaw</div></div>
+          </div>
+          <div class="card-desc" data-i18n="descNotion">Create Notion pages, manage databases, search workspace content.</div>
+          <div class="card-footer"><span class="downloads" data-i18n="dlNotion">19,000+ installs</span><span class="card-tag" data-i18n="tagEfficiency">Efficiency</span></div>
+        </div>
+        <div class="skill-card" onclick="installSkill('nano-pdf')">
+          <div class="card-top">
+            <div class="card-icon" style="background:#2e1a0a;">📄</div>
+            <div><div class="card-title">Nano PDF</div><div class="card-author">@nicosql</div></div>
+          </div>
+          <div class="card-desc" data-i18n="descNanoPdf">Edit PDF files: merge, split, add watermarks, extract text.</div>
+          <div class="card-footer"><span class="downloads" data-i18n="dlNanoPdf">14,000+ installs</span><span class="card-tag" data-i18n="tagOffice">Office</span></div>
+        </div>
+      </div>
+
+      <div class="section-header" style="margin-top:40px;">
+        <h2 data-i18n="sectionCoding">Coding & Development</h2>
+        <span class="badge" data-i18n="badgeDevFavorite">Developer Favorites</span>
+      </div>
+      <div class="skill-grid">
+        <div class="skill-card" onclick="installSkill('coding-agent')">
+          <div class="card-top">
+            <div class="card-icon" style="background:#0a2e0a;">🤖</div>
+            <div><div class="card-title">Coding Agent</div><div class="card-author">@openclaw</div></div>
+          </div>
+          <div class="card-desc" data-i18n="descCodingAgent">Delegate coding tasks to an AI Agent. Refactor code, write tests, fix bugs.</div>
+          <div class="card-footer"><span class="downloads" data-i18n="dlCodingAgent">31,000+ installs</span><span class="card-tag" data-i18n="tagCoding">Coding</span></div>
+        </div>
+        <div class="skill-card" onclick="installSkill('tmux')">
+          <div class="card-top">
+            <div class="card-icon" style="background:#0a0a0a;">🖥</div>
+            <div><div class="card-title">Tmux</div><div class="card-author">@openclaw</div></div>
+          </div>
+          <div class="card-desc" data-i18n="descTmux">Remote terminal operations. Check server status, run commands, manage processes.</div>
+          <div class="card-footer"><span class="downloads" data-i18n="dlTmux">11,000+ installs</span><span class="card-tag" data-i18n="tagOps">Ops</span></div>
+        </div>
+        <div class="skill-card" onclick="installSkill('openai-image-gen')">
+          <div class="card-top">
+            <div class="card-icon" style="background:#2e1a2e;">🎨</div>
+            <div><div class="card-title">OpenAI Image Gen</div><div class="card-author">@openclaw</div></div>
+          </div>
+          <div class="card-desc" data-i18n="descImageGen">DALL-E AI image generation. Describe in natural language, generate high-quality images.</div>
+          <div class="card-footer"><span class="downloads" data-i18n="dlImageGen">26,000+ installs</span><span class="card-tag" data-i18n="tagCreative">Creative</span></div>
+        </div>
+        <div class="skill-card" onclick="installSkill('peekaboo')">
+          <div class="card-top">
+            <div class="card-icon" style="background:#1a2e1a;">📸</div>
+            <div><div class="card-title">Peekaboo</div><div class="card-author">@nicosql</div></div>
+          </div>
+          <div class="card-desc" data-i18n="descPeekaboo">Screenshot + OCR. AI can "see" your screen and understand its content.</div>
+          <div class="card-footer"><span class="downloads" data-i18n="dlPeekaboo">17,000+ installs</span><span class="card-tag" data-i18n="tagMultimodal">Multimodal</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ Categories ══ -->
+    <div id="panel-categories" class="panel">
+      <div class="section-header">
+        <h2 data-i18n="sectionAllCategories">All Categories</h2>
+        <span class="badge" data-i18n="badgeCatCount">32 Categories</span>
+      </div>
+      <div class="cat-grid">
+        <div class="cat-card" onclick="filterCat('coding')"><div class="cat-icon">💻</div><div class="cat-name" data-i18n="catCoding">Coding Agent</div><div class="cat-count" data-i18n="catCount55">55 skills</div></div>
+        <div class="cat-card" onclick="filterCat('web-dev')"><div class="cat-icon">🌐</div><div class="cat-name" data-i18n="catWebDev">Web Frontend</div><div class="cat-count" data-i18n="catCount46">46 skills</div></div>
+        <div class="cat-card" onclick="filterCat('git')"><div class="cat-icon">🔀</div><div class="cat-name" data-i18n="catGit">Git & GitHub</div><div class="cat-count" data-i18n="catCount34">34 skills</div></div>
+        <div class="cat-card" onclick="filterCat('devops')"><div class="cat-icon">☁️</div><div class="cat-name" data-i18n="catDevOps">DevOps & Cloud</div><div class="cat-count" data-i18n="catCount144">144 skills</div></div>
+        <div class="cat-card" onclick="filterCat('browser')"><div class="cat-icon">🖱</div><div class="cat-name" data-i18n="catBrowser">Browser Automation</div><div class="cat-count" data-i18n="catCount69">69 skills</div></div>
+        <div class="cat-card" onclick="filterCat('ai')"><div class="cat-icon">🧠</div><div class="cat-name" data-i18n="catAI">AI & LLMs</div><div class="cat-count" data-i18n="catCount159">159 skills</div></div>
+        <div class="cat-card" onclick="filterCat('image')"><div class="cat-icon">🎨</div><div class="cat-name" data-i18n="catImage">Image & Video</div><div class="cat-count" data-i18n="catCount41">41 skills</div></div>
+        <div class="cat-card" onclick="filterCat('productivity')"><div class="cat-icon">⚡</div><div class="cat-name" data-i18n="catProductivity">Productivity</div><div class="cat-count" data-i18n="catCount93">93 skills</div></div>
+        <div class="cat-card" onclick="filterCat('data')"><div class="cat-icon">📊</div><div class="cat-name" data-i18n="catData">Data & Analytics</div><div class="cat-count" data-i18n="catCount18">18 skills</div></div>
+        <div class="cat-card" onclick="filterCat('notes')"><div class="cat-icon">📝</div><div class="cat-name" data-i18n="catNotes">Notes & Knowledge</div><div class="cat-count" data-i18n="catCount38">38 skills</div></div>
+        <div class="cat-card" onclick="filterCat('email')"><div class="cat-icon">📧</div><div class="cat-name" data-i18n="catEmail">Email & Messaging</div><div class="cat-count" data-i18n="catCount24">24 skills</div></div>
+        <div class="cat-card" onclick="filterCat('social')"><div class="cat-icon">💬</div><div class="cat-name" data-i18n="catSocial">Social Media</div><div class="cat-count" data-i18n="catCount31">31 skills</div></div>
+        <div class="cat-card" onclick="filterCat('search')"><div class="cat-icon">🔍</div><div class="cat-name" data-i18n="catSearch">Search & Research</div><div class="cat-count" data-i18n="catCount47">47 skills</div></div>
+        <div class="cat-card" onclick="filterCat('smarthome')"><div class="cat-icon">🏠</div><div class="cat-name" data-i18n="catSmartHome">Smart Home</div><div class="cat-count" data-i18n="catCount22">22 skills</div></div>
+        <div class="cat-card" onclick="filterCat('finance')"><div class="cat-icon">💰</div><div class="cat-name" data-i18n="catFinance">Finance & Crypto</div><div class="cat-count" data-i18n="catCount28">28 skills</div></div>
+        <div class="cat-card" onclick="filterCat('security')"><div class="cat-icon">🛡</div><div class="cat-name" data-i18n="catSecurity">Security</div><div class="cat-count" data-i18n="catCount19">19 skills</div></div>
+        <div class="cat-card" onclick="filterCat('voice')"><div class="cat-icon">🎙</div><div class="cat-name" data-i18n="catVoice">Voice & TTS</div><div class="cat-count" data-i18n="catCount15">15 skills</div></div>
+        <div class="cat-card" onclick="filterCat('file')"><div class="cat-icon">📁</div><div class="cat-name" data-i18n="catFile">File Management</div><div class="cat-count" data-i18n="catCount33">33 skills</div></div>
+        <div class="cat-card" onclick="filterCat('translate')"><div class="cat-icon">🌍</div><div class="cat-name" data-i18n="catTranslate">Translation</div><div class="cat-count" data-i18n="catCount12">12 skills</div></div>
+        <div class="cat-card" onclick="filterCat('calendar')"><div class="cat-icon">📅</div><div class="cat-name" data-i18n="catCalendar">Calendar & Reminders</div><div class="cat-count" data-i18n="catCount16">16 skills</div></div>
+      </div>
+      <div style="text-align:center; margin-top:24px; color:#666; font-size:0.9em;" data-i18n="catMore">
+        For more categories, enter keywords in the search box, or use the command: <code style="color:#ff6b35; background:#1a1a1a; padding:2px 8px; border-radius:4px;">openclaw skills search [keyword]</code>
+      </div>
+    </div>
+
+    <!-- ══ Ranking ══ -->
+    <div id="panel-ranking" class="panel">
+      <div class="section-header">
+        <h2 data-i18n="sectionRanking">Download Ranking</h2>
+        <span class="badge" data-i18n="badgeMarch2026">March 2026</span>
+      </div>
+      <table class="rank-table">
+        <thead>
+          <tr><th>#</th><th data-i18n="rankSkill">Skill</th><th data-i18n="rankCategory">Category</th><th data-i18n="rankDownloads">Downloads</th><th data-i18n="rankInstallCmd">Install Command</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="rank-num">1</td><td class="rank-name">Tavily Search</td><td><span class="card-tag" data-i18n="tagSearch">Search</span></td><td class="rank-dl">52,000+</td><td><code style="color:#ff6b35; font-size:0.8em;">openclaw skills install @tavily/search</code></td></tr>
+          <tr><td class="rank-num">2</td><td class="rank-name">GitHub</td><td><span class="card-tag" data-i18n="tagDev">Dev</span></td><td class="rank-dl">48,000+</td><td><code style="color:#ff6b35; font-size:0.8em;">openclaw skills install @openclaw/github</code></td></tr>
+          <tr><td class="rank-num">3</td><td class="rank-name">Capability Evolver</td><td><span class="card-tag">AI</span></td><td class="rank-dl">35,581</td><td><code style="color:#ff6b35; font-size:0.8em;">openclaw skills install @cap/evolver</code></td></tr>
+          <tr><td class="rank-num">4</td><td class="rank-name">Coding Agent</td><td><span class="card-tag" data-i18n="tagCoding">Coding</span></td><td class="rank-dl">31,000+</td><td><code style="color:#ff6b35; font-size:0.8em;">openclaw skills install @openclaw/coding-agent</code></td></tr>
+          <tr><td class="rank-num">5</td><td class="rank-name">Browser Relay</td><td><span class="card-tag" data-i18n="tagAutomation">Automation</span></td><td class="rank-dl">29,000+</td><td><code style="color:#ff6b35; font-size:0.8em;">openclaw skills install @nicosql/browser-relay</code></td></tr>
+          <tr><td class="rank-num">6</td><td class="rank-name">OpenAI Image Gen</td><td><span class="card-tag" data-i18n="tagCreative">Creative</span></td><td class="rank-dl">26,000+</td><td><code style="color:#ff6b35; font-size:0.8em;">openclaw skills install @openclaw/openai-image-gen</code></td></tr>
+          <tr><td class="rank-num">7</td><td class="rank-name">Obsidian</td><td><span class="card-tag" data-i18n="tagNotes">Notes</span></td><td class="rank-dl">22,000+</td><td><code style="color:#ff6b35; font-size:0.8em;">openclaw skills install @openclaw/obsidian</code></td></tr>
+          <tr><td class="rank-num">8</td><td class="rank-name">Himalaya</td><td><span class="card-tag" data-i18n="tagEmail">Email</span></td><td class="rank-dl">21,000+</td><td><code style="color:#ff6b35; font-size:0.8em;">openclaw skills install @sostrovsky/himalaya</code></td></tr>
+          <tr><td class="rank-num">9</td><td class="rank-name">Notion</td><td><span class="card-tag" data-i18n="tagEfficiency">Efficiency</span></td><td class="rank-dl">19,000+</td><td><code style="color:#ff6b35; font-size:0.8em;">openclaw skills install @openclaw/notion</code></td></tr>
+          <tr><td class="rank-num">10</td><td class="rank-name">Weather</td><td><span class="card-tag" data-i18n="tagLife">Life</span></td><td class="rank-dl">18,000+</td><td><code style="color:#ff6b35; font-size:0.8em;">openclaw skills install @openclaw/weather</code></td></tr>
+          <tr><td class="rank-num">11</td><td class="rank-name">Peekaboo</td><td><span class="card-tag" data-i18n="tagMultimodal">Multimodal</span></td><td class="rank-dl">17,000+</td><td><code style="color:#ff6b35; font-size:0.8em;">openclaw skills install @nicosql/peekaboo</code></td></tr>
+          <tr><td class="rank-num">12</td><td class="rank-name">Wacli</td><td><span class="card-tag" data-i18n="tagAutomation">Automation</span></td><td class="rank-dl">16,415</td><td><code style="color:#ff6b35; font-size:0.8em;">openclaw skills install @nicosql/wacli</code></td></tr>
+          <tr><td class="rank-num">13</td><td class="rank-name">ByteRover</td><td><span class="card-tag" data-i18n="tagSearch">Search</span></td><td class="rank-dl">16,004</td><td><code style="color:#ff6b35; font-size:0.8em;">openclaw skills install @byterover/search</code></td></tr>
+          <tr><td class="rank-num">14</td><td class="rank-name">Self-Improving Agent</td><td><span class="card-tag">AI</span></td><td class="rank-dl">15,962</td><td><code style="color:#ff6b35; font-size:0.8em;">openclaw skills install @self-improving-agent</code></td></tr>
+          <tr><td class="rank-num">15</td><td class="rank-name">Apple Notes</td><td><span class="card-tag" data-i18n="tagNotes">Notes</span></td><td class="rank-dl">15,000+</td><td><code style="color:#ff6b35; font-size:0.8em;">openclaw skills install @openclaw/apple-notes</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ══ Install ══ -->
+    <div id="panel-install" class="panel">
+      <div class="section-header">
+        <h2 data-i18n="sectionInstallSkills">Install Skills</h2>
+      </div>
+
+      <div class="mode-tabs">
+        <button class="mode-tab active" onclick="switchMode(this, 'agent')" data-i18n="modeAgent">I'm an Agent</button>
+        <button class="mode-tab" onclick="switchMode(this, 'human')" data-i18n="modeHuman">I'm a Human</button>
+      </div>
+
+      <div id="mode-agent" class="mode-panel">
+        <div class="install-box">
+          <div class="install-left">
+            <h3 data-i18n="installAgentTitle">Send this prompt to your <span>Agent</span> to install skills</h3>
+            <p data-i18n="installAgentDesc">Copy the command below and paste it into your OpenClaw conversation. The Agent will automatically search and install.</p>
+            <div class="install-cmd">
+              <code data-i18n="installAgentCmd1">Help me install the [skill name] skill</code>
+              <button onclick="copyText(this, t('installAgentCmd1'))" data-i18n="btnCopy">Copy</button>
+            </div>
+            <div class="install-cmd" style="margin-top:8px;">
+              <code data-i18n="installAgentCmd2">Search for skills related to [description] and install the best one</code>
+              <button onclick="copyText(this, t('installAgentCmd2'))" data-i18n="btnCopy">Copy</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="mode-human" class="mode-panel" style="display:none;">
+        <div class="install-box">
+          <div class="install-left">
+            <h3 data-i18n="installHumanTitle">Terminal Commands</h3>
+            <p data-i18n="installHumanDesc">Run the following commands in your terminal:</p>
+            <div class="install-cmd">
+              <code>openclaw skills search [keyword]</code>
+              <button onclick="copyText(this, 'openclaw skills search [keyword]')" data-i18n="btnCopy">Copy</button>
+            </div>
+            <div class="install-cmd" style="margin-top:8px;">
+              <code>openclaw skills install @author/skill-name</code>
+              <button onclick="copyText(this, 'openclaw skills install @author/skill-name')" data-i18n="btnCopy">Copy</button>
+            </div>
+            <div class="install-cmd" style="margin-top:8px;">
+              <code>openclaw clawhub search [keyword]</code>
+              <button onclick="copyText(this, 'openclaw clawhub search [keyword]')" data-i18n="btnCopy">Copy</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:32px;">
+        <h3 style="margin-bottom:16px;" data-i18n="quickRef">Quick Reference</h3>
+        <table class="rank-table">
+          <thead><tr><th data-i18n="refAction">Action</th><th data-i18n="refCommand">Command</th></tr></thead>
+          <tbody>
+            <tr><td data-i18n="refSearchSkills">Search skills</td><td><code style="color:#ff6b35;">openclaw skills search [keyword]</code></td></tr>
+            <tr><td data-i18n="refInstallSkill">Install skill</td><td><code style="color:#ff6b35;">openclaw skills install @author/skill-name</code></td></tr>
+            <tr><td data-i18n="refListSkills">List installed skills</td><td><code style="color:#ff6b35;">openclaw skills list</code></td></tr>
+            <tr><td data-i18n="refUninstallSkill">Uninstall skill</td><td><code style="color:#ff6b35;">openclaw skills uninstall skill-name</code></td></tr>
+            <tr><td data-i18n="refUpdateSkill">Update skill</td><td><code style="color:#ff6b35;">openclaw skills update skill-name</code></td></tr>
+            <tr><td data-i18n="refClawhubSearch">ClawHub search</td><td><code style="color:#ff6b35;">openclaw clawhub search [keyword]</code></td></tr>
+            <tr><td data-i18n="refSkillInfo">View skill details</td><td><code style="color:#ff6b35;">openclaw skills info @author/skill-name</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top:32px;">
+        <h3 style="margin-bottom:16px;" data-i18n="uclawExclusive">U-Claw Exclusive</h3>
+        <div class="install-box">
+          <div class="install-left">
+            <h3 data-i18n="uclawPreinstalled"><span>52 skills pre-installed</span>, ready to use out of the box</h3>
+            <p data-i18n="uclawPreinstalledDesc">U-Claw has 52 official skills built-in — no internet needed. Select [13] in the start menu to browse the full list.<br>Need more? Use the commands above to install from ClawHub online.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ Guide ══ -->
+    <div id="panel-guide" class="panel">
+      <div class="section-header">
+        <h2 data-i18n="sectionGuide">Tutorials</h2>
+      </div>
+
+      <div class="skill-grid" style="grid-template-columns: 1fr;">
+        <div class="skill-card" onclick="window.open('教程-OpenClaw中国区完全指南.md')">
+          <div class="card-top">
+            <div class="card-icon" style="background:#1a1a00;">📖</div>
+            <div><div class="card-title" data-i18n="guideCompleteTitle">OpenClaw Complete Guide (China Region)</div><div class="card-author" data-i18n="guideAuthor1">U-Claw Original</div></div>
+          </div>
+          <div class="card-desc" data-i18n="guideCompleteDesc">From installation to configuration to daily use, all in one guide. Includes China mirror setup, model selection, QQ/Feishu integration.</div>
+        </div>
+        <a href="https://datawhalechina.github.io/hello-claw/" target="_blank" style="text-decoration:none;">
+          <div class="skill-card">
+            <div class="card-top">
+              <div class="card-icon" style="background:#0a2e0a;">🐳</div>
+              <div><div class="card-title" data-i18n="guideHelloClawTitle">Hello Claw (Datawhale Tutorial)</div><div class="card-author" data-i18n="guideAuthor2">Recommended · datawhalechina</div></div>
+            </div>
+            <div class="card-desc" data-i18n="guideHelloClawDesc">Recommended reading: A systematic beginner tutorial, from zero to advanced, covering installation, configuration, and skill development.</div>
+          </div>
+        </a>
+        <a href="https://github.com/yeuxuan/openclaw-docs" target="_blank" style="text-decoration:none;">
+          <div class="skill-card">
+            <div class="card-top">
+              <div class="card-icon" style="background:#1a0a2e;">📚</div>
+              <div><div class="card-title" data-i18n="guideDocsTitle">OpenClaw Chinese Docs (276 Articles)</div><div class="card-author" data-i18n="guideAuthor3">Recommended · yeuxuan</div></div>
+            </div>
+            <div class="card-desc" data-i18n="guideDocsDesc">Recommended reading: Source-code level deep documentation — 276 articles covering architecture, gateway, plugins, and skill development.</div>
+          </div>
+        </a>
+        <a href="https://github.com/VoltAgent/awesome-openclaw-skills" target="_blank" style="text-decoration:none;">
+          <div class="skill-card">
+            <div class="card-top">
+              <div class="card-icon" style="background:#2e1a0a;">🦞</div>
+              <div><div class="card-title" data-i18n="guideAwesomeTitle">Awesome OpenClaw Skills (5,400+ Curated)</div><div class="card-author" data-i18n="guideAuthor4">Recommended · VoltAgent</div></div>
+            </div>
+            <div class="card-desc" data-i18n="guideAwesomeDesc">Recommended reading: 5,400+ quality skills curated from 13,000+, categorized and filtered for spam and malicious code.</div>
+          </div>
+        </a>
+        <a href="https://developer.aliyun.com/article/1715006" target="_blank" style="text-decoration:none;">
+          <div class="skill-card">
+            <div class="card-top">
+              <div class="card-icon" style="background:#0a1a1a;">🏆</div>
+              <div><div class="card-title" data-i18n="guide30Title">How to Choose from 13,000+ Skills? 30 Worth Installing</div><div class="card-author" data-i18n="guideAuthor5">Alibaba Cloud Developer Community</div></div>
+            </div>
+            <div class="card-desc" data-i18n="guide30Desc">30 most practical skills hand-picked from thousands, plus 5 must-install skill recommendations.</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+  </div><!-- .content -->
+
+  <!-- ── Contact (anchor) ── -->
+  <div id="contact" class="footer">
+    <p style="margin-bottom:8px;">
+      <a href="https://u-claw.org" target="_blank" data-i18n="footerSite">U-Claw Official Site</a> &nbsp;·&nbsp;
+      <a href="https://github.com/dongsheng123132/u-claw" target="_blank">GitHub</a> &nbsp;·&nbsp;
+      <a href="https://github.com/openclaw/openclaw" target="_blank" data-i18n="footerOpenclaw">OpenClaw Official</a>
+    </p>
+    <p data-i18n="footerWechat">WeChat: hecare888 &nbsp;·&nbsp; Made with 🦞 by <a href="https://github.com/dongsheng123132">dongsheng</a></p>
+  </div>
+
+</div><!-- .main -->
+
+<script>
+// ── i18n ──
+const i18n = {
+  en: {
+    pageTitle: 'U-Claw SkillHub - AI Skill Marketplace',
+    sidebarSubtitle: 'AI Skill Marketplace',
+    navOfficialSite: 'U-Claw Official Site',
+    navDocs: 'OpenClaw Official Docs',
+    navFeatured: 'Featured',
+    navCategories: 'All Categories',
+    navRanking: 'Download Ranking',
+    navInstall: 'Install Guide',
+    navGuide: 'Tutorials',
+    navContact: 'Contact Us',
+    heroTitle: 'Install Skills, <span class="accent">Unlock AI Superpowers</span>',
+    heroSubtitle: 'Curated picks · Fast downloads · Easy discovery<br>13,000+ AI Skills on ClawHub, accelerated by U-Claw',
+    statTotal: 'Total Skills',
+    statCategories: 'Categories',
+    statFeatured: 'Curated',
+    statPreinstalled: 'U-Claw Pre-installed',
+    searchPlaceholder: 'Search skills: e.g. github, email, weather, PDF...',
+    searchButton: 'Search',
+    tabFeatured: 'Featured',
+    tabCategories: 'All Categories',
+    tabRanking: 'Download Ranking',
+    tabInstall: 'Install Guide',
+    tabGuide: 'Tutorials',
+    sectionTop5: 'U-Claw Must-Have Skills TOP 5',
+    badgeOfficial: 'Official Picks',
+    badgeMustInstall: 'Must Install',
+    descGithub: 'Manage Issues, PRs, search repos, view code. The ultimate developer assistant.',
+    dlGithub: '48,000+ installs',
+    tagDev: 'Dev',
+    descTavily: 'AI-powered web search engine. Let your AI assistant search the internet in real time.',
+    dlTavily: '52,000+ installs',
+    tagSearch: 'Search',
+    descSummarize: 'Summarize web pages, articles, PDFs, and videos. Extract key info with one click.',
+    dlSummarize: '36,000+ installs',
+    tagEfficiency: 'Efficiency',
+    descHimalaya: 'Send and receive emails, search mail, manage folders. Supports Gmail/Outlook/QQ Mail.',
+    dlHimalaya: '21,000+ installs',
+    tagEmail: 'Email',
+    descBrowserRelay: 'AI controls the browser — auto-fill forms, take screenshots, scrape web data.',
+    dlBrowserRelay: '29,000+ installs',
+    tagAutomation: 'Automation',
+    sectionProductivity: 'Productivity Tools',
+    badgeDaily: 'Daily Essentials',
+    descWeather: 'Check global weather forecasts. Supports multi-day and real-time weather.',
+    dlWeather: '18,000+ installs',
+    tagLife: 'Life',
+    descAppleNotes: 'Read and write Apple Notes. Quickly capture ideas with voice or text.',
+    dlAppleNotes: '15,000+ installs',
+    tagNotes: 'Notes',
+    descAppleReminders: 'Create and manage reminders. "Remind me to attend a meeting at 3pm tomorrow."',
+    dlAppleReminders: '12,000+ installs',
+    descObsidian: 'Create, search, and manage notes in your Obsidian knowledge base.',
+    dlObsidian: '22,000+ installs',
+    tagKnowledge: 'Knowledge',
+    descNotion: 'Create Notion pages, manage databases, search workspace content.',
+    dlNotion: '19,000+ installs',
+    descNanoPdf: 'Edit PDF files: merge, split, add watermarks, extract text.',
+    dlNanoPdf: '14,000+ installs',
+    tagOffice: 'Office',
+    sectionCoding: 'Coding & Development',
+    badgeDevFavorite: 'Developer Favorites',
+    descCodingAgent: 'Delegate coding tasks to an AI Agent. Refactor code, write tests, fix bugs.',
+    dlCodingAgent: '31,000+ installs',
+    tagCoding: 'Coding',
+    descTmux: 'Remote terminal operations. Check server status, run commands, manage processes.',
+    dlTmux: '11,000+ installs',
+    tagOps: 'Ops',
+    descImageGen: 'DALL-E AI image generation. Describe in natural language, generate high-quality images.',
+    dlImageGen: '26,000+ installs',
+    tagCreative: 'Creative',
+    descPeekaboo: 'Screenshot + OCR. AI can "see" your screen and understand its content.',
+    dlPeekaboo: '17,000+ installs',
+    tagMultimodal: 'Multimodal',
+    sectionAllCategories: 'All Categories',
+    badgeCatCount: '32 Categories',
+    catCoding: 'Coding Agent',
+    catCount55: '55 skills',
+    catWebDev: 'Web Frontend',
+    catCount46: '46 skills',
+    catGit: 'Git & GitHub',
+    catCount34: '34 skills',
+    catDevOps: 'DevOps & Cloud',
+    catCount144: '144 skills',
+    catBrowser: 'Browser Automation',
+    catCount69: '69 skills',
+    catAI: 'AI & LLMs',
+    catCount159: '159 skills',
+    catImage: 'Image & Video',
+    catCount41: '41 skills',
+    catProductivity: 'Productivity',
+    catCount93: '93 skills',
+    catData: 'Data & Analytics',
+    catCount18: '18 skills',
+    catNotes: 'Notes & Knowledge',
+    catCount38: '38 skills',
+    catEmail: 'Email & Messaging',
+    catCount24: '24 skills',
+    catSocial: 'Social Media',
+    catCount31: '31 skills',
+    catSearch: 'Search & Research',
+    catCount47: '47 skills',
+    catSmartHome: 'Smart Home',
+    catCount22: '22 skills',
+    catFinance: 'Finance & Crypto',
+    catCount28: '28 skills',
+    catSecurity: 'Security',
+    catCount19: '19 skills',
+    catVoice: 'Voice & TTS',
+    catCount15: '15 skills',
+    catFile: 'File Management',
+    catCount33: '33 skills',
+    catTranslate: 'Translation',
+    catCount12: '12 skills',
+    catCalendar: 'Calendar & Reminders',
+    catCount16: '16 skills',
+    catMore: 'For more categories, enter keywords in the search box, or use the command: <code style="color:#ff6b35; background:#1a1a1a; padding:2px 8px; border-radius:4px;">openclaw skills search [keyword]</code>',
+    sectionRanking: 'Download Ranking',
+    badgeMarch2026: 'March 2026',
+    rankSkill: 'Skill',
+    rankCategory: 'Category',
+    rankDownloads: 'Downloads',
+    rankInstallCmd: 'Install Command',
+    sectionInstallSkills: 'Install Skills',
+    modeAgent: "I'm an Agent",
+    modeHuman: "I'm a Human",
+    installAgentTitle: 'Send this prompt to your <span>Agent</span> to install skills',
+    installAgentDesc: 'Copy the command below and paste it into your OpenClaw conversation. The Agent will automatically search and install.',
+    installAgentCmd1: 'Help me install the [skill name] skill',
+    installAgentCmd2: 'Search for skills related to [description] and install the best one',
+    btnCopy: 'Copy',
+    installHumanTitle: 'Terminal Commands',
+    installHumanDesc: 'Run the following commands in your terminal:',
+    quickRef: 'Quick Reference',
+    refAction: 'Action',
+    refCommand: 'Command',
+    refSearchSkills: 'Search skills',
+    refInstallSkill: 'Install skill',
+    refListSkills: 'List installed skills',
+    refUninstallSkill: 'Uninstall skill',
+    refUpdateSkill: 'Update skill',
+    refClawhubSearch: 'ClawHub search',
+    refSkillInfo: 'View skill details',
+    uclawExclusive: 'U-Claw Exclusive',
+    uclawPreinstalled: '<span>52 skills pre-installed</span>, ready to use out of the box',
+    uclawPreinstalledDesc: 'U-Claw has 52 official skills built-in — no internet needed. Select [13] in the start menu to browse the full list.<br>Need more? Use the commands above to install from ClawHub online.',
+    sectionGuide: 'Tutorials',
+    guideCompleteTitle: 'OpenClaw Complete Guide (China Region)',
+    guideAuthor1: 'U-Claw Original',
+    guideCompleteDesc: 'From installation to configuration to daily use, all in one guide. Includes China mirror setup, model selection, QQ/Feishu integration.',
+    guideHelloClawTitle: 'Hello Claw (Datawhale Tutorial)',
+    guideAuthor2: 'Recommended · datawhalechina',
+    guideHelloClawDesc: 'Recommended reading: A systematic beginner tutorial, from zero to advanced, covering installation, configuration, and skill development.',
+    guideDocsTitle: 'OpenClaw Chinese Docs (276 Articles)',
+    guideAuthor3: 'Recommended · yeuxuan',
+    guideDocsDesc: 'Recommended reading: Source-code level deep documentation — 276 articles covering architecture, gateway, plugins, and skill development.',
+    guideAwesomeTitle: 'Awesome OpenClaw Skills (5,400+ Curated)',
+    guideAuthor4: 'Recommended · VoltAgent',
+    guideAwesomeDesc: 'Recommended reading: 5,400+ quality skills curated from 13,000+, categorized and filtered for spam and malicious code.',
+    guide30Title: 'How to Choose from 13,000+ Skills? 30 Worth Installing',
+    guideAuthor5: 'Alibaba Cloud Developer Community',
+    guide30Desc: '30 most practical skills hand-picked from thousands, plus 5 must-install skill recommendations.',
+    footerSite: 'U-Claw Official Site',
+    footerOpenclaw: 'OpenClaw Official',
+    footerWechat: 'WeChat: hecare888 &nbsp;·&nbsp; Made with 🦞 by <a href="https://github.com/dongsheng123132">dongsheng</a>',
+    alertSearch: 'Run in terminal:\n\nopenclaw skills search {q}\n\nOr tell your AI:\n"Help me search for skills about {q}"',
+    alertCopied: 'Copied!',
+    alertInstall: 'Install {name}?\n\nCopy install command to clipboard:\n{cmd}',
+    alertFilterCat: 'Run in terminal:\n\nopenclaw clawhub search --category {cat}\n\nBrowse all skills in this category'
+  },
+  zh: {
+    pageTitle: 'U-Claw SkillHub - AI 技能市场',
+    sidebarSubtitle: 'AI 技能市场',
+    navOfficialSite: 'U-Claw 官网',
+    navDocs: 'OpenClaw 官方文档',
+    navFeatured: '精选推荐',
+    navCategories: '全部分类',
+    navRanking: '下载排行',
+    navInstall: '安装指南',
+    navGuide: '使用教程',
+    navContact: '联系我们',
+    heroTitle: '装上 Skill，<span class="accent">解锁 AI 超能力</span>',
+    heroSubtitle: '精选推荐 · 高速下载 · 轻松查找<br>ClawHub 13,000+ 个 AI Skills，U-Claw 为你加速',
+    statTotal: '技能总数',
+    statCategories: '分类',
+    statFeatured: '精选优质',
+    statPreinstalled: 'U-Claw 预装',
+    searchPlaceholder: '搜索技能：如 github、邮件、天气、PDF...',
+    searchButton: '搜索',
+    tabFeatured: '精选榜单',
+    tabCategories: '全部分类',
+    tabRanking: '下载排行',
+    tabInstall: '安装指南',
+    tabGuide: '使用教程',
+    sectionTop5: 'U-Claw 必装技能 TOP 5',
+    badgeOfficial: '官方推荐',
+    badgeMustInstall: '必装',
+    descGithub: '管理 Issue、PR、搜索仓库、查看代码。开发者最强助手。',
+    dlGithub: '48,000+ 安装',
+    tagDev: '开发',
+    descTavily: 'AI 驱动的网络搜索引擎。让你的 AI 助手能实时搜索互联网。',
+    dlTavily: '52,000+ 安装',
+    tagSearch: '搜索',
+    descSummarize: '总结网页、文章、PDF、视频内容。一键提取关键信息。',
+    dlSummarize: '36,000+ 安装',
+    tagEfficiency: '效率',
+    descHimalaya: '收发邮件、搜索邮件、管理文件夹。支持 Gmail/Outlook/QQ 邮箱。',
+    dlHimalaya: '21,000+ 安装',
+    tagEmail: '邮件',
+    descBrowserRelay: 'AI 控制浏览器，自动填表、截图、抓取网页数据。',
+    dlBrowserRelay: '29,000+ 安装',
+    tagAutomation: '自动化',
+    sectionProductivity: '效率工具',
+    badgeDaily: '日常必备',
+    descWeather: '查询全球天气预报。支持多日预报和实时天气。',
+    dlWeather: '18,000+ 安装',
+    tagLife: '生活',
+    descAppleNotes: '读写 Apple 备忘录。用语音或文字快速记录想法。',
+    dlAppleNotes: '15,000+ 安装',
+    tagNotes: '笔记',
+    descAppleReminders: '创建和管理提醒事项。"提醒我明天下午3点开会"。',
+    dlAppleReminders: '12,000+ 安装',
+    descObsidian: '在 Obsidian 知识库中创建、搜索、管理笔记。',
+    dlObsidian: '22,000+ 安装',
+    tagKnowledge: '知识管理',
+    descNotion: '创建 Notion 页面、管理数据库、搜索工作区内容。',
+    dlNotion: '19,000+ 安装',
+    descNanoPdf: '编辑 PDF 文件：合并、拆分、加水印、提取文本。',
+    dlNanoPdf: '14,000+ 安装',
+    tagOffice: '办公',
+    sectionCoding: '编程开发',
+    badgeDevFavorite: '开发者最爱',
+    descCodingAgent: '委派编程任务给 AI Agent。重构代码、写测试、修 bug。',
+    dlCodingAgent: '31,000+ 安装',
+    tagCoding: '编程',
+    descTmux: '远程终端操作。查看服务器状态、执行命令、管理进程。',
+    dlTmux: '11,000+ 安装',
+    tagOps: '运维',
+    descImageGen: 'DALL-E AI 绘图。用自然语言描述，生成高质量图片。',
+    dlImageGen: '26,000+ 安装',
+    tagCreative: '创作',
+    descPeekaboo: '屏幕截图 + OCR。AI 能"看见"你的屏幕并理解内容。',
+    dlPeekaboo: '17,000+ 安装',
+    tagMultimodal: '多模态',
+    sectionAllCategories: '全部分类',
+    badgeCatCount: '32 个分类',
+    catCoding: '编程 Agent',
+    catCount55: '55 个技能',
+    catWebDev: 'Web 前端',
+    catCount46: '46 个技能',
+    catGit: 'Git & GitHub',
+    catCount34: '34 个技能',
+    catDevOps: 'DevOps & 云',
+    catCount144: '144 个技能',
+    catBrowser: '浏览器自动化',
+    catCount69: '69 个技能',
+    catAI: 'AI & LLMs',
+    catCount159: '159 个技能',
+    catImage: '图片 & 视频',
+    catCount41: '41 个技能',
+    catProductivity: '效率工具',
+    catCount93: '93 个技能',
+    catData: '数据 & 分析',
+    catCount18: '18 个技能',
+    catNotes: '笔记 & 知识',
+    catCount38: '38 个技能',
+    catEmail: '邮件 & 通讯',
+    catCount24: '24 个技能',
+    catSocial: '社交媒体',
+    catCount31: '31 个技能',
+    catSearch: '搜索 & 研究',
+    catCount47: '47 个技能',
+    catSmartHome: '智能家居',
+    catCount22: '22 个技能',
+    catFinance: '金融 & 加密',
+    catCount28: '28 个技能',
+    catSecurity: '安全防护',
+    catCount19: '19 个技能',
+    catVoice: '语音 & TTS',
+    catCount15: '15 个技能',
+    catFile: '文件管理',
+    catCount33: '33 个技能',
+    catTranslate: '翻译',
+    catCount12: '12 个技能',
+    catCalendar: '日历 & 提醒',
+    catCount16: '16 个技能',
+    catMore: '更多分类请在搜索框输入关键词，或使用命令：<code style="color:#ff6b35; background:#1a1a1a; padding:2px 8px; border-radius:4px;">openclaw skills search 关键词</code>',
+    sectionRanking: '下载排行榜',
+    badgeMarch2026: '2026 年 3 月',
+    rankSkill: '技能',
+    rankCategory: '分类',
+    rankDownloads: '下载量',
+    rankInstallCmd: '安装命令',
+    sectionInstallSkills: '安装技能',
+    modeAgent: '我是 Agent',
+    modeHuman: '我是 Human',
+    installAgentTitle: '将此提示发送给你的 <span>Agent</span>，以安装技能',
+    installAgentDesc: '复制下面的命令，粘贴到你的 OpenClaw 对话中。Agent 会自动搜索和安装。',
+    installAgentCmd1: '帮我安装 [技能名称] 这个 skill',
+    installAgentCmd2: '搜索关于 [功能描述] 的 skill 并安装最合适的',
+    btnCopy: '复制',
+    installHumanTitle: '终端命令安装',
+    installHumanDesc: '在终端中直接运行以下命令：',
+    quickRef: '常用操作速查',
+    refAction: '操作',
+    refCommand: '命令',
+    refSearchSkills: '搜索技能',
+    refInstallSkill: '安装技能',
+    refListSkills: '查看已装技能',
+    refUninstallSkill: '卸载技能',
+    refUpdateSkill: '更新技能',
+    refClawhubSearch: 'ClawHub 搜索',
+    refSkillInfo: '查看技能详情',
+    uclawExclusive: 'U-Claw 用户专属',
+    uclawPreinstalled: '<span>52 个技能已预装</span>，开箱即用',
+    uclawPreinstalledDesc: 'U-Claw 已内置最常用的 52 个官方技能，无需联网下载。在启动菜单选 [13] 可浏览完整列表。<br>需要更多技能？使用上面的命令从 ClawHub 在线安装。',
+    sectionGuide: '使用教程',
+    guideCompleteTitle: 'OpenClaw 中国区完全指南',
+    guideAuthor1: 'U-Claw 出品',
+    guideCompleteDesc: '从安装到配置到日常使用，一篇搞定。包含国内镜像设置、模型选择、QQ/飞书接入。',
+    guideHelloClawTitle: 'Hello Claw（Datawhale 教程）',
+    guideAuthor2: '推荐资源 · datawhalechina',
+    guideHelloClawDesc: '推荐阅读：体系化入门教程，从零基础到进阶，覆盖安装、配置、技能开发。',
+    guideDocsTitle: 'OpenClaw 中文文档（276 篇）',
+    guideAuthor3: '推荐资源 · yeuxuan',
+    guideDocsDesc: '推荐阅读：源码级深度文档，276 篇覆盖架构、网关、插件、技能开发全流程。',
+    guideAwesomeTitle: 'Awesome OpenClaw Skills（精选 5400+）',
+    guideAuthor4: '推荐资源 · VoltAgent',
+    guideAwesomeDesc: '推荐阅读：从 13000+ 技能中精选 5400+ 优质技能，分类整理，过滤垃圾和恶意代码。',
+    guide30Title: '13000+ Skills 怎么选？30 个最值得装',
+    guideAuthor5: '阿里云开发者社区',
+    guide30Desc: '从海量技能中筛选 30 个最实用的，附 5 个必装 Skill 推荐。',
+    footerSite: 'U-Claw 官网',
+    footerOpenclaw: 'OpenClaw 官方',
+    footerWechat: '微信: hecare888 &nbsp;·&nbsp; Made with 🦞 by <a href="https://github.com/dongsheng123132">dongsheng</a>',
+    alertSearch: '在终端中运行：\n\nopenclaw skills search {q}\n\n或直接告诉你的 AI：\n"帮我搜索关于 {q} 的 skill"',
+    alertCopied: '已复制',
+    alertInstall: '安装 {name}？\n\n复制安装命令到剪贴板：\n{cmd}',
+    alertFilterCat: '在终端中运行：\n\nopenclaw clawhub search --category {cat}\n\n浏览该分类下的所有技能'
+  },
+  th: {
+    pageTitle: 'U-Claw SkillHub - ตลาด AI Skills', sidebarSubtitle: 'ตลาด AI Skills',
+    navOfficialSite: 'เว็บไซต์ U-Claw', navDocs: 'เอกสาร OpenClaw', navFeatured: 'แนะนำ', navCategories: 'ทุกหมวดหมู่', navRanking: 'อันดับดาวน์โหลด', navInstall: 'คู่มือติดตั้ง', navGuide: 'บทช่วยสอน', navContact: 'ติดต่อเรา',
+    heroTitle: 'ติดตั้ง Skills, <span class="accent">ปลดล็อกพลัง AI</span>', heroSubtitle: 'คัดสรร · ดาวน์โหลดเร็ว · ค้นหาง่าย<br>13,000+ AI Skills บน ClawHub, U-Claw เร่งความเร็วให้คุณ',
+    statTotal: 'Skills ทั้งหมด', statCategories: 'หมวดหมู่', statFeatured: 'คัดสรร', statPreinstalled: 'U-Claw ติดตั้งล่วงหน้า',
+    searchPlaceholder: 'ค้นหา skills: เช่น github, email, สภาพอากาศ, PDF...', searchButton: 'ค้นหา',
+    tabFeatured: 'แนะนำ', tabCategories: 'ทุกหมวดหมู่', tabRanking: 'อันดับดาวน์โหลด', tabInstall: 'คู่มือติดตั้ง', tabGuide: 'บทช่วยสอน',
+    sectionTop5: 'U-Claw Skills ที่ต้องติดตั้ง TOP 5', badgeOfficial: 'แนะนำทางการ', badgeMustInstall: 'ต้องติดตั้ง',
+    descGithub: 'จัดการ Issue, PR, ค้นหา repo, ดูโค้ด ผู้ช่วยที่แข็งแกร่งสำหรับนักพัฒนา', dlGithub: 'ติดตั้ง 48,000+', tagDev: 'พัฒนา',
+    descTavily: 'เครื่องมือค้นหาเว็บด้วย AI ให้ AI ค้นหาอินเทอร์เน็ตแบบเรียลไทม์', dlTavily: 'ติดตั้ง 52,000+', tagSearch: 'ค้นหา',
+    descSummarize: 'สรุปหน้าเว็บ บทความ PDF และวิดีโอ สกัดข้อมูลสำคัญคลิกเดียว', dlSummarize: 'ติดตั้ง 36,000+', tagEfficiency: 'ประสิทธิภาพ',
+    descHimalaya: 'รับ-ส่งอีเมล ค้นหาอีเมล จัดการโฟลเดอร์ รองรับ Gmail/Outlook/QQ Mail', dlHimalaya: 'ติดตั้ง 21,000+', tagEmail: 'อีเมล',
+    descBrowserRelay: 'AI ควบคุมเบราว์เซอร์ กรอกอัตโนมัติ สcreenshot ดึงข้อมูลเว็บ', dlBrowserRelay: 'ติดตั้ง 29,000+', tagAutomation: 'อัตโนมัติ',
+    sectionProductivity: 'เครื่องมือเพิ่มประสิทธิภาพ', badgeDaily: 'จำเป็นประจำวัน',
+    descWeather: 'ตรวจสอบพยากรณ์อากาศทั่วโลก รองรับพยากรณ์หลายวันและอากาศจริง', dlWeather: 'ติดตั้ง 18,000+', tagLife: 'ชีวิต',
+    descAppleNotes: 'อ่านและเขียน Apple Memo บันทึกความคิดด้วยเสียงหรือข้อความ', dlAppleNotes: 'ติดตั้ง 15,000+', tagNotes: 'บันทึก',
+    descAppleReminders: 'สร้างและจัดการเตือน "เตือนฉันประชุมพรุ่งนี้บ่าย3โมง"', dlAppleReminders: 'ติดตั้ง 12,000+',
+    descObsidian: 'สร้าง ค้นหา จัดการโน้ตใน Obsidian Knowledge Base', dlObsidian: 'ติดตั้ง 22,000+', tagKnowledge: 'ความรู้',
+    descNotion: 'สร้างหน้า Notion จัดการฐานข้อมูล ค้นหา workspace', dlNotion: 'ติดตั้ง 19,000+',
+    descNanoPdf: 'แก้ไขไฟล์ PDF: รวม แยก แอดวอเทอร์มาร์ก สกัดข้อความ', dlNanoPdf: 'ติดตั้ง 14,000+', tagOffice: 'สำนักงาน',
+    sectionCoding: 'การเขียนโปรแกรม', badgeDevFavorite: 'ที่ชื่นชอบนักพัฒนา',
+    descCodingAgent: 'มอบหมายงานเขียนโค้ดให้ AI Agent รีแฟคเตอร์ เขียนเทส แก้ bug', dlCodingAgent: 'ติดตั้ง 31,000+', tagCoding: 'เขียนโค้ด',
+    descTmux: 'ใช้งานเทอร์มินอลระยะไกล ตรวจสอบเซิร์ฟเวอร์ รันคำสั่ง จัดการโปรเซส', dlTmux: 'ติดตั้ง 11,000+', tagOps: 'Ops',
+    descImageGen: 'DALL-E สร้างภาพ AI บรรยายด้วยภาษาธรรมชาติ สร้างภาพคุณภาพสูง', dlImageGen: 'ติดตั้ง 26,000+', tagCreative: 'สร้างสรรค์',
+    descPeekaboo: 'Screenshot + OCR AI "เห็น" หน้าจอและเข้าใจเนื้อหา', dlPeekaboo: 'ติดตั้ง 17,000+', tagMultimodal: 'Multimodal',
+    sectionAllCategories: 'ทุกหมวดหมู่', badgeCatCount: '32 หมวดหมู่',
+    catCoding: 'Programming Agent', catCount55: '55 skills', catWebDev: 'Web Frontend', catCount46: '46 skills', catGit: 'Git & GitHub', catCount34: '34 skills', catDevOps: 'DevOps & Cloud', catCount144: '144 skills', catBrowser: 'Browser Automation', catCount69: '69 skills', catAI: 'AI & LLMs', catCount159: '159 skills', catImage: 'รูปภาพ & วิดีโอ', catCount41: '41 skills', catProductivity: 'เครื่องมือเพิ่มประสิทธิภาพ', catCount93: '93 skills', catData: 'ข้อมูล & การวิเคราะห์', catCount18: '18 skills', catNotes: 'บันทึก & ความรู้', catCount38: '38 skills', catEmail: 'อีเมล & การสื่อสาร', catCount24: '24 skills', catSocial: 'โซเชียลมีเดีย', catCount31: '31 skills', catSearch: 'ค้นหา & วิจัย', catCount47: '47 skills', catSmartHome: 'สมาร์ทโฮม', catCount22: '22 skills', catFinance: 'การเงิน & คริปโต', catCount28: '28 skills', catSecurity: 'ความปลอดภัย', catCount19: '19 skills', catVoice: 'เสียง & TTS', catCount15: '15 skills', catFile: 'จัดการไฟล์', catCount33: '33 skills', catTranslate: 'แปลภาษา', catCount12: '12 skills', catCalendar: 'ปฏิทิน & เตือน', catCount16: '16 skills',
+    catMore: 'สำหรับหมวดหมู่มากขึ้น พิมพ์คีย์เวิร์ดในช่องค้นหา หรือใช้คำสั่ง: <code style="color:#ff6b35; background:#1a1a1a; padding:2px 8px; border-radius:4px;">openclaw skills search [คีย์เวิร์ด]</code>',
+    sectionRanking: 'อันดับดาวน์โหลด', badgeMarch2026: 'มีนาคม 2026', rankSkill: 'Skill', rankCategory: 'หมวดหมู่', rankDownloads: 'ดาวน์โหลด', rankInstallCmd: 'คำสั่งติดตั้ง',
+    sectionInstallSkills: 'ติดตั้ง Skills', modeAgent: 'ฉันเป็น Agent', modeHuman: 'ฉันเป็น Human',
+    installAgentTitle: 'ส่ง prompt นี้ให้ <span>Agent</span> เพื่อติดตั้ง skills', installAgentDesc: 'คัดลอกคำสั่งด้านล่างแล้ววางในบทสนทนา OpenClaw Agent จะค้นหาและติดตั้งอัตโนมัติ',
+    installAgentCmd1: 'ช่วยฉันติดตั้ง skill [ชื่อ skill]', installAgentCmd2: 'ค้นหา skills เกี่ยวกับ [คำอธิบาย] และติดตั้งที่เหมาะสมที่สุด',
+    btnCopy: 'คัดลอก', installHumanTitle: 'ติดตั้งด้วยคำสั่งเทอร์มินอล', installHumanDesc: 'รันคำสั่งต่อไปนี้ในเทอร์มินอล:',
+    quickRef: 'อ้างอิงด่วน', refAction: 'การกระทำ', refCommand: 'คำสั่ง', refSearchSkills: 'ค้นหา skills', refInstallSkill: 'ติดตั้ง skill', refListSkills: 'ดู skills ที่ติดตั้ง', refUninstallSkill: 'ลบ skill', refUpdateSkill: 'อัปเดต skill', refClawhubSearch: 'ค้นหา ClawHub', refSkillInfo: 'ดูรายละเอียด skill',
+    uclawExclusive: 'พิเศษสำหรับผู้ใช้ U-Claw', uclawPreinstalled: '<span>52 skills ติดตั้งล่วงหน้า</span> ใช้งานได้เลย', uclawPreinstalledDesc: 'U-Claw มี 52 skills ในตัว ไม่ต้องเชื่อมต่ออินเทอร์เน็ต เลือก [13] ในเมนูเริ่มต้นเพื่อดูรายการทั้งหมด<br>ต้องการมากกว่านี้? ใช้คำสั่งด้านบนเพื่อติดตั้งจาก ClawHub',
+    sectionGuide: 'บทช่วยสอน', guideCompleteTitle: 'คู่มือ OpenClaw แบบสมบูรณ์', guideAuthor1: 'U-Claw', guideCompleteDesc: 'ตั้งแต่ติดตั้งถึงการใช้งาน รวมทุกอย่างในคู่มือเดียว',
+    guideHelloClawTitle: 'Hello Claw (Datawhale Tutorial)', guideAuthor2: 'แนะนำ · datawhalechina', guideHelloClawDesc: 'แนะนำอ่าน: บทช่วยสอนสำหรับผู้เริ่มต้น',
+    guideDocsTitle: 'เอกสาร OpenClaw ภาษาจีน (276 บทความ)', guideAuthor3: 'แนะนำ · yeuxuan', guideDocsDesc: 'แนะนำอ่าน: เอกสารระดับซอร์สโค้ด',
+    guideAwesomeTitle: 'Awesome OpenClaw Skills (คัดสรร 5,400+)', guideAuthor4: 'แนะนำ · VoltAgent', guideAwesomeDesc: 'แนะนำอ่าน: คัดสรร 5,400+ skills จาก 13,000+',
+    guide30Title: 'เลือกจาก 13,000+ Skills อย่างไร? 30 อันที่最值得ติดตั้ง', guideAuthor5: 'Alibaba Cloud Developer Community', guide30Desc: '30 skills ที่ใช้งานได้จริงที่สุดจากพัน skills',
+    footerSite: 'เว็บไซต์ U-Claw', footerOpenclaw: 'OpenClaw ทางการ', footerWechat: 'WeChat: hecare888 &nbsp;·&nbsp; Made with 🦞 by <a href="https://github.com/dongsheng123132">dongsheng</a>',
+    alertSearch: 'รันในเทอร์มินัล:\n\nopenclaw skills search {q}\n\nหรือบอก AI ของคุณ:\n"ช่วยฉันค้นหา skills เกี่ยวกับ {q}"',
+    alertCopied: 'คัดลอกแล้ว!', alertInstall: 'ติดตั้ง {name}?\n\nคัดลอกคำสั่งติดตั้งไปยังคลิปบอร์ด:\n{cmd}',
+    alertFilterCat: 'รันในเทอร์มินัล:\n\nopenclaw clawhub search --category {cat}\n\nดูทุก skills ในหมวดหมู่นี้'
+  },
+  vi: {
+    pageTitle: 'U-Claw SkillHub - Chợ AI Skill', sidebarSubtitle: 'Chợ AI Skill',
+    navOfficialSite: 'Trang chủ U-Claw', navDocs: 'Tài liệu OpenClaw', navFeatured: 'Nổi bật', navCategories: 'Tất cả danh mục', navRanking: 'Xếp hạng tải xuống', navInstall: 'Hướng dẫn cài đặt', navGuide: 'Hướng dẫn sử dụng', navContact: 'Liên hệ',
+    heroTitle: 'Cài Skill, <span class="accent">Mở khóa siêu năng lực AI</span>', heroSubtitle: 'Tuyển chọn · Tải nhanh · Dễ tìm<br>13,000+ AI Skills trên ClawHub, U-Claw tăng tốc cho bạn',
+    statTotal: 'Tổng số Skills', statCategories: 'Danh mục', statFeatured: 'Tuyển chọn', statPreinstalled: 'U-Claw cài sẵn',
+    searchPlaceholder: 'Tìm skills: ví dụ github, email, thời tiết, PDF...', searchButton: 'Tìm kiếm',
+    tabFeatured: 'Nổi bật', tabCategories: 'Tất cả danh mục', tabRanking: 'Xếp hạng tải xuống', tabInstall: 'Hướng dẫn cài đặt', tabGuide: 'Hướng dẫn sử dụng',
+    sectionTop5: 'U-Claw Skills không thể bỏ qua TOP 5', badgeOfficial: 'Đề xuất chính thức', badgeMustInstall: 'Phải cài',
+    descGithub: 'Quản lý Issue, PR, tìm kiếm repo, xem code. Trợ thủ mạnh nhất cho developer.', dlGithub: '48,000+ lượt cài', tagDev: 'Dev',
+    descTavily: 'Công cụ tìm kiếm web AI. Cho phép AI tìm kiếm internet thời gian thực.', dlTavily: '52,000+ lượt cài', tagSearch: 'Tìm kiếm',
+    descSummarize: 'Tóm tắt trang web, bài viết, PDF, video. Trích xuất thông tin chính một chạm.', dlSummarize: '36,000+ lượt cài', tagEfficiency: 'Hiệu suất',
+    descHimalaya: 'Gửi nhận email, tìm kiếm email, quản lý thư mục. Hỗ trợ Gmail/Outlook/QQ Mail.', dlHimalaya: '21,000+ lượt cài', tagEmail: 'Email',
+    descBrowserRelay: 'AI điều khiển trình duyệt, tự điền form, chụp màn hình, cạo dữ liệu web.', dlBrowserRelay: '29,000+ lượt cài', tagAutomation: 'Tự động hóa',
+    sectionProductivity: 'Công cụ năng suất', badgeDaily: 'Thiết yếu hàng ngày',
+    descWeather: 'Tra cứu dự báo thời tiết toàn cầu. Hỗ trợ dự báo nhiều ngày và thời tiết thực.', dlWeather: '18,000+ lượt cài', tagLife: 'Cuộc sống',
+    descAppleNotes: 'Đọc và ghi Apple Notes. Ghi lại ý tưởng bằng giọng nói hoặc văn bản.', dlAppleNotes: '15,000+ lượt cài', tagNotes: 'Ghi chú',
+    descAppleReminders: 'Tạo và quản lý lời nhắc. "Nhắc tôi họp lúc 3h chiều mai."', dlAppleReminders: '12,000+ lượt cài',
+    descObsidian: 'Tạo, tìm kiếm, quản lý notes trong kho kiến thức Obsidian.', dlObsidian: '22,000+ lượt cài', tagKnowledge: 'Kiến thức',
+    descNotion: 'Tạo trang Notion, quản lý database, tìm kiếm workspace.', dlNotion: '19,000+ lượt cài',
+    descNanoPdf: 'Chỉnh sửa file PDF: gộp, chia, thêm watermark, trích xuất văn bản.', dlNanoPdf: '14,000+ lượt cài', tagOffice: 'Văn phòng',
+    sectionCoding: 'Lập trình & Phát triển', badgeDevFavorite: 'Yêu thích của Dev',
+    descCodingAgent: 'Ủy thác tác vụ lập trình cho AI Agent. Tái cấu trúc code, viết test, sửa bug.', dlCodingAgent: '31,000+ lượt cài', tagCoding: 'Lập trình',
+    descTmux: 'Thao tác terminal từ xa. Kiểm tra trạng thái server, chạy lệnh, quản lý process.', dlTmux: '11,000+ lượt cài', tagOps: 'Ops',
+    descImageGen: 'DALL-E tạo ảnh AI. Mô tả bằng ngôn ngữ tự nhiên, tạo ảnh chất lượng cao.', dlImageGen: '26,000+ lượt cài', tagCreative: 'Sáng tạo',
+    descPeekaboo: 'Chụp màn hình + OCR. AI có thể "nhìn" và hiểu nội dung màn hình.', dlPeekaboo: '17,000+ lượt cài', tagMultimodal: 'Đa phương thức',
+    sectionAllCategories: 'Tất cả danh mục', badgeCatCount: '32 danh mục',
+    catCoding: 'Lập trình Agent', catCount55: '55 skills', catWebDev: 'Web Frontend', catCount46: '46 skills', catGit: 'Git & GitHub', catCount34: '34 skills', catDevOps: 'DevOps & Cloud', catCount144: '144 skills', catBrowser: 'Tự động hóa trình duyệt', catCount69: '69 skills', catAI: 'AI & LLMs', catCount159: '159 skills', catImage: 'Hình ảnh & Video', catCount41: '41 skills', catProductivity: 'Công cụ năng suất', catCount93: '93 skills', catData: 'Dữ liệu & Phân tích', catCount18: '18 skills', catNotes: 'Ghi chú & Kiến thức', catCount38: '38 skills', catEmail: 'Email & Nhắn tin', catCount24: '24 skills', catSocial: 'Mạng xã hội', catCount31: '31 skills', catSearch: 'Tìm kiếm & Nghiên cứu', catCount47: '47 skills', catSmartHome: 'Nhà thông minh', catCount22: '22 skills', catFinance: 'Tài chính & Crypto', catCount28: '28 skills', catSecurity: 'Bảo mật', catCount19: '19 skills', catVoice: 'Giọng nói & TTS', catCount15: '15 skills', catFile: 'Quản lý tệp', catCount33: '33 skills', catTranslate: 'Dịch thuật', catCount12: '12 skills', catCalendar: 'Lịch & Nhắc nhở', catCount16: '16 skills',
+    catMore: 'Để xem thêm danh mục, nhập từ khóa vào ô tìm kiếm, hoặc dùng lệnh: <code style="color:#ff6b35; background:#1a1a1a; padding:2px 8px; border-radius:4px;">openclaw skills search [từ khóa]</code>',
+    sectionRanking: 'Xếp hạng tải xuống', badgeMarch2026: 'Tháng 3 2026', rankSkill: 'Skill', rankCategory: 'Danh mục', rankDownloads: 'Lượt tải', rankInstallCmd: 'Lệnh cài đặt',
+    sectionInstallSkills: 'Cài đặt Skills', modeAgent: 'Tôi là Agent', modeHuman: 'Tôi là Human',
+    installAgentTitle: 'Gửi prompt này cho <span>Agent</span> để cài đặt skills', installAgentDesc: 'Sao chép lệnh bên dưới, dán vào hội thoại OpenClaw. Agent sẽ tự động tìm và cài.',
+    installAgentCmd1: 'Giúp tôi cài skill [tên skill]', installAgentCmd2: 'Tìm kiếm skills về [mô tả] và cài cái phù hợp nhất',
+    btnCopy: 'Sao chép', installHumanTitle: 'Cài đặt bằng lệnh Terminal', installHumanDesc: 'Chạy các lệnh sau trong terminal:',
+    quickRef: 'Tham khảo nhanh', refAction: 'Thao tác', refCommand: 'Lệnh', refSearchSkills: 'Tìm kiếm skills', refInstallSkill: 'Cài đặt skill', refListSkills: 'Xem skills đã cài', refUninstallSkill: 'Gỡ cài đặt skill', refUpdateSkill: 'Cập nhật skill', refClawhubSearch: 'Tìm kiếm ClawHub', refSkillInfo: 'Xem chi tiết skill',
+    uclawExclusive: 'Đặc quyền người dùng U-Claw', uclawPreinstalled: '<span>52 skills đã cài sẵn</span>, dùng ngay', uclawPreinstalledDesc: 'U-Claw đã tích hợp 52 skills chính thức, không cần mạng. Chọn [13] trong menu khởi động để xem danh sách.<br>Cần thêm? Dùng lệnh trên để cài từ ClawHub.',
+    sectionGuide: 'Hướng dẫn sử dụng', guideCompleteTitle: 'Hướng dẫn OpenClaw toàn diện', guideAuthor1: 'U-Claw', guideCompleteDesc: 'Từ cài đặt đến cấu hình đến sử dụng hàng ngày, tất cả trong một hướng dẫn.',
+    guideHelloClawTitle: 'Hello Claw (Datawhale Tutorial)', guideAuthor2: 'Đề xuất · datawhalechina', guideHelloClawDesc: 'Đề xuất đọc: Hướng dẫn nhập môn hệ thống.',
+    guideDocsTitle: 'Tài liệu OpenClaw tiếng Trung (276 bài)', guideAuthor3: 'Đề xuất · yeuxuan', guideDocsDesc: 'Đề xuất đọc: Tài liệu sâu cấp mã nguồn.',
+    guideAwesomeTitle: 'Awesome OpenClaw Skills (Tuyển chọn 5,400+)', guideAuthor4: 'Đề xuất · VoltAgent', guideAwesomeDesc: 'Đề xuất đọc: Tuyển chọn 5,400+ skills từ 13,000+.',
+    guide30Title: 'Chọn từ 13,000+ Skills? 30 cái đáng cài nhất', guideAuthor5: 'Cộng đồng nhà phát triển Alibaba Cloud', guide30Desc: '30 skills thực tế nhất được chọn từ hàng ngàn.',
+    footerSite: 'Trang chủ U-Claw', footerOpenclaw: 'OpenClaw chính thức', footerWechat: 'WeChat: hecare888 &nbsp;·&nbsp; Made with 🦞 by <a href="https://github.com/dongsheng123132">dongsheng</a>',
+    alertSearch: 'Chạy trong terminal:\n\nopenclaw skills search {q}\n\nHoặc bảo AI:\n"Giúp tôi tìm kiếm skills về {q}"',
+    alertCopied: 'Đã sao chép!', alertInstall: 'Cài đặt {name}?\n\nSao chép lệnh cài vào clipboard:\n{cmd}',
+    alertFilterCat: 'Chạy trong terminal:\n\nopenclaw clawhub search --category {cat}\n\nDuyệt tất cả skills trong danh mục này'
+  },
+  id: {
+    pageTitle: 'U-Claw SkillHub - Pasar AI Skill', sidebarSubtitle: 'Pasar AI Skill',
+    navOfficialSite: 'Situs Resmi U-Claw', navDocs: 'Dokumentasi OpenClaw', navFeatured: 'Unggulan', navCategories: 'Semua Kategori', navRanking: 'Peringkat Unduhan', navInstall: 'Panduan Instalasi', navGuide: 'Tutorial', navContact: 'Hubungi Kami',
+    heroTitle: 'Pasang Skill, <span class="accent">Buka Kekuatan Super AI</span>', heroSubtitle: 'Pilihan kurasi · Unduhan cepat · Mudah ditemukan<br>13,000+ AI Skills di ClawHub, U-Claw mempercepat untuk Anda',
+    statTotal: 'Total Skills', statCategories: 'Kategori', statFeatured: 'Kurasi', statPreinstalled: 'U-Claw terpasang',
+    searchPlaceholder: 'Cari skills: misalnya github, email, cuaca, PDF...', searchButton: 'Cari',
+    tabFeatured: 'Unggulan', tabCategories: 'Semua Kategori', tabRanking: 'Peringkat Unduhan', tabInstall: 'Panduan Instalasi', tabGuide: 'Tutorial',
+    sectionTop5: 'U-Claw Skills Wajib Pasang TOP 5', badgeOfficial: 'Rekomendasi Resmi', badgeMustInstall: 'Wajib Pasang',
+    descGithub: 'Kelola Issue, PR, cari repo, lihat kode. Asisten terkuat untuk developer.', dlGithub: '48,000+ pasang', tagDev: 'Dev',
+    descTavily: 'Mesin pencari web bertenaga AI. Biarkan AI mencari internet secara real-time.', dlTavily: '52,000+ pasang', tagSearch: 'Pencarian',
+    descSummarize: 'Ringkas halaman web, artikel, PDF, dan video. Ekstrak info penting satu klik.', dlSummarize: '36,000+ pasang', tagEfficiency: 'Efisiensi',
+    descHimalaya: 'Kirim terima email, cari email, kelola folder. Dukung Gmail/Outlook/QQ Mail.', dlHimalaya: '21,000+ pasang', tagEmail: 'Email',
+    descBrowserRelay: 'AI mengendalikan browser, isi otomatis, screenshot, kumpulkan data web.', dlBrowserRelay: '29,000+ pasang', tagAutomation: 'Otomatisasi',
+    sectionProductivity: 'Alat Produktivitas', badgeDaily: 'Wajib Harian',
+    descWeather: 'Cek prakiraan cuaca global. Dukung prakiraan multi-hari dan cuaca real-time.', dlWeather: '18,000+ pasang', tagLife: 'Kehidupan',
+    descAppleNotes: 'Baca dan tulis Apple Notes. Catat ide dengan suara atau teks.', dlAppleNotes: '15,000+ pasang', tagNotes: 'Catatan',
+    descAppleReminders: 'Buat dan kelola pengingat. "Ingatkan rapat besok jam 3 sore."', dlAppleReminders: '12,000+ pasang',
+    descObsidian: 'Buat, cari, kelola catatan di知识库 Obsidian.', dlObsidian: '22,000+ pasang', tagKnowledge: 'Pengetahuan',
+    descNotion: 'Buat halaman Notion, kelola database, cari workspace.', dlNotion: '19,000+ pasang',
+    descNanoPdf: 'Edit file PDF: gabung, pisah, tambah watermark, ekstrak teks.', dlNanoPdf: '14,000+ pasang', tagOffice: 'Kantor',
+    sectionCoding: 'Coding & Pengembangan', badgeDevFavorite: 'Favorit Developer',
+    descCodingAgent: 'Serahkan tugas coding ke AI Agent. Refaktor, tulis tes, perbaiki bug.', dlCodingAgent: '31,000+ pasang', tagCoding: 'Coding',
+    descTmux: 'Operasi terminal jarak jauh. Cek status server, jalankan perintah, kelola proses.', dlTmux: '11,000+ pasang', tagOps: 'Ops',
+    descImageGen: 'DALL-E gambar AI. Deskripsikan dengan bahasa alami, hasilkan gambar berkualitas.', dlImageGen: '26,000+ pasang', tagCreative: 'Kreatif',
+    descPeekaboo: 'Screenshot + OCR. AI bisa "melihat" dan memahami konten layar.', dlPeekaboo: '17,000+ pasang', tagMultimodal: 'Multimodal',
+    sectionAllCategories: 'Semua Kategori', badgeCatCount: '32 Kategori',
+    catCoding: 'Programming Agent', catCount55: '55 skills', catWebDev: 'Web Frontend', catCount46: '46 skills', catGit: 'Git & GitHub', catCount34: '34 skills', catDevOps: 'DevOps & Cloud', catCount144: '144 skills', catBrowser: 'Otomatisasi Browser', catCount69: '69 skills', catAI: 'AI & LLMs', catCount159: '159 skills', catImage: 'Gambar & Video', catCount41: '41 skills', catProductivity: 'Alat Produktivitas', catCount93: '93 skills', catData: 'Data & Analitik', catCount18: '18 skills', catNotes: 'Catatan & Pengetahuan', catCount38: '38 skills', catEmail: 'Email & Pesan', catCount24: '24 skills', catSocial: 'Media Sosial', catCount31: '31 skills', catSearch: 'Pencarian & Riset', catCount47: '47 skills', catSmartHome: 'Smart Home', catCount22: '22 skills', catFinance: 'Keuangan & Kripto', catCount28: '28 skills', catSecurity: 'Keamanan', catCount19: '19 skills', catVoice: 'Suara & TTS', catCount15: '15 skills', catFile: 'Manajemen File', catCount33: '33 skills', catTranslate: 'Terjemahan', catCount12: '12 skills', catCalendar: 'Kalender & Pengingat', catCount16: '16 skills',
+    catMore: 'Untuk kategori lainnya, masukkan kata kunci di kotak pencarian, atau gunakan perintah: <code style="color:#ff6b35; background:#1a1a1a; padding:2px 8px; border-radius:4px;">openclaw skills search [kata kunci]</code>',
+    sectionRanking: 'Peringkat Unduhan', badgeMarch2026: 'Maret 2026', rankSkill: 'Skill', rankCategory: 'Kategori', rankDownloads: 'Unduhan', rankInstallCmd: 'Perintah Instalasi',
+    sectionInstallSkills: 'Instalasi Skills', modeAgent: 'Saya Agent', modeHuman: 'Saya Human',
+    installAgentTitle: 'Kirim prompt ini ke <span>Agent</span> untuk instalasi skills', installAgentDesc: 'Salin perintah di bawah dan tempel di percakapan OpenClaw. Agent akan otomatis mencari dan memasang.',
+    installAgentCmd1: 'Bantu saya instal skill [nama skill]', installAgentCmd2: 'Cari skills tentang [deskripsi] dan instal yang paling cocok',
+    btnCopy: 'Salin', installHumanTitle: 'Instalasi Perintah Terminal', installHumanDesc: 'Jalankan perintah berikut di terminal:',
+    quickRef: 'Referensi Cepat', refAction: 'Aksi', refCommand: 'Perintah', refSearchSkills: 'Cari skills', refInstallSkill: 'Instal skill', refListSkills: 'Lihat skills terpasang', refUninstallSkill: 'Hapus skill', refUpdateSkill: 'Perbarui skill', refClawhubSearch: 'Cari ClawHub', refSkillInfo: 'Lihat detail skill',
+    uclawExclusive: 'Eksklusif Pengguna U-Claw', uclawPreinstalled: '<span>52 skills terpasang</span>, siap pakai', uclawPreinstalledDesc: 'U-Claw sudah memiliki 52 skills resmi bawaan, tidak perlu internet. Pilih [13] di menu awal untuk melihat daftar lengkap.<br>Butuh lebih? Gunakan perintah di atas untuk instal dari ClawHub.',
+    sectionGuide: 'Tutorial', guideCompleteTitle: 'Panduan Lengkap OpenClaw', guideAuthor1: 'U-Claw', guideCompleteDesc: 'Dari instalasi hingga penggunaan sehari-hari, semua dalam satu panduan.',
+    guideHelloClawTitle: 'Hello Claw (Datawhale Tutorial)', guideAuthor2: 'Rekomendasi · datawhalechina', guideHelloClawDesc: 'Rekomendasi bacaan: Tutorial pemula terstruktur.',
+    guideDocsTitle: 'Dokumentasi OpenClaw Mandarin (276 Artikel)', guideAuthor3: 'Rekomendasi · yeuxuan', guideDocsDesc: 'Rekomendasi bacaan: Dokumentasi mendalam level source code.',
+    guideAwesomeTitle: 'Awesome OpenClaw Skills (Kurasi 5,400+)', guideAuthor4: 'Rekomendasi · VoltAgent', guideAwesomeDesc: 'Rekomendasi bacaan: 5,400+ skills terpilih dari 13,000+.',
+    guide30Title: 'Cara memilih dari 13,000+ Skills? 30 yang paling layak pasang', guideAuthor5: 'Komunitas Developer Alibaba Cloud', guide30Desc: '30 skills paling praktis dipilih dari ribuan.',
+    footerSite: 'Situs Resmi U-Claw', footerOpenclaw: 'OpenClaw Resmi', footerWechat: 'WeChat: hecare888 &nbsp;·&nbsp; Made with 🦞 by <a href="https://github.com/dongsheng123132">dongsheng</a>',
+    alertSearch: 'Jalankan di terminal:\n\nopenclaw skills search {q}\n\nAtau beri tahu AI Anda:\n"Bantu saya mencari skills tentang {q}"',
+    alertCopied: 'Tersalin!', alertInstall: 'Instal {name}?\n\nSalin perintah instalasi ke clipboard:\n{cmd}',
+    alertFilterCat: 'Jalankan di terminal:\n\nopenclaw clawhub search --category {cat}\n\nJelajahi semua skills di kategori ini'
+  },
+  ms: {
+    pageTitle: 'U-Claw SkillHub - Pasaran AI Skill', sidebarSubtitle: 'Pasaran AI Skill',
+    navOfficialSite: 'Laman Rasmi U-Claw', navDocs: 'Dokumentasi OpenClaw', navFeatured: 'Pilihan', navCategories: 'Semua Kategori', navRanking: 'Kedudukan Muat Turun', navInstall: 'Panduan Pemasangan', navGuide: 'Tutorial', navContact: 'Hubungi Kami',
+    heroTitle: 'Pasang Skill, <span class="accent">Buka Kuasa Super AI</span>', heroSubtitle: 'Pilihan kurasi · Muat turun pantas · Mudah ditemui<br>13,000+ AI Skills di ClawHub, U-Claw memecutkan untuk anda',
+    statTotal: 'Jumlah Skills', statCategories: 'Kategori', statFeatured: 'Kurasi', statPreinstalled: 'U-Claw dipasang',
+    searchPlaceholder: 'Cari skills: contohnya github, e-mel, cuaca, PDF...', searchButton: 'Cari',
+    tabFeatured: 'Pilihan', tabCategories: 'Semua Kategori', tabRanking: 'Kedudukan Muat Turun', tabInstall: 'Panduan Pemasangan', tabGuide: 'Tutorial',
+    sectionTop5: 'U-Claw Skills Wajib Pasang TOP 5', badgeOfficial: 'Pilihan Rasmi', badgeMustInstall: 'Wajib Pasang',
+    descGithub: 'Urus Issue, PR, cari repo, lihat kod. Pembantu terhebat untuk pembangun.', dlGithub: '48,000+ pasang', tagDev: 'Dev',
+    descTavily: 'Enjin carian web berkuasa AI. Biarkan AI mencari internet secara masa nyata.', dlTavily: '52,000+ pasang', tagSearch: 'Carian',
+    descSummarize: 'Rumuskan laman web, artikel, PDF, dan video. Ekstrak maklumat penting satu klik.', dlSummarize: '36,000+ pasang', tagEfficiency: 'Kecekapan',
+    descHimalaya: 'Hantar terima e-mel, cari e-mel, urus folder. Sokong Gmail/Outlook/QQ Mail.', dlHimalaya: '21,000+ pasang', tagEmail: 'E-mel',
+    descBrowserRelay: 'AI mengawal pelayar, isi automatik, tangkap skrin, kumpulkan data web.', dlBrowserRelay: '29,000+ pasang', tagAutomation: 'Automasi',
+    sectionProductivity: 'Alat Produktiviti', badgeDaily: 'Keperluan Harian',
+    descWeather: 'Semak ramalan cuaca global. Sokong ramalan pelbagai hari dan cuaca masa nyata.', dlWeather: '18,000+ pasang', tagLife: 'Kehidupan',
+    descAppleNotes: 'Baca dan tulis Apple Notes. Catat idea dengan suara atau teks.', dlAppleNotes: '15,000+ pasang', tagNotes: 'Nota',
+    descAppleReminders: 'Cipta dan urus peringatan. "Ingatkan saya mesyuarat esok jam 3 petang."', dlAppleReminders: '12,000+ pasang',
+    descObsidian: 'Cipta, cari, urus nota dalam知识库 pengetahuan Obsidian.', dlObsidian: '22,000+ pasang', tagKnowledge: 'Pengetahuan',
+    descNotion: 'Cipta halaman Notion, urus database, cari workspace.', dlNotion: '19,000+ pasang',
+    descNanoPdf: 'Edit fail PDF: gabung, pisah, tambah watermark, ekstrak teks.', dlNanoPdf: '14,000+ pasang', tagOffice: 'Pejabat',
+    sectionCoding: 'Pengekodan & Pembangunan', badgeDevFavorite: 'Kegemaran Pembangun',
+    descCodingAgent: 'Serahkan tugas pengekodan kepada AI Agent. Refaktor, tulis ujian, baiki pepijat.', dlCodingAgent: '31,000+ pasang', tagCoding: 'Pengekodan',
+    descTmux: 'Operasi terminal jarak jauh. Semak status pelayan, jalankan perintah, urus proses.', dlTmux: '11,000+ pasang', tagOps: 'Ops',
+    descImageGen: 'DALL-E lukisan AI. Terangkan dengan bahasa semula jadi, hasilkan imej berkualiti.', dlImageGen: '26,000+ pasang', tagCreative: 'Kreatif',
+    descPeekaboo: 'Tangkap skrin + OCR. AI boleh "melihat" dan memahami kandungan skrin.', dlPeekaboo: '17,000+ pasang', tagMultimodal: 'Multimodal',
+    sectionAllCategories: 'Semua Kategori', badgeCatCount: '32 Kategori',
+    catCoding: 'Ejen Pengekodan', catCount55: '55 skills', catWebDev: 'Web Frontend', catCount46: '46 skills', catGit: 'Git & GitHub', catCount34: '34 skills', catDevOps: 'DevOps & Awan', catCount144: '144 skills', catBrowser: 'Automasi Pelayar', catCount69: '69 skills', catAI: 'AI & LLMs', catCount159: '159 skills', catImage: 'Imej & Video', catCount41: '41 skills', catProductivity: 'Alat Produktiviti', catCount93: '93 skills', catData: 'Data & Analisis', catCount18: '18 skills', catNotes: 'Nota & Pengetahuan', catCount38: '38 skills', catEmail: 'E-mel & Perutusan', catCount24: '24 skills', catSocial: 'Media Sosial', catCount31: '31 skills', catSearch: 'Carian & Penyelidikan', catCount47: '47 skills', catSmartHome: 'Rumah Pintar', catCount22: '22 skills', catFinance: 'Kewangan & Kripto', catCount28: '28 skills', catSecurity: 'Keselamatan', catCount19: '19 skills', catVoice: 'Suara & TTS', catCount15: '15 skills', catFile: 'Pengurusan Fail', catCount33: '33 skills', catTranslate: 'Terjemahan', catCount12: '12 skills', catCalendar: 'Kalendar & Peringatan', catCount16: '16 skills',
+    catMore: 'Untuk kategori lain, masukkan kata kunci dalam kotak carian, atau gunakan arahan: <code style="color:#ff6b35; background:#1a1a1a; padding:2px 8px; border-radius:4px;">openclaw skills search [kata kunci]</code>',
+    sectionRanking: 'Kedudukan Muat Turun', badgeMarch2026: 'Mac 2026', rankSkill: 'Skill', rankCategory: 'Kategori', rankDownloads: 'Muat Turun', rankInstallCmd: 'Arahan Pemasangan',
+    sectionInstallSkills: 'Pasang Skills', modeAgent: 'Saya Agent', modeHuman: 'Saya Human',
+    installAgentTitle: 'Hantar prompt ini kepada <span>Agent</span> untuk memasang skills', installAgentDesc: 'Salin arahan di bawah dan tampal dalam perbualan OpenClaw. Agent akan automatik cari dan pasang.',
+    installAgentCmd1: 'Bantu saya pasang skill [nama skill]', installAgentCmd2: 'Cari skills tentang [penerangan] dan pasang yang paling sesuai',
+    btnCopy: 'Salin', installHumanTitle: 'Pemasangan Arahan Terminal', installHumanDesc: 'Jalankan arahan berikut dalam terminal:',
+    quickRef: 'Rujukan Pantas', refAction: 'Tindakan', refCommand: 'Arahan', refSearchSkills: 'Cari skills', refInstallSkill: 'Pasang skill', refListSkills: 'Lihat skills dipasang', refUninstallSkill: 'Nyahpasang skill', refUpdateSkill: 'Kemas kini skill', refClawhubSearch: 'Cari ClawHub', refSkillInfo: 'Lihat butiran skill',
+    uclawExclusive: 'Eksklusif Pengguna U-Claw', uclawPreinstalled: '<span>52 skills telah dipasang</span>, sedia digunakan', uclawPreinstalledDesc: 'U-Claw telah mempunyai 52 skills rasmi terbina dalam, tidak perlu internet. Pilih [13] dalam menu mula untuk melihat senarai penuh.<br>Perlu lebih? Gunakan arahan di atas untuk pasang dari ClawHub.',
+    sectionGuide: 'Tutorial', guideCompleteTitle: 'Panduan Lengkap OpenClaw', guideAuthor1: 'U-Claw', guideCompleteDesc: 'Dari pemasangan hingga penggunaan harian, semua dalam satu panduan.',
+    guideHelloClawTitle: 'Hello Claw (Datawhale Tutorial)', guideAuthor2: 'Cadangan · datawhalechina', guideHelloClawDesc: 'Cadangan bacaan: Tutorial pemula tersusun.',
+    guideDocsTitle: 'Dokumentasi OpenClaw Mandarin (276 Artikel)', guideAuthor3: 'Cadangan · yeuxuan', guideDocsDesc: 'Cadangan bacaan: Dokumentasi mendalam tahap kod sumber.',
+    guideAwesomeTitle: 'Awesome OpenClaw Skills (Kurasi 5,400+)', guideAuthor4: 'Cadangan · VoltAgent', guideAwesomeDesc: 'Cadangan bacaan: 5,400+ skills terpilih dari 13,000+.',
+    guide30Title: 'Cara memilih dari 13,000+ Skills? 30 yang paling berbaloi pasang', guideAuthor5: 'Komuniti Pembangun Alibaba Cloud', guide30Desc: '30 skills paling praktikal dipilih dari ribuan.',
+    footerSite: 'Laman Rasmi U-Claw', footerOpenclaw: 'OpenClaw Rasmi', footerWechat: 'WeChat: hecare888 &nbsp;·&nbsp; Made with 🦞 by <a href="https://github.com/dongsheng123132">dongsheng</a>',
+    alertSearch: 'Jalankan dalam terminal:\n\nopenclaw skills search {q}\n\nAtau beritahu AI anda:\n"Bantu saya mencari skills tentang {q}"',
+    alertCopied: 'Telah disalin!', alertInstall: 'Pasang {name}?\n\nSalin arahan pemasangan ke papan klip:\n{cmd}',
+    alertFilterCat: 'Jalankan dalam terminal:\n\nopenclaw clawhub search --category {cat}\n\nLayari semua skills dalam kategori ini'
+  }
+};
+const SUPPORTED_LANGS = ['en', 'zh', 'th', 'vi', 'id', 'ms'];
+
+function getLang() {
+  const stored = localStorage.getItem('uclaw-lang');
+  if (stored && i18n[stored]) return stored;
+  return 'en';
+}
+function setLang(lang) { localStorage.setItem('uclaw-lang', lang); applyLang(lang); }
+function t(key) { return (i18n[getLang()] && i18n[getLang()][key]) || i18n['en'][key] || key; }
+function applyLang(lang) {
+  const dict = i18n[lang] || i18n.en;
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : lang;
+  document.title = dict.pageTitle || document.title;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (dict[key] !== undefined) el.innerHTML = dict[key];
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (dict[key] !== undefined) el.placeholder = dict[key];
+  });
+  const toggle = document.getElementById('langToggle');
+  if (toggle) toggle.value = lang;
+}
+document.addEventListener('DOMContentLoaded', () => { applyLang(getLang()); });
+
+// ── Tab switching ──
+document.querySelectorAll('.tab-bar a').forEach(tab => {
+  tab.addEventListener('click', function(e) {
+    e.preventDefault();
+    document.querySelectorAll('.tab-bar a').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    this.classList.add('active');
+    const panelId = 'panel-' + this.dataset.tab;
+    document.getElementById(panelId).classList.add('active');
+    // Update sidebar active
+    document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+    const href = this.getAttribute('href');
+    document.querySelectorAll('.sidebar-nav a[href="' + href + '"]').forEach(a => a.classList.add('active'));
+  });
+});
+
+// ── Sidebar nav ──
+document.querySelectorAll('.sidebar-nav a[href^="#"]').forEach(link => {
+  link.addEventListener('click', function(e) {
+    const href = this.getAttribute('href').replace('#', '');
+    const tabEl = document.querySelector('.tab-bar a[data-tab="' + href + '"]');
+    if (tabEl) { e.preventDefault(); tabEl.click(); }
+  });
+});
+
+// ── Search ──
+function handleSearch() {
+  const q = document.getElementById('searchInput').value.trim();
+  if (!q) return;
+  // Show install panel with search hint
+  const tabEl = document.querySelector('.tab-bar a[data-tab="install"]');
+  tabEl.click();
+  const msg = t('alertSearch').replace('{q}', q);
+  alert(msg);
+}
+document.getElementById('searchInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') handleSearch();
+});
+
+// ── Copy ──
+function copyText(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    if (btn) {
+      const orig = btn.textContent;
+      btn.textContent = t('alertCopied');
+      btn.style.background = '#4caf50';
+      setTimeout(() => { btn.textContent = orig; btn.style.background = '#ff6b35'; }, 1500);
+    }
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    if (btn) {
+      btn.textContent = t('alertCopied');
+      setTimeout(() => { btn.textContent = t('btnCopy'); }, 1500);
+    }
+  });
+}
+
+// ── Install Skill (shortcut) ──
+function installSkill(name) {
+  const cmd = 'openclaw skills install @openclaw/' + name;
+  const msg = t('alertInstall').replace('{name}', name).replace('{cmd}', cmd);
+  if (confirm(msg)) {
+    copyText(null, cmd);
+    navigator.clipboard.writeText(cmd);
+  }
+}
+
+// ── Category filter ──
+function filterCat(cat) {
+  const msg = t('alertFilterCat').replace('{cat}', cat);
+  alert(msg);
+}
+
+// ── Mode switch ──
+function switchMode(btn, mode) {
+  document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('mode-agent').style.display = mode === 'agent' ? 'block' : 'none';
+  document.getElementById('mode-human').style.display = mode === 'human' ? 'block' : 'none';
+}
+</script>
+</body>
+</html>

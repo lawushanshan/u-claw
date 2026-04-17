@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>U-Claw Pro — Model Configuration</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #0a0a0a; color: #e0e0e0; min-height: 100vh; }
+.container { max-width: 680px; margin: 0 auto; padding: 30px 20px 60px; }
+h1 { text-align: center; font-size: 1.8em; margin-bottom: 4px; }
+h1 .lobster { color: #ff6b35; }
+.subtitle { text-align: center; color: #888; margin-bottom: 24px; font-size: 0.92em; }
+
+/* Language toggle */
+#langToggle {
+  position: fixed; top: 16px; right: 16px; z-index: 9999;
+  background: #333; color: #ccc; border: 1px solid #555;
+  border-radius: 8px; padding: 6px 28px 6px 14px; cursor: pointer;
+  font-size: 0.85em; font-weight: 600; transition: all 0.2s;
+  -webkit-appearance: none; -moz-appearance: none; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ccc' d='M3 5l3 3 3-3z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center;
+}
+#langToggle:hover { background-color: #ff6b35; color: #fff; border-color: #ff6b35; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23fff' d='M3 5l3 3 3-3z'/%3E%3C/svg%3E"); }
+#langToggle option { background: #222; color: #ccc; }
+
+/* Steps */
+.steps { display: flex; gap: 0; margin-bottom: 24px; background: #1a1a1a; border-radius: 10px; overflow: hidden; border: 1px solid #333; }
+.step { flex: 1; text-align: center; padding: 12px 8px; font-size: 0.85em; color: #666; cursor: pointer; transition: all 0.2s; }
+.step.active { color: #ff6b35; background: rgba(255,107,53,0.08); font-weight: 600; }
+.step.done { color: #4caf50; }
+.step .num { display: inline-block; width: 22px; height: 22px; line-height: 22px; border-radius: 50%; background: #333; color: #888; font-size: 0.8em; margin-right: 4px; }
+.step.active .num { background: #ff6b35; color: #fff; }
+.step.done .num { background: #4caf50; color: #fff; }
+
+/* Section */
+.section { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 24px; margin-bottom: 16px; display: none; }
+.section.active { display: block; }
+.section h2 { color: #ff6b35; font-size: 1.15em; margin-bottom: 6px; }
+.section .desc { color: #888; font-size: 0.88em; margin-bottom: 16px; }
+
+/* Model cards */
+.model-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.model-card { background: #222; border: 2px solid #333; border-radius: 10px; padding: 14px; cursor: pointer; transition: all 0.15s; position: relative; }
+.model-card:hover { border-color: #555; transform: translateY(-1px); }
+.model-card.selected { border-color: #ff6b35; background: rgba(255,107,53,0.06); }
+.model-card h4 { color: #fff; font-size: 0.95em; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.model-card p { color: #888; font-size: 0.78em; line-height: 1.4; }
+.tag { font-size: 0.68em; padding: 2px 7px; border-radius: 10px; font-weight: 500; }
+.tag.hot { background: rgba(255,107,53,0.2); color: #ff6b35; }
+.tag.free { background: rgba(76,175,80,0.2); color: #4caf50; }
+.tag.cn { background: rgba(33,150,243,0.2); color: #2196f3; }
+.tag.fast { background: rgba(156,39,176,0.2); color: #ce93d8; }
+.tag.cheap { background: rgba(255,193,7,0.2); color: #ffd54f; }
+.check { position: absolute; top: 8px; right: 10px; color: #ff6b35; font-size: 1.2em; display: none; }
+.model-card.selected .check { display: block; }
+
+/* Buy link */
+.buy-link { display: inline-flex; align-items: center; gap: 4px; color: #ff6b35; text-decoration: none; font-size: 0.82em; margin-top: 6px; }
+.buy-link:hover { text-decoration: underline; }
+
+/* Forms */
+.form-group { margin-bottom: 16px; }
+label { display: block; color: #ccc; margin-bottom: 6px; font-size: 0.9em; }
+input[type="text"], input[type="password"] {
+    width: 100%; padding: 11px 14px; background: #222; border: 1px solid #444; border-radius: 8px;
+    color: #fff; font-size: 0.95em; outline: none; transition: border-color 0.2s;
+}
+input:focus { border-color: #ff6b35; }
+.input-wrap { position: relative; }
+.input-wrap input { padding-right: 44px; }
+.toggle-pw { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #888; cursor: pointer; font-size: 0.85em; }
+.toggle-pw:hover { color: #ccc; }
+.hint { color: #888; font-size: 0.8em; margin-top: 6px; line-height: 1.5; }
+.hint a { color: #ff6b35; text-decoration: none; }
+.hint a:hover { text-decoration: underline; }
+
+/* API Key info box */
+.api-info { background: #1e1e2e; border: 1px solid #333; border-radius: 8px; padding: 14px; margin-bottom: 16px; }
+.api-info h4 { color: #ff6b35; font-size: 0.9em; margin-bottom: 8px; }
+.api-info .provider-links { display: flex; flex-direction: column; gap: 6px; }
+.api-info a { color: #82aaff; text-decoration: none; font-size: 0.85em; display: flex; align-items: center; gap: 6px; }
+.api-info a:hover { color: #ff6b35; }
+.api-info a .price { color: #888; font-size: 0.85em; }
+
+/* Buttons */
+.btn { display: inline-block; padding: 12px 28px; border: none; border-radius: 8px; font-size: 0.95em; cursor: pointer; transition: all 0.15s; font-weight: 500; }
+.btn-primary { background: #ff6b35; color: #fff; }
+.btn-primary:hover { background: #e55a25; }
+.btn-primary:disabled { background: #444; color: #888; cursor: not-allowed; }
+.btn-secondary { background: #333; color: #ccc; }
+.btn-secondary:hover { background: #444; }
+.btn-row { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; }
+
+/* Result */
+.result { text-align: center; padding: 40px 20px; }
+.result .icon { font-size: 3em; margin-bottom: 12px; }
+.result h2 { color: #4caf50; margin-bottom: 8px; }
+.result p { color: #888; font-size: 0.92em; line-height: 1.6; }
+.result .url { color: #ff6b35; font-size: 1.1em; font-weight: 600; margin: 12px 0; }
+
+/* Toast */
+.toast { position: fixed; top: 20px; right: 20px; background: #4caf50; color: #fff; padding: 12px 20px; border-radius: 8px; font-size: 0.9em; opacity: 0; transform: translateY(-10px); transition: all 0.3s; z-index: 999; }
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.error { background: #f44336; }
+
+/* Channel form */
+.channel-card { transition: all 0.2s; }
+.channel-card.selected { border-color: #ff6b35; background: rgba(255,107,53,0.06); }
+.channel-form { padding-top: 12px; margin-top: 10px; border-top: 1px solid #333; max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s ease; padding-top: 0; }
+.channel-form.open { max-height: 300px; padding-top: 12px; }
+.channel-form .form-group { margin-bottom: 10px; }
+.channel-form label { font-size: 0.82em; color: #aaa; margin-bottom: 4px; }
+.channel-form input { font-size: 0.88em; padding: 9px 12px; }
+.channel-form .hint { font-size: 0.75em; margin-top: 4px; }
+
+/* Skills section */
+.skills-section { margin-top: 20px; }
+.skill-list { display: flex; flex-direction: column; gap: 8px; }
+.skill-item { background: #222; border: 1px solid #333; border-radius: 8px; padding: 12px; display: flex; align-items: center; justify-content: space-between; }
+.skill-item .info h4 { color: #fff; font-size: 0.9em; }
+.skill-item .info p { color: #888; font-size: 0.78em; }
+.skill-item .status { font-size: 0.8em; color: #4caf50; }
+</style>
+</head>
+<body>
+
+<select id="langToggle" onchange="setLang(this.value)">
+  <option value="en">EN</option>
+  <option value="zh">中文</option>
+  <option value="th">ไทย</option>
+  <option value="vi">Tiếng Việt</option>
+  <option value="id">Bahasa Indonesia</option>
+  <option value="ms">Bahasa Melayu</option>
+</select>
+
+<div class="container">
+    <h1><span class="lobster">🦞</span> U-Claw Pro</h1>
+    <p class="subtitle" data-i18n="subtitle">Portable — Choose a model, enter API Key, launch in one click</p>
+
+    <!-- Steps -->
+    <div class="steps">
+        <div class="step active" data-step="1"><span class="num">1</span><span data-i18n="step1">Model</span></div>
+        <div class="step" data-step="2"><span class="num">2</span><span data-i18n="step2">Key</span></div>
+        <div class="step" data-step="3"><span class="num">3</span><span data-i18n="step3">Launch</span></div>
+    </div>
+
+    <!-- Step 1: Select Model -->
+    <div class="section active" id="step1">
+        <h2 data-i18n="selectModel">Choose AI Model</h2>
+        <p class="desc" data-i18n="selectModelDesc">Select a model to use. International users recommended: OpenAI / Claude / Groq</p>
+
+        <div class="model-grid" id="modelGrid">
+            <!-- Chinese providers -->
+            <div class="model-card" data-provider="minimax" data-base="https://api.minimax.chat/v1" data-model="MiniMax-Text-01">
+                <span class="check">✓</span>
+                <h4><span data-i18n="providerMinimax">MiniMax</span> <span class="tag hot" data-i18n="tagRecommended">Recommended</span><span class="tag cn" data-i18n="tagChina">CN</span></h4>
+                <p data-i18n="descMinimax">MiniMax-Text-01, fast and cost-effective</p>
+                <a class="buy-link" href="https://platform.minimaxi.com/" target="_blank" data-i18n="getKey">→ Get API Key</a>
+            </div>
+            <div class="model-card" data-provider="kimi" data-base="https://api.moonshot.cn/v1" data-model="moonshot-v1-auto">
+                <span class="check">✓</span>
+                <h4><span data-i18n="providerKimi">Kimi (Moonshot)</span> <span class="tag cn" data-i18n="tagChina">CN</span><span class="tag fast" data-i18n="tagFast">Fast</span></h4>
+                <p data-i18n="descKimi">moonshot-v1-auto, smart model selection</p>
+                <a class="buy-link" href="https://platform.moonshot.cn/" target="_blank" data-i18n="getKey">→ Get API Key</a>
+            </div>
+            <div class="model-card" data-provider="deepseek" data-base="https://api.deepseek.com/v1" data-model="deepseek-chat">
+                <span class="check">✓</span>
+                <h4><span data-i18n="providerDeepseek">DeepSeek</span> <span class="tag cn" data-i18n="tagChina">CN</span><span class="tag cheap" data-i18n="tagCheap">Cheap</span></h4>
+                <p data-i18n="descDeepseek">deepseek-chat, ultra-low price</p>
+                <a class="buy-link" href="https://platform.deepseek.com/" target="_blank" data-i18n="getKey">→ Get API Key</a>
+            </div>
+            <div class="model-card" data-provider="zai" data-base="" data-model="glm-5">
+                <span class="check">✓</span>
+                <h4><span data-i18n="providerZai">GLM (Zhipu)</span> <span class="tag cn" data-i18n="tagChina">CN</span><span class="tag free" data-i18n="tagFree">Free Tier</span></h4>
+                <p data-i18n="descZai">glm-5 (zai provider), free quota available</p>
+                <a class="buy-link" href="https://open.bigmodel.cn/" target="_blank" data-i18n="getKey">→ Get API Key</a>
+            </div>
+            <div class="model-card" data-provider="qwen" data-base="https://dashscope.aliyuncs.com/compatible-mode/v1" data-model="qwen-turbo">
+                <span class="check">✓</span>
+                <h4><span data-i18n="providerQwen">Qwen (Alibaba)</span> <span class="tag cn" data-i18n="tagChina">CN</span><span class="tag free" data-i18n="tagFree">Free Tier</span></h4>
+                <p data-i18n="descQwen">qwen-turbo, by Alibaba Cloud</p>
+                <a class="buy-link" href="https://dashscope.console.aliyun.com/" target="_blank" data-i18n="getKey">→ Get API Key</a>
+            </div>
+            <div class="model-card" data-provider="doubao" data-base="https://ark.cn-beijing.volces.com/api/v3" data-model="doubao-1.5-pro-32k">
+                <span class="check">✓</span>
+                <h4><span data-i18n="providerDoubao">Doubao (ByteDance)</span> <span class="tag cn" data-i18n="tagChina">CN</span><span class="tag fast" data-i18n="tagFast">Fast</span></h4>
+                <p data-i18n="descDoubao">doubao-1.5-pro, by ByteDance</p>
+                <a class="buy-link" href="https://console.volcengine.com/ark" target="_blank" data-i18n="getKey">→ Get API Key</a>
+            </div>
+            <!-- International providers -->
+            <div class="model-card" data-provider="openai" data-base="https://api.openai.com/v1" data-model="gpt-4o">
+                <span class="check">✓</span>
+                <h4><span data-i18n="providerOpenai">OpenAI</span> <span class="tag hot" data-i18n="tagStrong">Powerful</span></h4>
+                <p data-i18n="descOpenai">GPT-4o, requires VPN or proxy</p>
+                <a class="buy-link" href="https://platform.openai.com/" target="_blank" data-i18n="getKey">→ Get API Key</a>
+            </div>
+            <div class="model-card" data-provider="anthropic" data-base="https://api.anthropic.com/v1" data-model="claude-sonnet-4-20250514">
+                <span class="check">✓</span>
+                <h4><span data-i18n="providerAnthropic">Anthropic Claude</span> <span class="tag hot" data-i18n="tagStrong">Powerful</span></h4>
+                <p data-i18n="descAnthropic">Claude Sonnet 4, requires VPN or proxy</p>
+                <a class="buy-link" href="https://console.anthropic.com/" target="_blank" data-i18n="getKey">→ Get API Key</a>
+            </div>
+            <div class="model-card" data-provider="groq" data-base="https://api.groq.com/openai/v1" data-model="llama-3.3-70b-versatile">
+                <span class="check">✓</span>
+                <h4><span data-i18n="providerGroq">Groq</span> <span class="tag fast" data-i18n="tagUltraFast">Ultra Fast</span><span class="tag free" data-i18n="tagFree">Free Tier</span></h4>
+                <p data-i18n="descGroq">Llama 3.3 70B, ultra-high-speed inference</p>
+                <a class="buy-link" href="https://console.groq.com/" target="_blank" data-i18n="getKey">→ Get API Key</a>
+            </div>
+            <div class="model-card" data-provider="siliconflow" data-base="https://api.siliconflow.cn/v1" data-model="Qwen/Qwen2.5-72B-Instruct">
+                <span class="check">✓</span>
+                <h4><span data-i18n="providerSiliconflow">SiliconFlow</span> <span class="tag cn" data-i18n="tagChina">CN</span><span class="tag cheap" data-i18n="tagCheap">Cheap</span></h4>
+                <p data-i18n="descSiliconflow">Multi-model aggregation, low price</p>
+                <a class="buy-link" href="https://cloud.siliconflow.cn/" target="_blank" data-i18n="getKey">→ Get API Key</a>
+            </div>
+            <div class="model-card" data-provider="custom" data-base="" data-model="">
+                <span class="check">✓</span>
+                <h4><span data-i18n="providerCustom">Custom</span> <span class="tag" data-i18n="tagOpenAICompatible">OpenAI Compatible</span></h4>
+                <p data-i18n="descCustom">Enter any OpenAI-compatible API endpoint</p>
+            </div>
+        </div>
+
+        <div class="btn-row">
+            <button class="btn btn-primary" id="nextStep1" disabled data-i18n="nextStep">Next →</button>
+        </div>
+    </div>
+
+    <!-- Step 2: API Key -->
+    <div class="section" id="step2">
+        <h2 data-i18n="enterApiKey">Enter API Key</h2>
+        <p class="desc" id="step2desc" data-i18n="fillApiKey">Please enter the API Key for your model</p>
+
+        <div class="api-info" id="buyInfo">
+            <h4 data-i18n="howToGetKey">📌 How to get an API Key?</h4>
+            <div class="provider-links" id="providerLinks"></div>
+        </div>
+
+        <!-- Custom fields (hidden by default) -->
+        <div id="customFields" style="display:none;">
+            <div class="form-group">
+                <label data-i18n="labelBaseUrl">API URL (Base URL)</label>
+                <input type="text" id="customBase" placeholder="https://api.example.com/v1">
+            </div>
+            <div class="form-group">
+                <label data-i18n="labelModelName">Model Name</label>
+                <input type="text" id="customModel" placeholder="gpt-4o">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label data-i18n="labelApiKey">API Key</label>
+            <div class="input-wrap">
+                <input type="password" id="apiKey" placeholder="sk-...">
+                <button class="toggle-pw" onclick="togglePw()">👁</button>
+            </div>
+            <p class="hint" data-i18n="keyStorageHint">Your Key is stored only on the local USB drive and never uploaded to any server</p>
+        </div>
+
+        <div class="btn-row">
+            <button class="btn btn-secondary" onclick="goStep(1)" data-i18n="back">← Back</button>
+            <button class="btn btn-primary" id="saveBtn" onclick="saveConfig()" data-i18n="saveAndLaunch">Save & Launch 🚀</button>
+        </div>
+    </div>
+
+    <!-- Step 3: Done -->
+    <div class="section" id="step3">
+        <div class="result">
+            <div class="icon">🦞</div>
+            <h2 data-i18n="configDone">Configuration Complete!</h2>
+            <p data-i18n="configDoneDesc">Model and API Key saved. Click the button below when ready to launch</p>
+            <div class="url" id="gatewayUrl">http://127.0.0.1:18789</div>
+
+            <div style="margin-top: 24px; text-align: left;">
+                <h3 style="color: #ff6b35; font-size: 0.95em; margin-bottom: 12px;" data-i18n="connectChannels">📱 Connect More Channels (Optional)</h3>
+                <p style="color: #888; font-size: 0.82em; margin-bottom: 12px;" data-i18n="channelsHint">Expand a card below to configure. Or skip and launch directly:</p>
+                <div class="model-grid">
+                    <div class="model-card channel-card" onclick="toggleChannel(this, 'telegram')">
+                        <h4 data-i18n="chTelegram">✈️ Telegram</h4>
+                        <p data-i18n="chTelegramDesc">Connect Telegram Bot</p>
+                        <div class="channel-form" id="form-telegram" onclick="event.stopPropagation()">
+                            <div class="form-group">
+                                <label data-i18n="labelBotToken">Bot Token</label>
+                                <input type="text" id="ch-telegram-token" placeholder="123456:ABC-DEF...">
+                                <p class="hint"><a href="https://t.me/BotFather" target="_blank" data-i18n="getFromBotFather">→ Get from @BotFather</a></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="model-card channel-card" onclick="toggleChannel(this, 'qqbot')">
+                        <h4 data-i18n="chQQ">🐧 QQ Bot</h4>
+                        <p data-i18n="chQQDesc">Connect QQ group/private chat bot</p>
+                        <div class="channel-form" id="form-qqbot" onclick="event.stopPropagation()">
+                            <div class="form-group">
+                                <label>App ID</label>
+                                <input type="text" id="ch-qqbot-appid" placeholder="App ID">
+                            </div>
+                            <div class="form-group">
+                                <label>Client Secret</label>
+                                <input type="text" id="ch-qqbot-secret" placeholder="App Secret">
+                                <p class="hint"><a href="https://q.qq.com" target="_blank" data-i18n="getFromQQ">→ Get from QQ Open Platform</a></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="model-card channel-card" onclick="toggleChannel(this, 'feishu')">
+                        <h4 data-i18n="chFeishu">📘 Feishu (Lark)</h4>
+                        <p data-i18n="chFeishuDesc">Connect Feishu bot</p>
+                        <div class="channel-form" id="form-feishu" onclick="event.stopPropagation()">
+                            <div class="form-group">
+                                <label>App ID</label>
+                                <input type="text" id="ch-feishu-appid" placeholder="cli_xxx...">
+                            </div>
+                            <div class="form-group">
+                                <label>App Secret</label>
+                                <input type="text" id="ch-feishu-secret" placeholder="App Secret">
+                                <p class="hint"><a href="https://open.feishu.cn/app" target="_blank" data-i18n="getFromFeishu">→ Get from Feishu Open Platform</a></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="model-card channel-card" onclick="toggleChannel(this, 'wecom')">
+                        <h4 data-i18n="chWecom">🏢 WeCom</h4>
+                        <p data-i18n="chWecomDesc">Connect WeCom bot</p>
+                        <div class="channel-form" id="form-wecom" onclick="event.stopPropagation()">
+                            <div class="form-group">
+                                <label>Bot ID</label>
+                                <input type="text" id="ch-wecom-botid" placeholder="aib...">
+                            </div>
+                            <div class="form-group">
+                                <label>Secret</label>
+                                <input type="text" id="ch-wecom-secret" placeholder="Secret">
+                                <p class="hint"><a href="https://work.weixin.qq.com" target="_blank" data-i18n="getFromWecom">→ Get from WeCom Admin</a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 28px; text-align: center;">
+                <button class="btn btn-primary" onclick="launchOpenClaw()" style="font-size: 1.15em; padding: 16px 48px;" data-i18n="launchOpenClaw">🚀 Launch OpenClaw</button>
+                <p style="color: #888; font-size: 0.8em; margin-top: 10px;" data-i18n="launchHint">The dashboard will open automatically. Channel configs will be written to openclaw.json</p>
+            </div>
+
+            <div class="btn-row" style="justify-content: center; margin-top: 16px;">
+                <button class="btn btn-secondary" onclick="goStep(1)" data-i18n="reconfigModel">Reconfigure Model</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skills info -->
+    <div class="section active skills-section" style="display:block; margin-top: 24px;">
+        <h2 data-i18n="skillsTitle">📦 Skills & Docs</h2>
+        <p class="desc" data-i18n="skillsDesc">Skills are in the skills/ directory, docs in docs/. They travel with your USB drive</p>
+        <div class="skill-list" id="skillList">
+            <div class="skill-item">
+                <div class="info">
+                    <h4 data-i18n="skillDirTitle">skills/ — Skills directory</h4>
+                    <p data-i18n="skillDirDesc">Drop .md skill files here, OpenClaw loads them automatically</p>
+                </div>
+                <span class="status">📁</span>
+            </div>
+            <div class="skill-item">
+                <div class="info">
+                    <h4 data-i18n="docsDirTitle">docs/ — Docs directory</h4>
+                    <p data-i18n="docsDirDesc">Store user guides, help docs, etc.</p>
+                </div>
+                <span class="status">📁</span>
+            </div>
+            <div class="skill-item">
+                <div class="info">
+                    <h4 data-i18n="dataDirTitle">data/ — Config & chat history</h4>
+                    <p data-i18n="dataDirDesc">API Keys, chat history, etc. stored here</p>
+                </div>
+                <span class="status">🔒</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── i18n ──────────────────────────────────────────────────────
+const i18n = {
+  en: {
+    pageTitle: 'U-Claw Pro — Model Configuration',
+    subtitle: 'Portable — Choose a model, enter API Key, launch in one click',
+    step1: 'Model', step2: 'Key', step3: 'Launch',
+    selectModel: 'Choose AI Model',
+    selectModelDesc: 'Select a model to use. International users recommended: OpenAI / Claude / Groq',
+    nextStep: 'Next →', back: '← Back',
+    tagRecommended: 'Recommended', tagChina: 'CN', tagFast: 'Fast',
+    tagCheap: 'Cheap', tagStrong: 'Powerful', tagUltraFast: 'Ultra Fast',
+    tagFree: 'Free Tier', tagOpenAICompatible: 'OpenAI Compatible',
+    providerMinimax: 'MiniMax', descMinimax: 'MiniMax-Text-01, fast and cost-effective',
+    providerKimi: 'Kimi (Moonshot)', descKimi: 'moonshot-v1-auto, smart model selection',
+    providerDeepseek: 'DeepSeek', descDeepseek: 'deepseek-chat, ultra-low price',
+    providerZai: 'GLM (Zhipu)', descZai: 'glm-5 (zai provider), free quota available',
+    providerQwen: 'Qwen (Alibaba)', descQwen: 'qwen-turbo, by Alibaba Cloud',
+    providerDoubao: 'Doubao (ByteDance)', descDoubao: 'doubao-1.5-pro, by ByteDance',
+    providerOpenai: 'OpenAI', descOpenai: 'GPT-4o, requires VPN or proxy',
+    providerAnthropic: 'Anthropic Claude', descAnthropic: 'Claude Sonnet 4, requires VPN or proxy',
+    providerGroq: 'Groq', descGroq: 'Llama 3.3 70B, ultra-high-speed inference',
+    providerSiliconflow: 'SiliconFlow', descSiliconflow: 'Multi-model aggregation, low price',
+    providerCustom: 'Custom', descCustom: 'Enter any OpenAI-compatible API endpoint',
+    getKey: '→ Get API Key',
+    enterApiKey: 'Enter API Key',
+    fillApiKey: 'Please enter the API Key for your model',
+    fillApiKeyFor: 'Please enter the API Key for {name}',
+    howToGetKey: '📌 How to get an API Key?',
+    labelBaseUrl: 'API URL (Base URL)', labelModelName: 'Model Name',
+    labelApiKey: 'API Key',
+    keyStorageHint: 'Your Key is stored only on the local USB drive and never uploaded to any server',
+    saveAndLaunch: 'Save & Launch 🚀',
+    configDone: 'Configuration Complete!',
+    configDoneDesc: 'Model and API Key saved. Click the button below when ready to launch',
+    connectChannels: '📱 Connect More Channels (Optional)',
+    channelsHint: 'Expand a card below to configure. Or skip and launch directly:',
+    chTelegram: '✈️ Telegram', chTelegramDesc: 'Connect Telegram Bot',
+    chQQ: '🐧 QQ Bot', chQQDesc: 'Connect QQ group/private chat bot',
+    chFeishu: '📘 Feishu (Lark)', chFeishuDesc: 'Connect Feishu bot',
+    chWecom: '🏢 WeCom', chWecomDesc: 'Connect WeCom bot',
+    labelBotToken: 'Bot Token',
+    getFromBotFather: '→ Get from @BotFather',
+    getFromQQ: '→ Get from QQ Open Platform',
+    getFromFeishu: '→ Get from Feishu Open Platform',
+    getFromWecom: '→ Get from WeCom Admin',
+    launchOpenClaw: '🚀 Launch OpenClaw',
+    launchHint: 'The dashboard will open automatically. Channel configs will be written to openclaw.json',
+    reconfigModel: 'Reconfigure Model',
+    skillsTitle: '📦 Skills & Docs',
+    skillsDesc: 'Skills are in the skills/ directory, docs in docs/. They travel with your USB drive',
+    skillDirTitle: 'skills/ — Skills directory', skillDirDesc: 'Drop .md skill files here, OpenClaw loads them automatically',
+    docsDirTitle: 'docs/ — Docs directory', docsDirDesc: 'Store user guides, help docs, etc.',
+    dataDirTitle: 'data/ — Config & chat history', dataDirDesc: 'API Keys, chat history, etc. stored here',
+    errNoApiKey: 'Please enter your API Key',
+    errFillBaseAndModel: 'Please enter API URL and model name',
+    errSaveFailed: 'Save failed',
+    errSaveFailedMsg: 'Save failed: {msg}',
+    configSaved: 'Configuration saved!',
+    launchMsg: 'Configuration saved! Please close this page and return to the launcher to use U-Claw',
+    altLinkMinimax: '🔑 MiniMax — Recommended (CN), free credits on signup',
+    altLinkZai: '🔑 GLM (Zhipu) — Free tier available',
+    altLinkSiliconflow: '🔑 SiliconFlow — Multi-model aggregation, low cost'
+  },
+  zh: {
+    pageTitle: 'U-Claw Pro — 模型配置',
+    subtitle: '便携版 — 选择模型，填入 API Key，一键启动',
+    step1: '选模型', step2: '填 Key', step3: '启动',
+    selectModel: '选择 AI 模型',
+    selectModelDesc: '选择你要使用的模型，推荐国内用户用 MiniMax / Kimi / DeepSeek',
+    nextStep: '下一步 →', back: '← 返回',
+    tagRecommended: '推荐', tagChina: '国内', tagFast: '快',
+    tagCheap: '便宜', tagStrong: '强', tagUltraFast: '极快',
+    tagFree: '有免费', tagOpenAICompatible: 'OpenAI 兼容',
+    providerMinimax: 'MiniMax', descMinimax: 'MiniMax-Text-01，速度快，性价比高',
+    providerKimi: 'Kimi (月之暗面)', descKimi: 'moonshot-v1-auto，智能选模型',
+    providerDeepseek: 'DeepSeek', descDeepseek: 'deepseek-chat，超低价格',
+    providerZai: '智谱 GLM', descZai: 'glm-5（zai provider），免费额度可用',
+    providerQwen: '通义千问', descQwen: 'qwen-turbo，阿里云出品',
+    providerDoubao: '豆包', descDoubao: 'doubao-1.5-pro，字节跳动',
+    providerOpenai: 'OpenAI', descOpenai: 'GPT-4o，需翻墙或中转',
+    providerAnthropic: 'Anthropic Claude', descAnthropic: 'Claude Sonnet 4，需翻墙或中转',
+    providerGroq: 'Groq', descGroq: 'Llama 3.3 70B，超高速推理',
+    providerSiliconflow: '硅基流动', descSiliconflow: '多模型聚合，价格低',
+    providerCustom: '自定义', descCustom: '填写任意 OpenAI 兼容 API 地址',
+    getKey: '→ 获取 API Key',
+    enterApiKey: '填写 API Key',
+    fillApiKey: '请填写对应模型的 API Key',
+    fillApiKeyFor: '请填写 {name} 的 API Key',
+    howToGetKey: '📌 如何获取 API Key？',
+    labelBaseUrl: 'API 地址 (Base URL)', labelModelName: '模型名称',
+    labelApiKey: 'API Key',
+    keyStorageHint: '你的 Key 仅保存在本地 U 盘，不会上传到任何服务器',
+    saveAndLaunch: '保存并启动 🚀',
+    configDone: '配置完成！',
+    configDoneDesc: '模型和 API Key 已保存，准备好后点击下方按钮启动',
+    connectChannels: '📱 接入更多渠道（可选）',
+    channelsHint: '点击展开卡片填写配置，启动时自动写入。不填也可以直接启动：',
+    chTelegram: '✈️ Telegram', chTelegramDesc: '接入 Telegram Bot',
+    chQQ: '🐧 QQ Bot', chQQDesc: '接入 QQ 群/私聊机器人',
+    chFeishu: '📘 飞书', chFeishuDesc: '接入飞书机器人',
+    chWecom: '🏢 企业微信', chWecomDesc: '接入企业微信机器人',
+    labelBotToken: 'Bot Token',
+    getFromBotFather: '→ 从 @BotFather 获取',
+    getFromQQ: '→ 从 QQ 开放平台获取',
+    getFromFeishu: '→ 从飞书开放平台获取',
+    getFromWecom: '→ 从企业微信管理后台获取',
+    launchOpenClaw: '🚀 启动 OpenClaw',
+    launchHint: '启动后会自动打开控制台，渠道配置会自动写入 openclaw.json',
+    reconfigModel: '重新配置模型',
+    skillsTitle: '📦 技能 & 文档',
+    skillsDesc: '技能存放在 skills/ 目录，文档存放在 docs/ 目录，随 U 盘携带',
+    skillDirTitle: 'skills/ — 技能目录', skillDirDesc: '放入 .md 技能文件，OpenClaw 会自动加载',
+    docsDirTitle: 'docs/ — 文档目录', docsDirDesc: '存放使用说明、帮助文档等',
+    dataDirTitle: 'data/ — 配置和聊天记录', dataDirDesc: 'API Key、聊天历史等保存在此',
+    errNoApiKey: '请填写 API Key',
+    errFillBaseAndModel: '请填写 API 地址和模型名称',
+    errSaveFailed: '保存失败',
+    errSaveFailedMsg: '保存失败: {msg}',
+    configSaved: '配置已保存！',
+    launchMsg: '配置已保存！请关闭此页面，回到启动窗口使用 U-Claw',
+    altLinkMinimax: '🔑 MiniMax — 国内推荐，注册送额度',
+    altLinkZai: '🔑 智谱 GLM — 有免费额度',
+    altLinkSiliconflow: '🔑 硅基流动 — 多模型聚合，便宜'
+  },
+  th: {
+    pageTitle: 'U-Claw Pro — ตั้งค่าโมเดล',
+    subtitle: 'แบบพกพา — เลือกโมเดล ป้อน API Key เปิดใช้งานด้วยคลิกเดียว',
+    step1: 'โมเดล', step2: 'Key', step3: 'เปิดใช้',
+    selectModel: 'เลือก AI Model',
+    selectModelDesc: 'เลือกโมเดลที่จะใช้ ผู้ใช้ต่างชาติแนะนำ: OpenAI / Claude / Groq',
+    nextStep: 'ถัดไป →', back: '← กลับ',
+    tagRecommended: 'แนะนำ', tagChina: 'CN', tagFast: 'เร็ว',
+    tagCheap: 'ถูก', tagStrong: 'ทรงพลัง', tagUltraFast: 'เร็วมาก',
+    tagFree: 'ใช้ฟรี', tagOpenAICompatible: 'OpenAI Compatible',
+    providerMinimax: 'MiniMax', descMinimax: 'MiniMax-Text-01 เร็วและคุ้มค่า',
+    providerKimi: 'Kimi (Moonshot)', descKimi: 'moonshot-v1-auto เลือกโมเดลอัตโนมัติ',
+    providerDeepseek: 'DeepSeek', descDeepseek: 'deepseek-chat ราคาถูกมาก',
+    providerZai: 'GLM (Zhipu)', descZai: 'glm-5 มีโควต้าฟรี',
+    providerQwen: 'Qwen (Alibaba)', descQwen: 'qwen-turbo โดย Alibaba Cloud',
+    providerDoubao: 'Doubao (ByteDance)', descDoubao: 'doubao-1.5-pro โดย ByteDance',
+    providerOpenai: 'OpenAI', descOpenai: 'GPT-4o ต้องใช้ VPN หรือ proxy',
+    providerAnthropic: 'Anthropic Claude', descAnthropic: 'Claude Sonnet 4 ต้องใช้ VPN หรือ proxy',
+    providerGroq: 'Groq', descGroq: 'Llama 3.3 70B ประมวลผลเร็วมาก',
+    providerSiliconflow: 'SiliconFlow', descSiliconflow: 'รวมหลายโมเดล ราคาต่ำ',
+    providerCustom: 'กำหนดเอง', descCustom: 'ป้อน API endpoint ใดๆ ที่เข้ากันได้กับ OpenAI',
+    getKey: '→ รับ API Key',
+    enterApiKey: 'ป้อน API Key',
+    fillApiKey: 'กรุณาป้อน API Key สำหรับโมเดลของคุณ',
+    fillApiKeyFor: 'กรุณาป้อน API Key ของ {name}',
+    howToGetKey: '📌 วิธีรับ API Key?',
+    labelBaseUrl: 'API URL (Base URL)', labelModelName: 'ชื่อโมเดล',
+    labelApiKey: 'API Key',
+    keyStorageHint: 'Key ของคุณจะถูกเก็บไว้ใน USB เท่านั้น ไม่มีการอัปโหลดไปยังเซิร์ฟเวอร์ใดๆ',
+    saveAndLaunch: 'บันทึกและเปิดใช้ 🚀',
+    configDone: 'ตั้งค่าเสร็จสิ้น!',
+    configDoneDesc: 'โมเดลและ API Key ถูกบันทึกแล้ว คลิกปุ่มด้านล่างเพื่อเปิดใช้',
+    connectChannels: '📱 เชื่อมต่อช่องทางอื่น (ไม่บังคับ)',
+    channelsHint: 'ขยายการ์ดด้านล่างเพื่อตั้งค่า หรือข้ามแล้วเปิดใช้เลย:',
+    chTelegram: '✈️ Telegram', chTelegramDesc: 'เชื่อมต่อ Telegram Bot',
+    chWhatsApp: '💬 WhatsApp', chWhatsAppDesc: 'เชื่อมต่อ WhatsApp Business API',
+    chLINE: '🟢 LINE', chLINEDesc: 'เชื่อมต่อ LINE Messaging API',
+    chDiscord: '🎮 Discord', chDiscordDesc: 'เชื่อมต่อ Discord Bot',
+    chZalo: '🔵 Zalo', chZaloDesc: 'เชื่อมต่อ Zalo Official Account',
+    chMessenger: '📘 Messenger', chMessengerDesc: 'เชื่อมต่อ Facebook Messenger Bot',
+    labelBotToken: 'Bot Token',
+    labelPhoneNumberId: 'Phone Number ID',
+    labelChannelSecret: 'Channel Secret',
+    labelChannelToken: 'Channel Access Token',
+    labelAppId: 'App ID',
+    labelSecretKey: 'Secret Key',
+    labelPageToken: 'Page Access Token',
+    labelAppSecret: 'App Secret',
+    getFromBotFather: '→ รับจาก @BotFather',
+    getFromWhatsApp: '→ รับจาก Meta for Developers',
+    getFromLINE: '→ รับจาก LINE Developers Console',
+    getFromDiscord: '→ รับจาก Discord Developer Portal',
+    getFromZalo: '→ รับจาก Zalo Developer Portal',
+    getFromMessenger: '→ รับจาก Meta for Developers',
+    launchOpenClaw: '🚀 เปิดใช้ OpenClaw',
+    launchHint: 'แดชบอร์ดจะเปิดอัตโนมัติ การตั้งค่าช่องทางจะถูกเขียนลง openclaw.json',
+    reconfigModel: 'ตั้งค่าโมเดลใหม่',
+    skillsTitle: '📦 Skills & Docs',
+    skillsDesc: 'Skills อยู่ในโฟลเดอร์ skills/ เอกสารอยู่ใน docs/ มาพร้อมกับ USB ของคุณ',
+    skillDirTitle: 'skills/ — โฟลเดอร์ Skills', skillDirDesc: 'วางไฟล์ .md ที่นี่ OpenClaw จะโหลดอัตโนมัติ',
+    docsDirTitle: 'docs/ — โฟลเดอร์เอกสาร', docsDirDesc: 'เก็บคู่มือผู้ใช้ เอกสารช่วยเหลือ ฯลฯ',
+    dataDirTitle: 'data/ — การตั้งค่าและประวัติแชท', dataDirDesc: 'API Key ประวัติแชท ฯลฯ เก็บไว้ที่นี่',
+    errNoApiKey: 'กรุณาป้อน API Key',
+    errFillBaseAndModel: 'กรุณาป้อน API URL และชื่อโมเดล',
+    errSaveFailed: 'บันทึกล้มเหลว',
+    errSaveFailedMsg: 'บันทึกล้มเหลว: {msg}',
+    configSaved: 'บันทึกการตั้งค่าแล้ว!',
+    launchMsg: 'บันทึกการตั้งค่าแล้ว! กรุณาปิดหน้านี้และกลับไปที่ตัวเปิดใช้',
+    altLinkMinimax: '🔑 MiniMax — แนะนำ มีเครดิตฟรี',
+    altLinkZai: '🔑 GLM (Zhipu) — มีโควต้าฟรี',
+    altLinkSiliconflow: '🔑 SiliconFlow — รวมหลายโมเดล ราคาถูก'
+  },
+  vi: {
+    pageTitle: 'U-Claw Pro — Cấu hình Model',
+    subtitle: 'Bản di động — Chọn model, nhập API Key, khởi chạy một chạm',
+    step1: 'Model', step2: 'Key', step3: 'Khởi chạy',
+    selectModel: 'Chọn AI Model',
+    selectModelDesc: 'Chọn model để sử dụng. Người dùng quốc tế khuyến nghị: OpenAI / Claude / Groq',
+    nextStep: 'Tiếp →', back: '← Quay lại',
+    tagRecommended: 'Khuyến nghị', tagChina: 'CN', tagFast: 'Nhanh',
+    tagCheap: 'Rẻ', tagStrong: 'Mạnh', tagUltraFast: 'Siêu nhanh',
+    tagFree: 'Miễn phí', tagOpenAICompatible: 'OpenAI Compatible',
+    providerMinimax: 'MiniMax', descMinimax: 'MiniMax-Text-01, nhanh và tiết kiệm',
+    providerKimi: 'Kimi (Moonshot)', descKimi: 'moonshot-v1-auto, tự chọn model',
+    providerDeepseek: 'DeepSeek', descDeepseek: 'deepseek-chat, giá cực rẻ',
+    providerZai: 'GLM (Zhipu)', descZai: 'glm-5, có hạn mức miễn phí',
+    providerQwen: 'Qwen (Alibaba)', descQwen: 'qwen-turbo, bởi Alibaba Cloud',
+    providerDoubao: 'Doubao (ByteDance)', descDoubao: 'doubao-1.5-pro, bởi ByteDance',
+    providerOpenai: 'OpenAI', descOpenai: 'GPT-4o, cần VPN hoặc proxy',
+    providerAnthropic: 'Anthropic Claude', descAnthropic: 'Claude Sonnet 4, cần VPN hoặc proxy',
+    providerGroq: 'Groq', descGroq: 'Llama 3.3 70B, suy luận cực nhanh',
+    providerSiliconflow: 'SiliconFlow', descSiliconflow: 'Tích hợp nhiều model, giá thấp',
+    providerCustom: 'Tùy chỉnh', descCustom: 'Nhập API endpoint bất kỳ tương thích OpenAI',
+    getKey: '→ Lấy API Key',
+    enterApiKey: 'Nhập API Key',
+    fillApiKey: 'Vui lòng nhập API Key cho model của bạn',
+    fillApiKeyFor: 'Vui lòng nhập API Key cho {name}',
+    howToGetKey: '📌 Cách lấy API Key?',
+    labelBaseUrl: 'API URL (Base URL)', labelModelName: 'Tên Model',
+    labelApiKey: 'API Key',
+    keyStorageHint: 'Key của bạn chỉ lưu trên USB cục bộ, không bao giờ tải lên máy chủ',
+    saveAndLaunch: 'Lưu & Khởi chạy 🚀',
+    configDone: 'Cấu hình hoàn tất!',
+    configDoneDesc: 'Model và API Key đã lưu. Nhấn nút bên dưới để khởi chạy',
+    connectChannels: '📱 Kết nối kênh khác (Tùy chọn)',
+    channelsHint: 'Mở rộng thẻ bên dưới để cấu hình. Hoặc bỏ qua và khởi chạy:',
+    chTelegram: '✈️ Telegram', chTelegramDesc: 'Kết nối Telegram Bot',
+    chWhatsApp: '💬 WhatsApp', chWhatsAppDesc: 'Kết nối WhatsApp Business API',
+    chLINE: '🟢 LINE', chLINEDesc: 'Kết nối LINE Messaging API',
+    chDiscord: '🎮 Discord', chDiscordDesc: 'Kết nối Discord Bot',
+    chZalo: '🔵 Zalo', chZaloDesc: 'Kết nối Zalo Official Account',
+    chMessenger: '📘 Messenger', chMessengerDesc: 'Kết nối Facebook Messenger Bot',
+    labelBotToken: 'Bot Token',
+    labelPhoneNumberId: 'Phone Number ID',
+    labelChannelSecret: 'Channel Secret',
+    labelChannelToken: 'Channel Access Token',
+    labelAppId: 'App ID',
+    labelSecretKey: 'Secret Key',
+    labelPageToken: 'Page Access Token',
+    labelAppSecret: 'App Secret',
+    getFromBotFather: '→ Lấy từ @BotFather',
+    getFromWhatsApp: '→ Lấy từ Meta for Developers',
+    getFromLINE: '→ Lấy từ LINE Developers Console',
+    getFromDiscord: '→ Lấy từ Discord Developer Portal',
+    getFromZalo: '→ Lấy từ Zalo Developer Portal',
+    getFromMessenger: '→ Lấy từ Meta for Developers',
+    launchOpenClaw: '🚀 Khởi chạy OpenClaw',
+    launchHint: 'Bảng điều khiển sẽ mở tự động. Cấu hình kênh sẽ được ghi vào openclaw.json',
+    reconfigModel: 'Cấu hình lại Model',
+    skillsTitle: '📦 Skills & Docs',
+    skillsDesc: 'Skills nằm trong thư mục skills/, tài liệu trong docs/. Đi kèm USB của bạn',
+    skillDirTitle: 'skills/ — Thư mục Skills', skillDirDesc: 'Thả file .md vào đây, OpenClaw tự động tải',
+    docsDirTitle: 'docs/ — Thư mục tài liệu', docsDirDesc: 'Lưu hướng dẫn, tài liệu trợ giúp, v.v.',
+    dataDirTitle: 'data/ — Cấu hình & lịch sử chat', dataDirDesc: 'API Key, lịch sử chat, v.v. lưu tại đây',
+    errNoApiKey: 'Vui lòng nhập API Key',
+    errFillBaseAndModel: 'Vui lòng nhập API URL và tên model',
+    errSaveFailed: 'Lưu thất bại',
+    errSaveFailedMsg: 'Lưu thất bại: {msg}',
+    configSaved: 'Đã lưu cấu hình!',
+    launchMsg: 'Đã lưu cấu hình! Vui lòng đóng trang này và quay lại trình khởi chạy',
+    altLinkMinimax: '🔑 MiniMax — Khuyến nghị, có tín dụng miễn phí',
+    altLinkZai: '🔑 GLM (Zhipu) — Có hạn mức miễn phí',
+    altLinkSiliconflow: '🔑 SiliconFlow — Tích hợp nhiều model, giá rẻ'
+  },
+  id: {
+    pageTitle: 'U-Claw Pro — Konfigurasi Model',
+    subtitle: 'Versi Portabel — Pilih model, masukkan API Key, luncurkan satu klik',
+    step1: 'Model', step2: 'Key', step3: 'Luncurkan',
+    selectModel: 'Pilih AI Model',
+    selectModelDesc: 'Pilih model yang digunakan. Pengguna internasional direkomendasikan: OpenAI / Claude / Groq',
+    nextStep: 'Lanjut →', back: '← Kembali',
+    tagRecommended: 'Direkomendasikan', tagChina: 'CN', tagFast: 'Cepat',
+    tagCheap: 'Murah', tagStrong: 'Kuat', tagUltraFast: 'Sangat Cepat',
+    tagFree: 'Gratis', tagOpenAICompatible: 'OpenAI Compatible',
+    providerMinimax: 'MiniMax', descMinimax: 'MiniMax-Text-01, cepat dan hemat biaya',
+    providerKimi: 'Kimi (Moonshot)', descKimi: 'moonshot-v1-auto, pemilihan model cerdas',
+    providerDeepseek: 'DeepSeek', descDeepseek: 'deepseek-chat, harga sangat murah',
+    providerZai: 'GLM (Zhipu)', descZai: 'glm-5, ada kuota gratis',
+    providerQwen: 'Qwen (Alibaba)', descQwen: 'qwen-turbo, oleh Alibaba Cloud',
+    providerDoubao: 'Doubao (ByteDance)', descDoubao: 'doubao-1.5-pro, oleh ByteDance',
+    providerOpenai: 'OpenAI', descOpenai: 'GPT-4o, perlu VPN atau proxy',
+    providerAnthropic: 'Anthropic Claude', descAnthropic: 'Claude Sonnet 4, perlu VPN atau proxy',
+    providerGroq: 'Groq', descGroq: 'Llama 3.3 70B, inferensi sangat cepat',
+    providerSiliconflow: 'SiliconFlow', descSiliconflow: 'Agregasi multi-model, harga rendah',
+    providerCustom: 'Kustom', descCustom: 'Masukkan endpoint API apa pun yang kompatibel OpenAI',
+    getKey: '→ Dapatkan API Key',
+    enterApiKey: 'Masukkan API Key',
+    fillApiKey: 'Silakan masukkan API Key untuk model Anda',
+    fillApiKeyFor: 'Silakan masukkan API Key untuk {name}',
+    howToGetKey: '📌 Cara mendapatkan API Key?',
+    labelBaseUrl: 'API URL (Base URL)', labelModelName: 'Nama Model',
+    labelApiKey: 'API Key',
+    keyStorageHint: 'Key Anda hanya disimpan di USB lokal dan tidak pernah diunggah ke server mana pun',
+    saveAndLaunch: 'Simpan & Luncurkan 🚀',
+    configDone: 'Konfigurasi Selesai!',
+    configDoneDesc: 'Model dan API Key telah disimpan. Klik tombol di bawah untuk meluncurkan',
+    connectChannels: '📱 Hubungkan Lebih Banyak Channel (Opsional)',
+    channelsHint: 'Perluas kartu di bawah untuk mengonfigurasi. Atau lewati dan luncurkan langsung:',
+    chTelegram: '✈️ Telegram', chTelegramDesc: 'Hubungkan Telegram Bot',
+    chWhatsApp: '💬 WhatsApp', chWhatsAppDesc: 'Hubungkan WhatsApp Business API',
+    chLINE: '🟢 LINE', chLINEDesc: 'Hubungkan LINE Messaging API',
+    chDiscord: '🎮 Discord', chDiscordDesc: 'Hubungkan Discord Bot',
+    chZalo: '🔵 Zalo', chZaloDesc: 'Hubungkan Zalo Official Account',
+    chMessenger: '📘 Messenger', chMessengerDesc: 'Hubungkan Facebook Messenger Bot',
+    labelBotToken: 'Bot Token',
+    labelPhoneNumberId: 'Phone Number ID',
+    labelChannelSecret: 'Channel Secret',
+    labelChannelToken: 'Channel Access Token',
+    labelAppId: 'App ID',
+    labelSecretKey: 'Secret Key',
+    labelPageToken: 'Page Access Token',
+    labelAppSecret: 'App Secret',
+    getFromBotFather: '→ Dapatkan dari @BotFather',
+    getFromWhatsApp: '→ Dapatkan dari Meta for Developers',
+    getFromLINE: '→ Dapatkan dari LINE Developers Console',
+    getFromDiscord: '→ Dapatkan dari Discord Developer Portal',
+    getFromZalo: '→ Dapatkan dari Zalo Developer Portal',
+    getFromMessenger: '→ Dapatkan dari Meta for Developers',
+    launchOpenClaw: '🚀 Luncurkan OpenClaw',
+    launchHint: 'Dashboard akan terbuka otomatis. Konfigurasi channel akan ditulis ke openclaw.json',
+    reconfigModel: 'Konfigurasi Ulang Model',
+    skillsTitle: '📦 Skills & Docs',
+    skillsDesc: 'Skills ada di direktori skills/, dokumen di docs/. Dibawa bersama USB Anda',
+    skillDirTitle: 'skills/ — Direktori Skills', skillDirDesc: 'Letakkan file .md di sini, OpenClaw akan memuat otomatis',
+    docsDirTitle: 'docs/ — Direktori Dokumen', docsDirDesc: 'Simpan panduan pengguna, dokumen bantuan, dll.',
+    dataDirTitle: 'data/ — Konfigurasi & riwayat chat', dataDirDesc: 'API Key, riwayat chat, dll. disimpan di sini',
+    errNoApiKey: 'Silakan masukkan API Key',
+    errFillBaseAndModel: 'Silakan masukkan API URL dan nama model',
+    errSaveFailed: 'Gagal menyimpan',
+    errSaveFailedMsg: 'Gagal menyimpan: {msg}',
+    configSaved: 'Konfigurasi disimpan!',
+    launchMsg: 'Konfigurasi disimpan! Silakan tutup halaman ini dan kembali ke peluncur',
+    altLinkMinimax: '🔑 MiniMax — Direkomendasikan, kredit gratis saat daftar',
+    altLinkZai: '🔑 GLM (Zhipu) — Ada kuota gratis',
+    altLinkSiliconflow: '🔑 SiliconFlow — Agregasi multi-model, murah'
+  },
+  ms: {
+    pageTitle: 'U-Claw Pro — Konfigurasi Model',
+    subtitle: 'Versi Mudah Alih — Pilih model, masukkan API Key, lancar satu klik',
+    step1: 'Model', step2: 'Key', step3: 'Lancar',
+    selectModel: 'Pilih AI Model',
+    selectModelDesc: 'Pilih model untuk digunakan. Pengguna antarabangsa disyorkan: OpenAI / Claude / Groq',
+    nextStep: 'Seterusnya →', back: '← Kembali',
+    tagRecommended: 'Disyorkan', tagChina: 'CN', tagFast: 'Pantas',
+    tagCheap: 'Murah', tagStrong: 'Kuat', tagUltraFast: 'Sangat Pantas',
+    tagFree: 'Percuma', tagOpenAICompatible: 'OpenAI Compatible',
+    providerMinimax: 'MiniMax', descMinimax: 'MiniMax-Text-01, pantas dan jimat kos',
+    providerKimi: 'Kimi (Moonshot)', descKimi: 'moonshot-v1-auto, pemilihan model pintar',
+    providerDeepseek: 'DeepSeek', descDeepseek: 'deepseek-chat, harga sangat murah',
+    providerZai: 'GLM (Zhipu)', descZai: 'glm-5, ada kuota percuma',
+    providerQwen: 'Qwen (Alibaba)', descQwen: 'qwen-turbo, oleh Alibaba Cloud',
+    providerDoubao: 'Doubao (ByteDance)', descDoubao: 'doubao-1.5-pro, oleh ByteDance',
+    providerOpenai: 'OpenAI', descOpenai: 'GPT-4o, perlu VPN atau proksi',
+    providerAnthropic: 'Anthropic Claude', descAnthropic: 'Claude Sonnet 4, perlu VPN atau proksi',
+    providerGroq: 'Groq', descGroq: 'Llama 3.3 70B, inferens sangat pantas',
+    providerSiliconflow: 'SiliconFlow', descSiliconflow: 'Agregasi pelbagai model, harga rendah',
+    providerCustom: 'Tersuai', descCustom: 'Masukkan mana-mana endpoint API yang serasi OpenAI',
+    getKey: '→ Dapatkan API Key',
+    enterApiKey: 'Masukkan API Key',
+    fillApiKey: 'Sila masukkan API Key untuk model anda',
+    fillApiKeyFor: 'Sila masukkan API Key untuk {name}',
+    howToGetKey: '📌 Cara dapatkan API Key?',
+    labelBaseUrl: 'API URL (Base URL)', labelModelName: 'Nama Model',
+    labelApiKey: 'API Key',
+    keyStorageHint: 'Key anda hanya disimpan di USB tempatan dan tidak dimuat naik ke mana-mana pelayan',
+    saveAndLaunch: 'Simpan & Lancar 🚀',
+    configDone: 'Konfigurasi Selesai!',
+    configDoneDesc: 'Model dan API Key telah disimpan. Klik butang di bawah untuk melancarkan',
+    connectChannels: '📱 Sambung Lebih Banyak Channel (Pilihan)',
+    channelsHint: 'Kembangkan kad di bawah untuk konfigurasi. Atau langkau dan lancar terus:',
+    chTelegram: '✈️ Telegram', chTelegramDesc: 'Sambung Telegram Bot',
+    chWhatsApp: '💬 WhatsApp', chWhatsAppDesc: 'Sambung WhatsApp Business API',
+    chLINE: '🟢 LINE', chLINEDesc: 'Sambung LINE Messaging API',
+    chDiscord: '🎮 Discord', chDiscordDesc: 'Sambung Discord Bot',
+    chZalo: '🔵 Zalo', chZaloDesc: 'Sambung Zalo Official Account',
+    chMessenger: '📘 Messenger', chMessengerDesc: 'Sambung Facebook Messenger Bot',
+    labelBotToken: 'Bot Token',
+    labelPhoneNumberId: 'Phone Number ID',
+    labelChannelSecret: 'Channel Secret',
+    labelChannelToken: 'Channel Access Token',
+    labelAppId: 'App ID',
+    labelSecretKey: 'Secret Key',
+    labelPageToken: 'Page Access Token',
+    labelAppSecret: 'App Secret',
+    getFromBotFather: '→ Dapatkan dari @BotFather',
+    getFromWhatsApp: '→ Dapatkan dari Meta for Developers',
+    getFromLINE: '→ Dapatkan dari LINE Developers Console',
+    getFromDiscord: '→ Dapatkan dari Discord Developer Portal',
+    getFromZalo: '→ Dapatkan dari Zalo Developer Portal',
+    getFromMessenger: '→ Dapatkan dari Meta for Developers',
+    launchOpenClaw: '🚀 Lancar OpenClaw',
+    launchHint: 'Papan pemuka akan terbuka secara automatik. Konfigurasi channel akan ditulis ke openclaw.json',
+    reconfigModel: 'Konfigurasi Semula Model',
+    skillsTitle: '📦 Skills & Docs',
+    skillsDesc: 'Skills ada di direktori skills/, dokumen di docs/. Dibawa bersama USB anda',
+    skillDirTitle: 'skills/ — Direktori Skills', skillDirDesc: 'Letakkan fail .md di sini, OpenClaw akan muat secara automatik',
+    docsDirTitle: 'docs/ — Direktori Dokumen', docsDirDesc: 'Simpan panduan pengguna, dokumen bantuan, dll.',
+    dataDirTitle: 'data/ — Konfigurasi & sejarah chat', dataDirDesc: 'API Key, sejarah chat, dll. disimpan di sini',
+    errNoApiKey: 'Sila masukkan API Key',
+    errFillBaseAndModel: 'Sila masukkan API URL dan nama model',
+    errSaveFailed: 'Gagal menyimpan',
+    errSaveFailedMsg: 'Gagal menyimpan: {msg}',
+    configSaved: 'Konfigurasi disimpan!',
+    launchMsg: 'Konfigurasi disimpan! Sila tutup halaman ini dan kembali ke pelancar',
+    altLinkMinimax: '🔑 MiniMax — Disyorkan, kredit percuma apabila mendaftar',
+    altLinkZai: '🔑 GLM (Zhipu) — Ada kuota percuma',
+    altLinkSiliconflow: '🔑 SiliconFlow — Agregasi pelbagai model, murah'
+  }
+};
+
+// ── Language Detection & Persistence ──────────────────────────
+const SUPPORTED_LANGS = ['en', 'zh', 'th', 'vi', 'id', 'ms'];
+
+function getLang() {
+  const stored = localStorage.getItem('uclaw-lang');
+  if (stored && i18n[stored]) return stored;
+  return 'en';
+}
+
+function setLang(lang) {
+  localStorage.setItem('uclaw-lang', lang);
+  applyLang(lang);
+}
+
+function t(key, replacements) {
+  const lang = getLang();
+  let val = (i18n[lang] && i18n[lang][key]) || i18n['en'][key] || key;
+  if (replacements) {
+    Object.keys(replacements).forEach(k => { val = val.replace('{' + k + '}', replacements[k]); });
+  }
+  return val;
+}
+
+function applyLang(lang) {
+  const dict = i18n[lang] || i18n.en;
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+  document.title = dict.pageTitle || document.title;
+
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (dict[key] !== undefined) {
+      el.textContent = dict[key];
+    }
+  });
+
+  const toggle = document.getElementById('langToggle');
+  if (toggle) toggle.value = lang;
+
+  // Reorder model cards based on language
+  reorderModelCards(lang);
+}
+
+// ── Model card reordering ─────────────────────────────────────
+const INTERNATIONAL_PROVIDERS = ['openai', 'anthropic', 'groq'];
+const CHINESE_PROVIDERS = ['minimax', 'kimi', 'deepseek', 'zai', 'qwen', 'doubao', 'siliconflow'];
+const TAIL_PROVIDERS = ['custom'];
+
+function reorderModelCards(lang) {
+  const grid = document.getElementById('modelGrid');
+  if (!grid) return;
+
+  const cards = Array.from(grid.querySelectorAll('.model-card'));
+  const cardMap = {};
+  cards.forEach(c => { cardMap[c.dataset.provider] = c; });
+
+  let ordered;
+  if (lang === 'zh') {
+    ordered = [...CHINESE_PROVIDERS, ...INTERNATIONAL_PROVIDERS, ...TAIL_PROVIDERS].map(p => cardMap[p]).filter(Boolean);
+  } else {
+    ordered = [...INTERNATIONAL_PROVIDERS, ...CHINESE_PROVIDERS, ...TAIL_PROVIDERS].map(p => cardMap[p]).filter(Boolean);
+  }
+
+  ordered.forEach(card => grid.appendChild(card));
+}
+
+// ── Initialize ───────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  applyLang(getLang());
+});
+
+// --- State ---
+let selectedProvider = null;
+let selectedBase = '';
+let selectedModel = '';
+
+// --- Model cards ---
+document.querySelectorAll('.model-card:not(.channel-card)').forEach(card => {
+    card.addEventListener('click', (e) => {
+        if (e.target.closest('.buy-link')) return;
+        document.querySelectorAll('.model-card:not(.channel-card)').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        selectedProvider = card.dataset.provider;
+        selectedBase = card.dataset.base;
+        selectedModel = card.dataset.model;
+        document.getElementById('nextStep1').disabled = false;
+    });
+});
+
+document.getElementById('nextStep1').addEventListener('click', () => goStep(2));
+
+// --- Steps ---
+function goStep(n) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById('step' + n).classList.add('active');
+    document.querySelectorAll('.steps .step').forEach((s, i) => {
+        s.classList.remove('active', 'done');
+        if (i + 1 < n) s.classList.add('done');
+        if (i + 1 === n) s.classList.add('active');
+    });
+
+    if (n === 2) setupStep2();
+}
+
+function setupStep2() {
+    const isCustom = selectedProvider === 'custom';
+    document.getElementById('customFields').style.display = isCustom ? 'block' : 'none';
+
+    const lang = getLang();
+    const providerNames = {
+        minimax: lang === 'zh' ? 'MiniMax' : 'MiniMax',
+        kimi: lang === 'zh' ? 'Kimi (月之暗面)' : 'Kimi (Moonshot)',
+        deepseek: 'DeepSeek',
+        zai: lang === 'zh' ? '智谱 GLM' : 'GLM (Zhipu)',
+        qwen: lang === 'zh' ? '通义千问' : 'Qwen (Alibaba)',
+        doubao: lang === 'zh' ? '豆包' : 'Doubao (ByteDance)',
+        openai: 'OpenAI', anthropic: 'Anthropic Claude', groq: 'Groq',
+        siliconflow: lang === 'zh' ? '硅基流动' : 'SiliconFlow',
+        custom: lang === 'zh' ? '自定义' : 'Custom'
+    };
+    const name = providerNames[selectedProvider] || selectedProvider;
+    document.getElementById('step2desc').textContent = t('fillApiKeyFor', { name });
+
+    // Buy links
+    const card = document.querySelector(`.model-card[data-provider="${selectedProvider}"]`);
+    const buyLink = card ? card.querySelector('.buy-link') : null;
+    const linksDiv = document.getElementById('providerLinks');
+    linksDiv.innerHTML = '';
+    if (buyLink) {
+        linksDiv.innerHTML = `<a href="${buyLink.href}" target="_blank">🔑 ${name} — ${t('getKey').replace('→ ', '')}</a>`;
+    }
+    // Add common alternatives
+    linksDiv.innerHTML += `
+        <a href="https://platform.minimaxi.com/" target="_blank">${t('altLinkMinimax')}</a>
+        <a href="https://open.bigmodel.cn/" target="_blank">${t('altLinkZai')}</a>
+        <a href="https://cloud.siliconflow.cn/" target="_blank">${t('altLinkSiliconflow')}</a>
+    `;
+}
+
+// --- Toggle password ---
+function togglePw() {
+    const inp = document.getElementById('apiKey');
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+// --- Generate correct OpenClaw config ---
+function buildOpenClawConfig(provider, base, model, apiKey) {
+    const baseConfig = {
+        gateway: { auth: { mode: 'token', token: 'uclaw', scopes: ['operator.admin'] } },
+        commands: { native: 'auto', nativeSkills: 'auto', restart: true, ownerDisplay: 'raw' },
+        meta: { lastTouchedVersion: '2026.3.13', lastTouchedAt: new Date().toISOString() }
+    };
+
+    if (provider === 'zai') {
+        return {
+            ...baseConfig,
+            env: { ZAI_API_KEY: apiKey },
+            agents: { defaults: { model: { primary: 'zai/' + model } } }
+        };
+    }
+
+    const providerName = provider || 'myProvider';
+    return {
+        ...baseConfig,
+        models: {
+            mode: 'merge',
+            providers: {
+                [providerName]: {
+                    baseUrl: base,
+                    apiKey: apiKey,
+                    api: 'openai-completions',
+                    models: [{
+                        id: model,
+                        name: model,
+                        reasoning: false,
+                        input: ['text'],
+                        cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+                        contextWindow: 128000,
+                        maxTokens: 8192
+                    }]
+                }
+            }
+        },
+        agents: { defaults: { model: { primary: providerName + '/' + model } } }
+    };
+}
+
+// --- Save config ---
+async function saveConfig() {
+    const apiKey = document.getElementById('apiKey').value.trim();
+    if (!apiKey) { showToast(t('errNoApiKey'), true); return; }
+
+    let base = selectedBase;
+    let model = selectedModel;
+
+    if (selectedProvider === 'custom') {
+        base = document.getElementById('customBase').value.trim();
+        model = document.getElementById('customModel').value.trim();
+        if (!base || !model) { showToast(t('errFillBaseAndModel'), true); return; }
+    }
+
+    const openclawConfig = buildOpenClawConfig(selectedProvider, base, model, apiKey);
+
+    try {
+        const res = await fetch('/api/config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(openclawConfig)
+        });
+        if (!res.ok) throw new Error(t('errSaveFailed'));
+
+        showToast(t('configSaved'));
+        goStep(3);
+        const port = getPort();
+        document.getElementById('gatewayUrl').textContent = 'http://127.0.0.1:' + port;
+    } catch (e) {
+        showToast(t('errSaveFailedMsg', { msg: e.message }), true);
+    }
+}
+
+// --- Toast ---
+function showToast(msg, isError) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = 'toast show' + (isError ? ' error' : '');
+    setTimeout(() => el.className = 'toast', 3000);
+}
+
+// --- Load existing config ---
+async function loadConfig() {
+    try {
+        const res = await fetch('/api/config');
+        const cfg = await res.json();
+
+        if (cfg.env && cfg.env.ZAI_API_KEY) {
+            const card = document.querySelector('.model-card[data-provider="zai"]');
+            if (card) card.click();
+            document.getElementById('apiKey').value = cfg.env.ZAI_API_KEY;
+            return;
+        }
+
+        if (cfg.models && cfg.models.providers) {
+            const providerName = Object.keys(cfg.models.providers)[0];
+            if (providerName) {
+                const p = cfg.models.providers[providerName];
+                document.querySelectorAll('.model-card').forEach(card => {
+                    if (card.dataset.provider === providerName) card.click();
+                });
+                if (p.apiKey) document.getElementById('apiKey').value = p.apiKey;
+            }
+        }
+    } catch(e) {}
+}
+loadConfig();
+
+const stepParam = new URLSearchParams(window.location.search).get('step');
+if (stepParam) goStep(parseInt(stepParam));
+
+// --- Step 3: Quick entry buttons ---
+function getPort() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('port') || '18789';
+}
+
+function openDashboard() {
+    const port = getPort();
+    window.open('http://127.0.0.1:' + port + '/#token=uclaw', '_blank');
+}
+
+function openOnboard() {
+    const port = getPort();
+    window.open('http://127.0.0.1:' + port + '/onboarding', '_blank');
+}
+
+function openChannel(type) {
+    const port = getPort();
+    window.open('http://127.0.0.1:' + port + '/#/channels', '_blank');
+}
+
+function toggleChannel(card, type) {
+    const form = document.getElementById('form-' + type);
+    const isOpen = form.classList.contains('open');
+    if (isOpen) {
+        form.classList.remove('open');
+        card.classList.remove('selected');
+    } else {
+        form.classList.add('open');
+        card.classList.add('selected');
+        const firstInput = form.querySelector('input');
+        if (firstInput) setTimeout(() => firstInput.focus(), 100);
+    }
+}
+
+async function launchOpenClaw() {
+    const channels = {};
+
+    const tgToken = document.getElementById('ch-telegram-token')?.value.trim();
+    if (tgToken) channels.telegram = { enabled: true, token: tgToken, dmPolicy: 'pairing' };
+
+    const qqId = document.getElementById('ch-qqbot-appid')?.value.trim();
+    const qqSecret = document.getElementById('ch-qqbot-secret')?.value.trim();
+    if (qqId && qqSecret) channels.qqbot = { enabled: true, appId: qqId, clientSecret: qqSecret };
+
+    const fsId = document.getElementById('ch-feishu-appid')?.value.trim();
+    const fsSecret = document.getElementById('ch-feishu-secret')?.value.trim();
+    if (fsId && fsSecret) channels.feishu = { enabled: true, appId: fsId, appSecret: fsSecret };
+
+    const wcBotId = document.getElementById('ch-wecom-botid')?.value.trim();
+    const wcSecret = document.getElementById('ch-wecom-secret')?.value.trim();
+    if (wcBotId && wcSecret) channels.wecom = { enabled: true, botId: wcBotId, secret: wcSecret };
+
+    if (Object.keys(channels).length > 0) {
+        try {
+            const res = await fetch('/api/config');
+            const existing = res.ok ? await res.json() : {};
+            delete existing.agent;
+            existing.channels = Object.assign(existing.channels || {}, channels);
+            await fetch('/api/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(existing)
+            });
+        } catch(e) {}
+    }
+
+    showToast(t('launchMsg'));
+    try { await fetch('/api/done', { method: 'POST' }); } catch(e) {}
+}
+</script>
+</body>
+</html>
