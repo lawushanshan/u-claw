@@ -7,6 +7,7 @@ const crypto = require('crypto');
 
 const PORT = 18788;
 const CONFIG_PATH = path.join(__dirname, '../data/.openclaw/openclaw.json');
+const BUILTIN_TOKENS_PATH = path.join(__dirname, '../builtin-tokens.json');
 
 // ── WeChat Login State ──────────────────────────────────────────────────────
 const DEFAULT_WECHAT_BASE_URL = 'https://ilinkai.weixin.qq.com';
@@ -373,6 +374,21 @@ const server = http.createServer((req, res) => {
     const installed = fs.existsSync(path.join(INSTALLED_PLUGIN_DIR, 'openclaw.plugin.json'));
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ hasPlugin, installed }));
+    return;
+  }
+
+  // API: Get builtin tokens (USB ID + built-in provider keys)
+  if (req.url === '/api/builtin' && req.method === 'GET') {
+    try {
+      const data = fs.existsSync(BUILTIN_TOKENS_PATH)
+        ? JSON.parse(fs.readFileSync(BUILTIN_TOKENS_PATH, 'utf8'))
+        : {};
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(data));
+    } catch (err) {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ usbId: null, openrouter: null }));
+    }
     return;
   }
 

@@ -1,0 +1,8 @@
+{
+  "usbId": "cm-000000",
+  "openrouter": {
+    "token": "",
+    "baseUrl": "https://openrouter.ai/api/v1",
+    "defaultModel": "openrouter/auto"
+  }
+}

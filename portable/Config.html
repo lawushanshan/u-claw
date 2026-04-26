@@ -55,6 +55,7 @@ h1 .lobster { color: #ff6b35; }
 .tag.cn { background: rgba(33,150,243,0.2); color: #2196f3; }
 .tag.fast { background: rgba(156,39,176,0.2); color: #ce93d8; }
 .tag.cheap { background: rgba(255,193,7,0.2); color: #ffd54f; }
+.tag.builtin { background: rgba(0,188,212,0.2); color: #00e5ff; }
 .check { position: absolute; top: 8px; right: 10px; color: #ff6b35; font-size: 1.2em; display: none; }
 .model-card.selected .check { display: block; }
 
@@ -222,6 +223,11 @@ input:focus { border-color: #ff6b35; }
                 <p data-i18n="descSiliconflow">Multi-model aggregation, low price</p>
                 <a class="buy-link" href="https://cloud.siliconflow.cn/" target="_blank" data-i18n="getKey">→ Get API Key</a>
             </div>
+            <div class="model-card" data-provider="openrouter" data-base="https://openrouter.ai/api/v1" data-model="openrouter/auto">
+                <span class="check">✓</span>
+                <h4><span data-i18n="providerOpenrouter">OpenRouter</span> <span class="tag builtin" data-i18n="tagBuiltin">Built-in</span><span class="tag free" data-i18n="tagFree">Free Tier</span></h4>
+                <p data-i18n="descOpenrouter">Multi-model routing, free credits included</p>
+            </div>
             <div class="model-card" data-provider="custom" data-base="" data-model="">
                 <span class="check">✓</span>
                 <h4><span data-i18n="providerCustom">Custom</span> <span class="tag" data-i18n="tagOpenAICompatible">OpenAI Compatible</span></h4>
@@ -278,6 +284,12 @@ input:focus { border-color: #ff6b35; }
             <h2 data-i18n="configDone">Configuration Complete!</h2>
             <p data-i18n="configDoneDesc">Model and API Key saved. Click the button below when ready to launch</p>
             <div class="url" id="gatewayUrl">http://127.0.0.1:18789</div>
+
+            <div id="usbIdDisplay" style="margin-top: 12px; text-align: center; display: none;">
+                <span style="color: #888; font-size: 0.85em;" data-i18n="usbIdLabel">USB ID:</span>
+                <span id="usbIdValue" style="color: #00e5ff; font-weight: 600; font-size: 0.95em;"></span>
+                <p style="color: #666; font-size: 0.78em; margin-top: 4px;" data-i18n="usbIdHint">Use this ID to top up your OpenRouter credits</p>
+            </div>
 
             <div style="margin-top: 24px; text-align: left;">
                 <h3 style="color: #ff6b35; font-size: 0.95em; margin-bottom: 12px;" data-i18n="connectChannels">📱 Connect More Channels (Optional)</h3>
@@ -490,7 +502,13 @@ const i18n = {
     launchMsg: 'Configuration saved! Please close this page and return to the launcher to use U-Claw',
     altLinkMinimax: '🔑 MiniMax — Recommended (CN), free credits on signup',
     altLinkZai: '🔑 GLM (Zhipu) — Free tier available',
-    altLinkSiliconflow: '🔑 SiliconFlow — Multi-model aggregation, low cost'
+    altLinkSiliconflow: '🔑 SiliconFlow — Multi-model aggregation, low cost',
+    providerOpenrouter: 'OpenRouter',
+    descOpenrouter: 'Multi-model routing, free credits included',
+    tagBuiltin: 'Built-in',
+    usbIdLabel: 'USB ID:',
+    usbIdHint: 'Use this ID to top up your OpenRouter credits',
+    builtinKeyHint: '{name} — Built-in API Key, no configuration needed'
   },
   zh: {
     pageTitle: 'U-Claw Pro — 模型配置',
@@ -562,7 +580,13 @@ const i18n = {
     launchMsg: '配置已保存！请关闭此页面，回到启动窗口使用 U-Claw',
     altLinkMinimax: '🔑 MiniMax — 国内推荐，注册送额度',
     altLinkZai: '🔑 智谱 GLM — 有免费额度',
-    altLinkSiliconflow: '🔑 硅基流动 — 多模型聚合，便宜'
+    altLinkSiliconflow: '🔑 硅基流动 — 多模型聚合，便宜',
+    providerOpenrouter: 'OpenRouter',
+    descOpenrouter: '多模型路由，内置免费额度',
+    tagBuiltin: '内置',
+    usbIdLabel: 'U 盘编号：',
+    usbIdHint: '使用此编号为您的 OpenRouter 充值额度',
+    builtinKeyHint: '{name} — 已内置 API Key，无需配置'
   },
   th: {
     pageTitle: 'U-Claw Pro — ตั้งค่าโมเดล',
@@ -634,7 +658,13 @@ const i18n = {
     launchMsg: 'บันทึกการตั้งค่าแล้ว! กรุณาปิดหน้านี้และกลับไปที่ตัวเปิดใช้',
     altLinkMinimax: '🔑 MiniMax — แนะนำ มีเครดิตฟรี',
     altLinkZai: '🔑 GLM (Zhipu) — มีโควต้าฟรี',
-    altLinkSiliconflow: '🔑 SiliconFlow — รวมหลายโมเดล ราคาถูก'
+    altLinkSiliconflow: '🔑 SiliconFlow — รวมหลายโมเดล ราคาถูก',
+    providerOpenrouter: 'OpenRouter',
+    descOpenrouter: 'กำหนดเส้นทางหลายโมเดล มีเครดิตฟรีให้',
+    tagBuiltin: 'ในเครื่อง',
+    usbIdLabel: 'USB ID:',
+    usbIdHint: 'ใช้ ID นี้เพื่อเติมเครดิต OpenRouter',
+    builtinKeyHint: '{name} — มี API Key ในเครื่อง ไม่ต้องตั้งค่า'
   },
   vi: {
     pageTitle: 'U-Claw Pro — Cấu hình Model',
@@ -706,7 +736,13 @@ const i18n = {
     launchMsg: 'Đã lưu cấu hình! Vui lòng đóng trang này và quay lại trình khởi chạy',
     altLinkMinimax: '🔑 MiniMax — Khuyến nghị, có tín dụng miễn phí',
     altLinkZai: '🔑 GLM (Zhipu) — Có hạn mức miễn phí',
-    altLinkSiliconflow: '🔑 SiliconFlow — Tích hợp nhiều model, giá rẻ'
+    altLinkSiliconflow: '🔑 SiliconFlow — Tích hợp nhiều model, giá rẻ',
+    providerOpenrouter: 'OpenRouter',
+    descOpenrouter: 'Định tuyến nhiều model, có sẵn credit miễn phí',
+    tagBuiltin: 'Tích hợp sẵn',
+    usbIdLabel: 'USB ID:',
+    usbIdHint: 'Sử dụng ID này để nạp credit OpenRouter',
+    builtinKeyHint: '{name} — Đã tích hợp API Key, không cần cấu hình'
   },
   id: {
     pageTitle: 'U-Claw Pro — Konfigurasi Model',
@@ -778,7 +814,13 @@ const i18n = {
     launchMsg: 'Konfigurasi disimpan! Silakan tutup halaman ini dan kembali ke peluncur',
     altLinkMinimax: '🔑 MiniMax — Direkomendasikan, kredit gratis saat daftar',
     altLinkZai: '🔑 GLM (Zhipu) — Ada kuota gratis',
-    altLinkSiliconflow: '🔑 SiliconFlow — Agregasi multi-model, murah'
+    altLinkSiliconflow: '🔑 SiliconFlow — Agregasi multi-model, murah',
+    providerOpenrouter: 'OpenRouter',
+    descOpenrouter: 'Perutean multi-model, kredit gratis sudah termasuk',
+    tagBuiltin: 'Bawaan',
+    usbIdLabel: 'USB ID:',
+    usbIdHint: 'Gunakan ID ini untuk mengisi ulang kredit OpenRouter',
+    builtinKeyHint: '{name} — API Key bawaan, tidak perlu konfigurasi'
   },
   ms: {
     pageTitle: 'U-Claw Pro — Konfigurasi Model',
@@ -850,7 +892,13 @@ const i18n = {
     launchMsg: 'Konfigurasi disimpan! Sila tutup halaman ini dan kembali ke pelancar',
     altLinkMinimax: '🔑 MiniMax — Disyorkan, kredit percuma apabila mendaftar',
     altLinkZai: '🔑 GLM (Zhipu) — Ada kuota percuma',
-    altLinkSiliconflow: '🔑 SiliconFlow — Agregasi pelbagai model, murah'
+    altLinkSiliconflow: '🔑 SiliconFlow — Agregasi pelbagai model, murah',
+    providerOpenrouter: 'OpenRouter',
+    descOpenrouter: 'Penghalaan pelbagai model, kredit percuma disertakan',
+    tagBuiltin: 'Terbina dalam',
+    usbIdLabel: 'USB ID:',
+    usbIdHint: 'Gunakan ID ini untuk mengisi kredit OpenRouter anda',
+    builtinKeyHint: '{name} — API Key terbina dalam, tiada konfigurasi diperlukan'
   },
   de: {
     pageTitle: 'U-Claw Pro — Modellkonfiguration',
@@ -922,7 +970,13 @@ const i18n = {
     launchMsg: 'Konfiguration gespeichert! Bitte schließen Sie diese Seite und kehren zum Launcher zurück',
     altLinkMinimax: '🔑 MiniMax — Empfohlen, kostenlose Credits bei Registrierung',
     altLinkZai: '🔑 GLM (Zhipu) — Kostenlose Kontingente verfügbar',
-    altLinkSiliconflow: '🔑 SiliconFlow — Multi-Modell-Aggregation, günstig'
+    altLinkSiliconflow: '🔑 SiliconFlow — Multi-Modell-Aggregation, günstig',
+    providerOpenrouter: 'OpenRouter',
+    descOpenrouter: 'Multi-Modell-Routing, kostenlose Credits enthalten',
+    tagBuiltin: 'Integriert',
+    usbIdLabel: 'USB-ID:',
+    usbIdHint: 'Verwenden Sie diese ID zum Aufladen Ihrer OpenRouter-Guthaben',
+    builtinKeyHint: '{name} — Integrierter API-Key, keine Konfiguration erforderlich'
   },
   fr: {
     pageTitle: 'U-Claw Pro — Configuration du modèle',
@@ -994,7 +1048,13 @@ const i18n = {
     launchMsg: 'Configuration enregistrée! Fermez cette page et retournez au launcher',
     altLinkMinimax: '🔑 MiniMax — Recommandé, crédits gratuits à l\'inscription',
     altLinkZai: '🔑 GLM (Zhipu) — Quotas gratuits disponibles',
-    altLinkSiliconflow: '🔑 SiliconFlow — Agrégation multi-modèles, économique'
+    altLinkSiliconflow: '🔑 SiliconFlow — Agrégation multi-modèles, économique',
+    providerOpenrouter: 'OpenRouter',
+    descOpenrouter: 'Routage multi-modèles, crédits gratuits inclus',
+    tagBuiltin: 'Intégré',
+    usbIdLabel: 'USB ID :',
+    usbIdHint: 'Utilisez cet ID pour recharger vos crédits OpenRouter',
+    builtinKeyHint: '{name} — Clé API intégrée, aucune configuration requise'
   },
   es: {
     pageTitle: 'U-Claw Pro — Configuración del modelo',
@@ -1066,7 +1126,13 @@ const i18n = {
     launchMsg: '¡Configuración guardada! Cierre esta página y vuelva al launcher',
     altLinkMinimax: '🔑 MiniMax — Recomendado, créditos gratis al registrarse',
     altLinkZai: '🔑 GLM (Zhipu) — Cuotas gratuitas disponibles',
-    altLinkSiliconflow: '🔑 SiliconFlow — Agregación multi-modelo, económico'
+    altLinkSiliconflow: '🔑 SiliconFlow — Agregación multi-modelo, económico',
+    providerOpenrouter: 'OpenRouter',
+    descOpenrouter: 'Enrutamiento multi-modelo, créditos gratuitos incluidos',
+    tagBuiltin: 'Integrado',
+    usbIdLabel: 'USB ID:',
+    usbIdHint: 'Use este ID para recargar sus créditos de OpenRouter',
+    builtinKeyHint: '{name} — Clave API integrada, sin configuración necesaria'
   },
   it: {
     pageTitle: 'U-Claw Pro — Configurazione modello',
@@ -1138,7 +1204,13 @@ const i18n = {
     launchMsg: 'Configurazione salvata! Chiudi questa pagina e torna al launcher',
     altLinkMinimax: '🔑 MiniMax — Consigliato, crediti gratis alla registrazione',
     altLinkZai: '🔑 GLM (Zhipu) — Quota gratuita disponibile',
-    altLinkSiliconflow: '🔑 SiliconFlow — Aggregazione multi-modello, economico'
+    altLinkSiliconflow: '🔑 SiliconFlow — Aggregazione multi-modello, economico',
+    providerOpenrouter: 'OpenRouter',
+    descOpenrouter: 'Routing multi-modello, crediti gratuiti inclusi',
+    tagBuiltin: 'Integrato',
+    usbIdLabel: 'USB ID:',
+    usbIdHint: 'Usa questo ID per ricaricare i tuoi crediti OpenRouter',
+    builtinKeyHint: '{name} — Chiave API integrata, nessuna configurazione necessaria'
   },
   pt: {
     pageTitle: 'U-Claw Pro — Configuração do modelo',
@@ -1210,7 +1282,13 @@ const i18n = {
     launchMsg: 'Configuração salva! Feche esta página e volte ao launcher',
     altLinkMinimax: '🔑 MiniMax — Recomendado, créditos grátis ao registrar',
     altLinkZai: '🔑 GLM (Zhipu) — Quota gratuita disponível',
-    altLinkSiliconflow: '🔑 SiliconFlow — Agregação multi-modelo, econômico'
+    altLinkSiliconflow: '🔑 SiliconFlow — Agregação multi-modelo, econômico',
+    providerOpenrouter: 'OpenRouter',
+    descOpenrouter: 'Roteamento multi-modelo, créditos gratuitos incluídos',
+    tagBuiltin: 'Integrado',
+    usbIdLabel: 'USB ID:',
+    usbIdHint: 'Use este ID para recarregar seus créditos do OpenRouter',
+    builtinKeyHint: '{name} — Chave API integrada, sem configuração necessária'
   },
   nl: {
     pageTitle: 'U-Claw Pro — Modelconfiguratie',
@@ -1282,7 +1360,13 @@ const i18n = {
     launchMsg: 'Configuratie opgeslagen! Sluit deze pagina en ga terug naar de launcher',
     altLinkMinimax: '🔑 MiniMax — Aanbevolen, gratis credits bij registratie',
     altLinkZai: '🔑 GLM (Zhipu) — Gratis quota beschikbaar',
-    altLinkSiliconflow: '🔑 SiliconFlow — Multi-model aggregatie, goedkoop'
+    altLinkSiliconflow: '🔑 SiliconFlow — Multi-model aggregatie, goedkoop',
+    providerOpenrouter: 'OpenRouter',
+    descOpenrouter: 'Multi-model routering, gratis credits inbegrepen',
+    tagBuiltin: 'Ingebouwd',
+    usbIdLabel: 'USB ID:',
+    usbIdHint: 'Gebruik dit ID om uw OpenRouter-credits op te waarderen',
+    builtinKeyHint: '{name} — Ingebouwde API-key, geen configuratie nodig'
   }
 };
 
@@ -1359,6 +1443,7 @@ document.addEventListener('DOMContentLoaded', () => {
 let selectedProvider = null;
 let selectedBase = '';
 let selectedModel = '';
+let builtinData = null;
 
 // --- Model cards ---
 document.querySelectorAll('.model-card:not(.channel-card)').forEach(card => {
@@ -1392,6 +1477,12 @@ function setupStep2() {
     const isCustom = selectedProvider === 'custom';
     document.getElementById('customFields').style.display = isCustom ? 'block' : 'none';
 
+    // Reset state from potential previous builtin provider
+    document.getElementById('buyInfo').style.display = '';
+    const apiKeyInput = document.getElementById('apiKey');
+    apiKeyInput.value = '';
+    apiKeyInput.readOnly = false;
+
     const lang = getLang();
     const providerNames = {
         minimax: lang === 'zh' ? 'MiniMax' : 'MiniMax',
@@ -1402,9 +1493,18 @@ function setupStep2() {
         doubao: lang === 'zh' ? '豆包' : 'Doubao (ByteDance)',
         openai: 'OpenAI', anthropic: 'Anthropic Claude', groq: 'Groq',
         siliconflow: lang === 'zh' ? '硅基流动' : 'SiliconFlow',
+        openrouter: 'OpenRouter',
         custom: lang === 'zh' ? '自定义' : 'Custom'
     };
     const name = providerNames[selectedProvider] || selectedProvider;
+
+    // Check if this is a builtin provider
+    const isBuiltin = selectedProvider === 'openrouter';
+    if (isBuiltin) {
+        loadBuiltinAndFill(name);
+        return;
+    }
+
     document.getElementById('step2desc').textContent = t('fillApiKeyFor', { name });
 
     // Buy links
@@ -1421,6 +1521,35 @@ function setupStep2() {
         <a href="https://open.bigmodel.cn/" target="_blank">${t('altLinkZai')}</a>
         <a href="https://cloud.siliconflow.cn/" target="_blank">${t('altLinkSiliconflow')}</a>
     `;
+}
+
+async function loadBuiltinAndFill(name) {
+    document.getElementById('step2desc').textContent = t('builtinKeyHint', { name });
+
+    // Hide the "how to get key" section for builtin providers
+    document.getElementById('buyInfo').style.display = 'none';
+
+    // Load builtin tokens
+    try {
+        if (!builtinData) {
+            const res = await fetch('/api/builtin');
+            builtinData = await res.json();
+        }
+    } catch { builtinData = {}; }
+
+    const apiKeyInput = document.getElementById('apiKey');
+    const providerConfig = builtinData[selectedProvider];
+    if (providerConfig && providerConfig.token) {
+        apiKeyInput.value = providerConfig.token;
+        apiKeyInput.type = 'password';
+        apiKeyInput.readOnly = true;
+    } else {
+        // No builtin token — fall back to manual entry
+        apiKeyInput.value = '';
+        apiKeyInput.readOnly = false;
+        document.getElementById('step2desc').textContent = t('fillApiKeyFor', { name });
+        document.getElementById('buyInfo').style.display = '';
+    }
 }
 
 // --- Toggle password ---
@@ -1499,6 +1628,15 @@ async function saveConfig() {
         goStep(3);
         const port = getPort();
         document.getElementById('gatewayUrl').textContent = 'http://127.0.0.1:' + port;
+
+        // Show USB ID on step 3 if available
+        const usbIdDisplay = document.getElementById('usbIdDisplay');
+        if (builtinData && builtinData.usbId && builtinData.usbId !== 'cm-000000') {
+            document.getElementById('usbIdValue').textContent = builtinData.usbId;
+            usbIdDisplay.style.display = '';
+        } else {
+            usbIdDisplay.style.display = 'none';
+        }
     } catch (e) {
         showToast(t('errSaveFailedMsg', { msg: e.message }), true);
     }
