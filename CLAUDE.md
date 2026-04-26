@@ -64,12 +64,17 @@ portable/           THE USB content (= repo + setup.sh downloads)
                     data/.openclaw/openclaw.json — user config (on USB, portable)
                     Mac-Install.command / Windows-Install.bat — install to computer from USB
                     skills-cn/ — 10 个中国本地化技能（小红书、微博、B站等）
+                    config-server/ — Node.js mini HTTP server (port 18788) for Config.html
+                      Serves config API, WeChat QR login, plugin installation
+                    lib/maintain.sh — Maintenance: kill/logs/reset/update/cleanup/plugins
+                    HTML files are self-contained single-file apps (CSS+JS inline)
 
 u-claw-app/         Electron desktop app (src/main.js ~144 lines)
                     setup.sh / setup.bat for one-click dev environment
                     Bundles Node.js in resources/runtime/node-{platform}-{arch}
                     Config stored in app.getPath('userData')/.openclaw/
                     electron ^35.0.0, electron-builder ^26.0.0
+                    asar: false — better runtime performance with bundled Node.js
 
 bootable/           Linux 可启动 U 盘模块（完全独立，不依赖其他模块）
                     4 步 PowerShell 脚本 (Windows 上制作)
@@ -84,14 +89,38 @@ install/            一键在线安装模块（curl | bash / irm | iex）
 
 ```
 
+## Port Allocation
+
+- **18788**: Config server (`config-server/server.js`) — serves Config.html, WeChat QR, config API
+- **18789–18799**: OpenClaw gateway — auto-finds first available port in range
+
 > **Note**: 官网 (u-claw.org) 已拆分到独立私有仓库 [u-claw.org](https://github.com/dongsheng123132/u-claw.org)，本仓库不再包含 website/ 和 vercel.json。
 > **虾航**: AI人导航站 (nav.u-claw.org) 在独立私有仓库 [xiahang](https://github.com/dongsheng123132/xiahang)。
 
 Both portable and desktop versions auto-find a free port in range 18789–18799 and start the OpenClaw gateway. On first run, they detect whether a model is configured — if not, they open Config.html; otherwise, they open the dashboard.
 
+## HTML i18n Pattern
+
+All 4 HTML files (Config.html, Welcome.html, U-Claw.html, SkillHub.html) are self-contained single-file apps with inline CSS+JS and a shared multilingual pattern:
+- Language selector dropdown at top-right, `onchange="setLang(this.value)"`
+- All translatable strings in a single `i18n` JS object keyed by locale code (`en`, `zh`, `th`, `vi`, `id`, `ms`, `de`, `fr`, `es`, etc.)
+- Elements use `data-i18n="keyName"` attributes; `setLang()` iterates and replaces textContent
+- When adding a new language: add entries to the `i18n` object + add an `<option>` to the `<select id="langToggle">`
+
+## Maintenance System (`portable/lib/maintain.sh`)
+
+Called from Mac-Menu.command / Windows-Menu.bat. Functions:
+- `do_kill_gateway()`: Kill processes on ports 18789–18799
+- `do_logs()`: View/export/clean OpenClaw logs
+- `do_factory_reset()`: Backup config → delete data → restore defaults
+- `do_update()`: Check npmmirror for latest OpenClaw version
+- `do_cleanup()`: Remove old backups (>3), logs (>7 days), npm cache
+- `do_plugins()`: List/install/remove plugins
+
 ## Key Technical Details
 
 - **Node.js versions**: Portable `setup.sh` pins `v22.22.1`; `install/install.sh` pins `v22.16.0` — keep these in sync if updating
+- **Config server API**: `GET/POST /api/config` on port 18788 — reads/writes `openclaw.json`; also handles WeChat OAuth and plugin installation
 - **Node.js discovery**: Portable looks at `app/runtime/node-mac-arm64/bin/node`; Electron looks at `resources/runtime/node-{platform}-{arch}` then falls back to system `node`
 - **China mirrors**: All downloads use `npmmirror.com` — Node.js binaries from `npmmirror.com/mirrors/node`, npm packages from `registry.npmmirror.com`
 - **Environment variables**: `OPENCLAW_HOME`, `OPENCLAW_STATE_DIR`, `OPENCLAW_CONFIG_PATH` control where OpenClaw reads config

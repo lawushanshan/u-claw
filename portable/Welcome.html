@@ -183,6 +183,12 @@ h1 .emoji { font-size: 1.2em; }
 <select id="langToggle" onchange="setLang(this.value)">
   <option value="en">EN</option>
   <option value="zh">中文</option>
+  <option value="de">Deutsch</option>
+  <option value="fr">Français</option>
+  <option value="es">Español</option>
+  <option value="it">Italiano</option>
+  <option value="pt">Português</option>
+  <option value="nl">Nederlands</option>
   <option value="th">ไทย</option>
   <option value="vi">Tiếng Việt</option>
   <option value="id">Bahasa Indonesia</option>
@@ -407,10 +413,142 @@ const i18n = {
     diagDesc: 'Jika gagal bermula, klik dua kali alat diagnostik:<br>Windows: <code>Windows-Diagnose.bat</code><br>Mac: <code>Mac-Diagnose.command</code>',
     openConfig: 'Buka Halaman Konfigurasi',
     viewDocs: 'Lihat Dokumentasi'
+  },
+  de: {
+    pageTitle: 'U-Claw Benutzerhandbuch',
+    subtitle: 'Portabler AI-Assistent · 3 Schritte zum Start',
+    quickStart: 'Schnellstart',
+    step1Title: 'Schritt 1: Dienst starten',
+    step1Desc: 'Doppelklick auf den Launcher für Ihr System:<br><br><strong>Windows-Benutzer:</strong> Doppelklick auf <code>Windows-Start.bat</code><br><strong>Mac-Benutzer:</strong> Doppelklick auf <code>Mac-Start.command</code>',
+    step2Title: 'Schritt 2: AI-Modell konfigurieren',
+    step2Desc: 'Der erste Start öffnet automatisch die Konfigurationsseite. Folgen Sie den Anweisungen:<br>1. Wählen Sie ein AI-Modell (empfohlen: <strong>DeepSeek</strong> — günstig & stark)<br>2. Geben Sie Ihren API-Key ein (registrieren Sie sich auf der Modell-Website)<br>3. Klicken Sie auf "Konfiguration speichern"',
+    step3Title: 'Schritt 3: Chat starten',
+    step3Desc: 'Nach der Konfiguration öffnet der Browser automatisch die AI-Chat-Oberfläche<br>URL: <code>http://127.0.0.1:18789</code><br>Sie können jetzt mit Ihrem AI-Assistenten chatten!',
+    storageNote: '✅ Alle Konfiguration und Chat-Historie wird im <code>data/</code>-Verzeichnis des USB gespeichert, automatisch zwischen Mac und Windows geteilt!',
+    recommendedModels: 'Empfohlene AI-Modelle',
+    recDeepseek: '🔥 DeepSeek', recDeepseekDesc: 'Beste für Coding, sehr günstig',
+    recKimi: '📄 Kimi', recKimiDesc: 'Experte für lange Dokumente',
+    recQwen: '🆓 Qwen', recQwenDesc: 'Großes kostenloses Limit',
+    recClaude: '🌟 Claude', recClaudeDesc: 'Bestes Verständnis',
+    troubleshooting: 'Problemlösung?',
+    runDiag: '💡 Diagnose-Tool ausführen',
+    diagDesc: 'Wenn der Start fehlschlägt, doppelklicken Sie auf das Diagnose-Tool:<br>Windows: <code>Windows-Diagnose.bat</code><br>Mac: <code>Mac-Diagnose.command</code>',
+    openConfig: 'Konfigurationsseite öffnen',
+    viewDocs: 'Dokumentation anzeigen'
+  },
+  fr: {
+    pageTitle: 'Guide utilisateur U-Claw',
+    subtitle: 'Assistant AI portable · 3 étapes pour commencer',
+    quickStart: 'Démarrage rapide',
+    step1Title: 'Étape 1: Démarrer le service',
+    step1Desc: 'Double-cliquez sur le lanceur pour votre système:<br><br><strong>Utilisateurs Windows:</strong> Double-cliquez sur <code>Windows-Start.bat</code><br><strong>Utilisateurs Mac:</strong> Double-cliquez sur <code>Mac-Start.command</code>',
+    step2Title: 'Étape 2: Configurer le modèle AI',
+    step2Desc: 'Le premier lancement ouvre automatiquement la page de configuration. Suivez les instructions:<br>1. Choisissez un modèle AI (recommandé: <strong>DeepSeek</strong> — économique & puissant)<br>2. Entrez votre clé API (inscrivez-vous sur le site du modèle)<br>3. Cliquez sur "Enregistrer la configuration"',
+    step3Title: 'Étape 3: Commencer à chatter',
+    step3Desc: 'Après configuration, le navigateur ouvre automatiquement l\'interface de chat AI<br>URL: <code>http://127.0.0.1:18789</code><br>Vous pouvez maintenant chatter avec votre assistant AI!',
+    storageNote: '✅ Toute la configuration et l\'historique de chat sont stockés dans le répertoire <code>data/</code> du USB, automatiquement partagé entre Mac et Windows!',
+    recommendedModels: 'Modèles AI recommandés',
+    recDeepseek: '🔥 DeepSeek', recDeepseekDesc: 'Meilleur pour le code, très économique',
+    recKimi: '📄 Kimi', recKimiDesc: 'Expert documents longs',
+    recQwen: '🆓 Qwen', recQwenDesc: 'Gratuit généreux',
+    recClaude: '🌟 Claude', recClaudeDesc: 'Meilleure compréhension',
+    troubleshooting: 'Dépannage?',
+    runDiag: '💡 Exécuter l\'outil de diagnostic',
+    diagDesc: 'Si le démarrage échoue, double-cliquez sur l\'outil de diagnostic:<br>Windows: <code>Windows-Diagnose.bat</code><br>Mac: <code>Mac-Diagnose.command</code>',
+    openConfig: 'Ouvrir la page de configuration',
+    viewDocs: 'Voir la documentation'
+  },
+  es: {
+    pageTitle: 'Guía de usuario U-Claw',
+    subtitle: 'Asistente AI portátil · 3 pasos para empezar',
+    quickStart: 'Inicio rápido',
+    step1Title: 'Paso 1: Iniciar el servicio',
+    step1Desc: 'Doble clic en el lanzador para su sistema:<br><br><strong>Usuarios Windows:</strong> Doble clic en <code>Windows-Start.bat</code><br><strong>Usuarios Mac:</strong> Doble clic en <code>Mac-Start.command</code>',
+    step2Title: 'Paso 2: Configurar modelo AI',
+    step2Desc: 'El primer inicio abre automáticamente la página de configuración. Siga las instrucciones:<br>1. Elija un modelo AI (recomendado: <strong>DeepSeek</strong> — económico y potente)<br>2. Ingrese su clave API (regístrese en el sitio del modelo)<br>3. Clique en "Guardar configuración"',
+    step3Title: 'Paso 3: Comenzar a chatear',
+    step3Desc: 'Después de configurar, el navegador abre automáticamente la interfaz de chat AI<br>URL: <code>http://127.0.0.1:18789</code><br>¡Ya puede chatear con su asistente AI!',
+    storageNote: '✅ Toda la configuración e historial de chat se almacenan en el directorio <code>data/</code> del USB, compartido automáticamente entre Mac y Windows!',
+    recommendedModels: 'Modelos AI recomendados',
+    recDeepseek: '🔥 DeepSeek', recDeepseekDesc: 'Mejor para código, muy económico',
+    recKimi: '📄 Kimi', recKimiDesc: 'Experto en documentos largos',
+    recQwen: '🆓 Qwen', recQwenDesc: 'Gratis generoso',
+    recClaude: '🌟 Claude', recClaudeDesc: 'Mejor comprensión',
+    troubleshooting: 'Solución de problemas?',
+    runDiag: '💡 Ejecutar herramienta de diagnóstico',
+    diagDesc: 'Si el inicio falla, doble clic en la herramienta de diagnóstico:<br>Windows: <code>Windows-Diagnose.bat</code><br>Mac: <code>Mac-Diagnose.command</code>',
+    openConfig: 'Abrir página de configuración',
+    viewDocs: 'Ver documentación'
+  },
+  it: {
+    pageTitle: 'Guida utente U-Claw',
+    subtitle: 'Assistente AI portatile · 3 passi per iniziare',
+    quickStart: 'Avvio rapido',
+    step1Title: 'Passo 1: Avvia il servizio',
+    step1Desc: 'Doppio clic sul launcher per il tuo sistema:<br><br><strong>Utenti Windows:</strong> Doppio clic su <code>Windows-Start.bat</code><br><strong>Utenti Mac:</strong> Doppio clic su <code>Mac-Start.command</code>',
+    step2Title: 'Passo 2: Configura modello AI',
+    step2Desc: 'Il primo avvio apre automaticamente la pagina di configurazione. Segui le istruzioni:<br>1. Scegli un modello AI (consigliato: <strong>DeepSeek</strong> — economico e potente)<br>2. Inserisci la tua chiave API (registrati sul sito del modello)<br>3. Clicca "Salva configurazione"',
+    step3Title: 'Passo 3: Inizia a chattare',
+    step3Desc: 'Dopo la configurazione, il browser apre automaticamente l\'interfaccia chat AI<br>URL: <code>http://127.0.0.1:18789</code><br>Puoi ora chattare con il tuo assistente AI!',
+    storageNote: '✅ Tutta la configurazione e cronologia chat sono salvate nella directory <code>data/</code> del USB, condivisa automaticamente tra Mac e Windows!',
+    recommendedModels: 'Modelli AI consigliati',
+    recDeepseek: '🔥 DeepSeek', recDeepseekDesc: 'Ottimo per codice, molto economico',
+    recKimi: '📄 Kimi', recKimiDesc: 'Esperto documenti lunghi',
+    recQwen: '🆓 Qwen', recQwenDesc: 'Gratuito generoso',
+    recClaude: '🌟 Claude', recClaudeDesc: 'Migliore comprensione',
+    troubleshooting: 'Risoluzione problemi?',
+    runDiag: '💡 Esegui strumento diagnostico',
+    diagDesc: 'Se l\'avvio fallisce, doppio clic sul strumento diagnostico:<br>Windows: <code>Windows-Diagnose.bat</code><br>Mac: <code>Mac-Diagnose.command</code>',
+    openConfig: 'Apri pagina configurazione',
+    viewDocs: 'Vedi documentazione'
+  },
+  pt: {
+    pageTitle: 'Guia de usuário U-Claw',
+    subtitle: 'Assistente AI portátil · 3 passos para começar',
+    quickStart: 'Início rápido',
+    step1Title: 'Passo 1: Iniciar o serviço',
+    step1Desc: 'Clique duplo no launcher para seu sistema:<br><br><strong>Usuários Windows:</strong> Clique duplo em <code>Windows-Start.bat</code><br><strong>Usuários Mac:</strong> Clique duplo em <code>Mac-Start.command</code>',
+    step2Title: 'Passo 2: Configurar modelo AI',
+    step2Desc: 'A primeira execução abre automaticamente a página de configuração. Siga as instruções:<br>1. Escolha um modelo AI (recomendado: <strong>DeepSeek</strong> — econômico e potente)<br>2. Insira sua chave API (registre-se no site do modelo)<br>3. Clique em "Salvar configuração"',
+    step3Title: 'Passo 3: Começar a conversar',
+    step3Desc: 'Após configurar, o navegador abre automaticamente a interface de chat AI<br>URL: <code>http://127.0.0.1:18789</code><br>Agora você pode conversar com seu assistente AI!',
+    storageNote: '✅ Toda a configuração e histórico de chat são armazenados no diretório <code>data/</code> do USB, compartilhado automaticamente entre Mac e Windows!',
+    recommendedModels: 'Modelos AI recomendados',
+    recDeepseek: '🔥 DeepSeek', recDeepseekDesc: 'Melhor para código, muito econômico',
+    recKimi: '📄 Kimi', recKimiDesc: 'Especialista em documentos longos',
+    recQwen: '🆓 Qwen', recQwenDesc: 'Gratuito generoso',
+    recClaude: '🌟 Claude', recClaudeDesc: 'Melhor compreensão',
+    troubleshooting: 'Solução de problemas?',
+    runDiag: '💡 Executar ferramenta de diagnóstico',
+    diagDesc: 'Se o início falhar, clique duplo na ferramenta de diagnóstico:<br>Windows: <code>Windows-Diagnose.bat</code><br>Mac: <code>Mac-Diagnose.command</code>',
+    openConfig: 'Abrir página de configuração',
+    viewDocs: 'Ver documentação'
+  },
+  nl: {
+    pageTitle: 'U-Claw gebruikershandleiding',
+    subtitle: 'Portabele AI-assistent · 3 stappen om te beginnen',
+    quickStart: 'Snelle start',
+    step1Title: 'Stap 1: Start de service',
+    step1Desc: 'Dubbelklik op de launcher voor uw systeem:<br><br><strong>Windows-gebruikers:</strong> Dubbelklik op <code>Windows-Start.bat</code><br><strong>Mac-gebruikers:</strong> Dubbelklik op <code>Mac-Start.command</code>',
+    step2Title: 'Stap 2: Configureer AI-model',
+    step2Desc: 'De eerste start opent automatisch de configuratiepagina. Volg de instructies:<br>1. Kies een AI-model (aanbevolen: <strong>DeepSeek</strong> — voordelig en krachtig)<br>2. Voer uw API-key in (registreer op de website van het model)<br>3. Klik op "Configuratie opslaan"',
+    step3Title: 'Stap 3: Begin met chatten',
+    step3Desc: 'Na configuratie opent de browser automatisch de AI-chat-interface<br>URL: <code>http://127.0.0.1:18789</code><br>U kunt nu chatten met uw AI-assistent!',
+    storageNote: '✅ Alle configuratie en chatgeschiedenis worden opgeslagen in de <code>data/</code>-directory van de USB, automatisch gedeeld tussen Mac en Windows!',
+    recommendedModels: 'Aanbevolen AI-modellen',
+    recDeepseek: '🔥 DeepSeek', recDeepseekDesc: 'Beste voor code, zeer voordelig',
+    recKimi: '📄 Kimi', recKimiDesc: 'Expert lange documenten',
+    recQwen: '🆓 Qwen', recQwenDesc: 'Grote gratis limiet',
+    recClaude: '🌟 Claude', recClaudeDesc: 'Beste begrip',
+    troubleshooting: 'Probleemoplossing?',
+    runDiag: '💡 Diagnose-tool uitvoeren',
+    diagDesc: 'Als het starten faalt, dubbelklik op de diagnose-tool:<br>Windows: <code>Windows-Diagnose.bat</code><br>Mac: <code>Mac-Diagnose.command</code>',
+    openConfig: 'Open configuratiepagina',
+    viewDocs: 'Bekijk documentatie'
   }
 };
 
-const SUPPORTED_LANGS = ['en', 'zh', 'th', 'vi', 'id', 'ms'];
+const SUPPORTED_LANGS = ['en', 'zh', 'de', 'fr', 'es', 'it', 'pt', 'nl', 'th', 'vi', 'id', 'ms'];
 
 function getLang() {
   const stored = localStorage.getItem('uclaw-lang');

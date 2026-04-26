@@ -214,6 +214,12 @@ body { font-family: -apple-system, "Microsoft YaHei", "PingFang SC", sans-serif;
 <select id="langToggle" onchange="setLang(this.value)">
   <option value="en">EN</option>
   <option value="zh">中文</option>
+  <option value="de">Deutsch</option>
+  <option value="fr">Français</option>
+  <option value="es">Español</option>
+  <option value="it">Italiano</option>
+  <option value="pt">Português</option>
+  <option value="nl">Nederlands</option>
   <option value="th">ไทย</option>
   <option value="vi">Tiếng Việt</option>
   <option value="id">Bahasa Indonesia</option>
@@ -1167,7 +1173,7 @@ const i18n = {
     alertFilterCat: 'Jalankan dalam terminal:\n\nopenclaw clawhub search --category {cat}\n\nLayari semua skills dalam kategori ini'
   }
 };
-const SUPPORTED_LANGS = ['en', 'zh', 'th', 'vi', 'id', 'ms'];
+const SUPPORTED_LANGS = ['en', 'zh', 'de', 'fr', 'es', 'it', 'pt', 'nl', 'th', 'vi', 'id', 'ms'];
 
 function getLang() {
   const stored = localStorage.getItem('uclaw-lang');
