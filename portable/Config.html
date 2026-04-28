@@ -1412,7 +1412,7 @@ function applyLang(lang) {
 }
 
 // ── Model card reordering ─────────────────────────────────────
-const INTERNATIONAL_PROVIDERS = ['openai', 'anthropic', 'groq'];
+const INTERNATIONAL_PROVIDERS = ['openrouter', 'openai', 'anthropic', 'groq'];
 const CHINESE_PROVIDERS = ['minimax', 'kimi', 'deepseek', 'zai', 'qwen', 'doubao', 'siliconflow'];
 const TAIL_PROVIDERS = ['custom'];
 
@@ -1571,6 +1571,32 @@ function buildOpenClawConfig(provider, base, model, apiKey) {
             ...baseConfig,
             env: { ZAI_API_KEY: apiKey },
             agents: { defaults: { model: { primary: 'zai/' + model } } }
+        };
+    }
+
+    if (provider === 'openrouter') {
+        return {
+            ...baseConfig,
+            models: {
+                mode: 'merge',
+                providers: {
+                    openrouter: {
+                        baseUrl: base,
+                        apiKey: apiKey,
+                        api: 'openai-completions',
+                        models: [{
+                            id: model,
+                            name: model,
+                            reasoning: false,
+                            input: ['text'],
+                            cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+                            contextWindow: 128000,
+                            maxTokens: 8192
+                        }]
+                    }
+                }
+            },
+            agents: { defaults: { model: { primary: 'openrouter/' + model } } }
         };
     }
 

@@ -94,6 +94,7 @@ fi
 export OPENCLAW_HOME="$DATA_DIR"
 export OPENCLAW_STATE_DIR="$STATE_DIR"
 export OPENCLAW_CONFIG_PATH="$CONFIG_FILE"
+export NODE_PATH="$CORE_DIR/node_modules"
 
 # ---- 7. Check dependencies ----
 if [ ! -d "$CORE_DIR/node_modules" ]; then

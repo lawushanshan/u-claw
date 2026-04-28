@@ -24,6 +24,7 @@ set "NPM_BIN=%NODE_DIR%\npm.cmd"
 set "OPENCLAW_HOME=%DATA_DIR%"
 set "OPENCLAW_STATE_DIR=%STATE_DIR%"
 set "OPENCLAW_CONFIG_PATH=%STATE_DIR%\openclaw.json"
+set "NODE_PATH=%CORE_DIR%\node_modules"
 
 REM Check runtime
 if not exist "%NODE_BIN%" (

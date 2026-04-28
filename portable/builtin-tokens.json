@@ -1,8 +1,8 @@
 {
   "usbId": "cm-000000",
   "openrouter": {
-    "token": "",
+    "token": "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",
     "baseUrl": "https://openrouter.ai/api/v1",
-    "defaultModel": "openrouter/auto"
+    "defaultModel": "deepseek/deepseek-v4-flash"
   }
 }

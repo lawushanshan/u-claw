@@ -220,6 +220,7 @@ function startGateway(port) {
       OPENCLAW_STATE_DIR: configDir,
       OPENCLAW_CONFIG_PATH: configPath,
       OPENCLAW_EMBEDDED_IN: APP_NAME,
+      NODE_PATH: path.join(openclawPath, 'node_modules'),
     };
 
     gatewayProcess = spawn(nodeBin, [

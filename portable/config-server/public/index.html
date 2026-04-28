@@ -202,6 +202,11 @@ input:focus { border-color: #ff6b35; }
                 <p data-i18n="descDoubao">doubao-1.5-pro, by ByteDance</p>
                 <a class="buy-link" href="https://console.volcengine.com/ark" target="_blank" data-i18n="getKey">→ Get API Key</a>
             </div>
+            <div class="model-card" data-provider="openrouter" data-base="https://openrouter.ai/api/v1" data-model="openrouter/auto">
+                <span class="check">✓</span>
+                <h4><span data-i18n="providerOpenrouter">OpenRouter</span> <span class="tag builtin" data-i18n="tagBuiltin">Built-in</span><span class="tag free" data-i18n="tagFree">Free Tier</span></h4>
+                <p data-i18n="descOpenrouter">Multi-model routing, free credits included</p>
+            </div>
             <div class="model-card" data-provider="openai" data-base="https://api.openai.com/v1" data-model="gpt-4o">
                 <span class="check">✓</span>
                 <h4><span data-i18n="providerOpenai">OpenAI</span> <span class="tag hot" data-i18n="tagStrong">Powerful</span></h4>
@@ -433,13 +438,14 @@ const i18n = {
     nextStep: 'Next →', back: '← Back',
     tagRecommended: 'Recommended', tagChina: 'CN', tagFast: 'Fast',
     tagCheap: 'Cheap', tagStrong: 'Powerful', tagUltraFast: 'Ultra Fast',
-    tagFree: 'Free Tier', tagOpenAICompatible: 'OpenAI Compatible',
+    tagFree: 'Free Tier', tagOpenAICompatible: 'OpenAI Compatible', tagBuiltin: 'Built-in',
     providerMinimax: 'MiniMax', descMinimax: 'MiniMax-Text-01, fast and cost-effective',
     providerKimi: 'Kimi (Moonshot)', descKimi: 'moonshot-v1-auto, smart model selection',
     providerDeepseek: 'DeepSeek', descDeepseek: 'deepseek-chat, ultra-low price',
     providerZai: 'GLM (Zhipu)', descZai: 'glm-5 (zai provider), free quota available',
     providerQwen: 'Qwen (Alibaba)', descQwen: 'qwen-turbo, by Alibaba Cloud',
     providerDoubao: 'Doubao (ByteDance)', descDoubao: 'doubao-1.5-pro, by ByteDance',
+    providerOpenrouter: 'OpenRouter', descOpenrouter: 'Multi-model routing, free credits included',
     providerOpenai: 'OpenAI', descOpenai: 'GPT-4o, requires VPN or proxy',
     providerAnthropic: 'Anthropic Claude', descAnthropic: 'Claude Sonnet 4, requires VPN or proxy',
     providerGroq: 'Groq', descGroq: 'Llama 3.3 70B, ultra-high-speed inference',
@@ -449,6 +455,7 @@ const i18n = {
     enterApiKey: 'Enter API Key',
     fillApiKey: 'Please enter the API Key for your model',
     fillApiKeyFor: 'Please enter the API Key for {name}',
+    builtinKeyHint: '{name} — Built-in API Key, no configuration needed',
     howToGetKey: '📌 How to get an API Key?',
     labelBaseUrl: 'API URL (Base URL)', labelModelName: 'Model Name',
     labelApiKey: 'API Key',
@@ -528,13 +535,14 @@ const i18n = {
     nextStep: '下一步 →', back: '← 返回',
     tagRecommended: '推荐', tagChina: '国内', tagFast: '快',
     tagCheap: '便宜', tagStrong: '强', tagUltraFast: '极快',
-    tagFree: '有免费', tagOpenAICompatible: 'OpenAI 兼容',
+    tagFree: '有免费', tagOpenAICompatible: 'OpenAI 兼容', tagBuiltin: '内置',
     providerMinimax: 'MiniMax', descMinimax: 'MiniMax-Text-01，速度快，性价比高',
     providerKimi: 'Kimi (月之暗面)', descKimi: 'moonshot-v1-auto，智能选模型',
     providerDeepseek: 'DeepSeek', descDeepseek: 'deepseek-chat，超低价格',
     providerZai: '智谱 GLM', descZai: 'glm-5（zai provider），免费额度可用',
     providerQwen: '通义千问', descQwen: 'qwen-turbo，阿里云出品',
     providerDoubao: '豆包 (字节)', descDoubao: 'doubao-1.5-pro，字节跳动',
+    providerOpenrouter: 'OpenRouter', descOpenrouter: '多模型路由，内置免费额度',
     providerOpenai: 'OpenAI', descOpenai: 'GPT-4o，需翻墙或中转',
     providerAnthropic: 'Claude', descAnthropic: 'Claude Sonnet 4，需翻墙或中转',
     providerGroq: 'Groq', descGroq: 'Llama 3.3 70B，超高速推理',
@@ -544,6 +552,7 @@ const i18n = {
     enterApiKey: '填写 API Key',
     fillApiKey: '请填写对应模型的 API Key',
     fillApiKeyFor: '请填写 {name} 的 API Key',
+    builtinKeyHint: '{name} — 已内置 API Key，无需配置',
     howToGetKey: '📌 如何获取 API Key？',
     labelBaseUrl: 'API 地址 (Base URL)', labelModelName: '模型名称',
     labelApiKey: 'API Key',
@@ -616,20 +625,21 @@ const i18n = {
     step1: 'โมเดล', step2: 'Key', step3: 'เปิดใช้',
     selectModel: 'เลือก AI Model', selectModelDesc: 'ผู้ใช้ต่างชาติแนะนำ: OpenAI / Claude / Groq',
     nextStep: 'ถัดไป →', back: '← กลับ',
-    tagRecommended: 'แนะนำ', tagChina: 'CN', tagFast: 'เร็ว', tagCheap: 'ถูก', tagStrong: 'ทรงพลัง', tagUltraFast: 'เร็วมาก', tagFree: 'ใช้ฟรี', tagOpenAICompatible: 'OpenAI Compatible',
+    tagRecommended: 'แนะนำ', tagChina: 'CN', tagFast: 'เร็ว', tagCheap: 'ถูก', tagStrong: 'ทรงพลัง', tagUltraFast: 'เร็วมาก', tagFree: 'ใช้ฟรี', tagOpenAICompatible: 'OpenAI Compatible', tagBuiltin: 'ในเครื่อง',
     providerMinimax: 'MiniMax', descMinimax: 'MiniMax-Text-01 เร็วและคุ้มค่า',
     providerKimi: 'Kimi (Moonshot)', descKimi: 'moonshot-v1-auto เลือกโมเดลอัตโนมัติ',
     providerDeepseek: 'DeepSeek', descDeepseek: 'deepseek-chat ราคาถูกมาก',
     providerZai: 'GLM (Zhipu)', descZai: 'glm-5 มีโควต้าฟรี',
     providerQwen: 'Qwen (Alibaba)', descQwen: 'qwen-turbo โดย Alibaba Cloud',
     providerDoubao: 'Doubao (ByteDance)', descDoubao: 'doubao-1.5-pro โดย ByteDance',
+    providerOpenrouter: 'OpenRouter', descOpenrouter: 'กำหนดเส้นทางหลายโมเดล มีเครดิตฟรีให้',
     providerOpenai: 'OpenAI', descOpenai: 'GPT-4o ต้องใช้ VPN',
     providerAnthropic: 'Claude', descAnthropic: 'Claude Sonnet 4 ต้องใช้ VPN',
     providerGroq: 'Groq', descGroq: 'Llama 3.3 70B ประมวลผลเร็วมาก',
     providerSiliconflow: 'SiliconFlow', descSiliconflow: 'รวมหลายโมเดล ราคาต่ำ',
     providerCustom: '🔧 API กำหนดเอง', descCustom: 'ป้อน API endpoint ใดๆ ที่เข้ากันได้ OpenAI',
     getKey: '→ รับ API Key', enterApiKey: 'ป้อน API Key', fillApiKey: 'กรุณาป้อน API Key',
-    fillApiKeyFor: 'กรุณาป้อน API Key ของ {name}', howToGetKey: '📌 วิธีรับ API Key?',
+    fillApiKeyFor: 'กรุณาป้อน API Key ของ {name}', builtinKeyHint: '{name} — มี API Key ในเครื่อง ไม่ต้องตั้งค่า', howToGetKey: '📌 วิธีรับ API Key?',
     labelBaseUrl: 'API URL (Base URL)', labelModelName: 'ชื่อโมเดล', labelApiKey: 'API Key',
     showPw: 'แสดง', hidePw: 'ซ่อน',
     keyStorageHint: 'Key ถูกเก็บใน USB เท่านั้น ไม่อัปโหลดไปเซิร์ฟเวอร์',
@@ -686,20 +696,21 @@ const i18n = {
     step1: 'Model', step2: 'Key', step3: 'Khởi chạy',
     selectModel: 'Chọn AI Model', selectModelDesc: 'Người dùng quốc tế khuyến nghị: OpenAI / Claude / Groq',
     nextStep: 'Tiếp →', back: '← Quay lại',
-    tagRecommended: 'Khuyến nghị', tagChina: 'CN', tagFast: 'Nhanh', tagCheap: 'Rẻ', tagStrong: 'Mạnh', tagUltraFast: 'Siêu nhanh', tagFree: 'Miễn phí', tagOpenAICompatible: 'OpenAI Compatible',
+    tagRecommended: 'Khuyến nghị', tagChina: 'CN', tagFast: 'Nhanh', tagCheap: 'Rẻ', tagStrong: 'Mạnh', tagUltraFast: 'Siêu nhanh', tagFree: 'Miễn phí', tagOpenAICompatible: 'OpenAI Compatible', tagBuiltin: 'Tích hợp sẵn',
     providerMinimax: 'MiniMax', descMinimax: 'MiniMax-Text-01, nhanh và tiết kiệm',
     providerKimi: 'Kimi (Moonshot)', descKimi: 'moonshot-v1-auto, tự chọn model',
     providerDeepseek: 'DeepSeek', descDeepseek: 'deepseek-chat, giá cực rẻ',
     providerZai: 'GLM (Zhipu)', descZai: 'glm-5, có hạn mức miễn phí',
     providerQwen: 'Qwen (Alibaba)', descQwen: 'qwen-turbo, bởi Alibaba Cloud',
     providerDoubao: 'Doubao (ByteDance)', descDoubao: 'doubao-1.5-pro, bởi ByteDance',
+    providerOpenrouter: 'OpenRouter', descOpenrouter: 'Định tuyến nhiều model, có sẵn credit miễn phí',
     providerOpenai: 'OpenAI', descOpenai: 'GPT-4o, cần VPN',
     providerAnthropic: 'Claude', descAnthropic: 'Claude Sonnet 4, cần VPN',
     providerGroq: 'Groq', descGroq: 'Llama 3.3 70B, suy luận cực nhanh',
     providerSiliconflow: 'SiliconFlow', descSiliconflow: 'Tích hợp nhiều model, giá thấp',
     providerCustom: '🔧 API tùy chỉnh', descCustom: 'Nhập API endpoint bất kỳ tương thích OpenAI',
     getKey: '→ Lấy API Key', enterApiKey: 'Nhập API Key', fillApiKey: 'Vui lòng nhập API Key',
-    fillApiKeyFor: 'Vui lòng nhập API Key cho {name}', howToGetKey: '📌 Cách lấy API Key?',
+    fillApiKeyFor: 'Vui lòng nhập API Key cho {name}', builtinKeyHint: '{name} — Đã tích hợp API Key, không cần cấu hình', howToGetKey: '📌 Cách lấy API Key?',
     labelBaseUrl: 'API URL (Base URL)', labelModelName: 'Tên Model', labelApiKey: 'API Key',
     showPw: 'Hiện', hidePw: 'Ẩn',
     keyStorageHint: 'Key chỉ lưu trên USB, không tải lên máy chủ',
@@ -756,7 +767,7 @@ const i18n = {
     step1: 'Model', step2: 'Key', step3: 'Luncurkan',
     selectModel: 'Pilih AI Model', selectModelDesc: 'Pengguna internasional direkomendasikan: OpenAI / Claude / Groq',
     nextStep: 'Lanjut →', back: '← Kembali',
-    tagRecommended: 'Direkomendasikan', tagChina: 'CN', tagFast: 'Cepat', tagCheap: 'Murah', tagStrong: 'Kuat', tagUltraFast: 'Sangat Cepat', tagFree: 'Gratis', tagOpenAICompatible: 'OpenAI Compatible',
+    tagRecommended: 'Direkomendasikan', tagChina: 'CN', tagFast: 'Cepat', tagCheap: 'Murah', tagStrong: 'Kuat', tagUltraFast: 'Sangat Cepat', tagFree: 'Gratis', tagOpenAICompatible: 'OpenAI Compatible', tagBuiltin: 'Bawaan',
     providerMinimax: 'MiniMax', descMinimax: 'MiniMax-Text-01, cepat dan hemat biaya',
     providerKimi: 'Kimi (Moonshot)', descKimi: 'moonshot-v1-auto, pemilihan model cerdas',
     providerDeepseek: 'DeepSeek', descDeepseek: 'deepseek-chat, harga sangat murah',
@@ -767,9 +778,10 @@ const i18n = {
     providerAnthropic: 'Claude', descAnthropic: 'Claude Sonnet 4, perlu VPN',
     providerGroq: 'Groq', descGroq: 'Llama 3.3 70B, inferensi sangat cepat',
     providerSiliconflow: 'SiliconFlow', descSiliconflow: 'Agregasi multi-model, harga rendah',
+    providerOpenrouter: 'OpenRouter', descOpenrouter: 'Perutean multi-model, kredit gratis sudah termasuk',
     providerCustom: '🔧 API Kustom', descCustom: 'Masukkan API endpoint apa pun yang kompatibel OpenAI',
     getKey: '→ Dapatkan API Key', enterApiKey: 'Masukkan API Key', fillApiKey: 'Silakan masukkan API Key',
-    fillApiKeyFor: 'Silakan masukkan API Key untuk {name}', howToGetKey: '📌 Cara mendapatkan API Key?',
+    fillApiKeyFor: 'Silakan masukkan API Key untuk {name}', builtinKeyHint: '{name} — API Key bawaan, tidak perlu konfigurasi', howToGetKey: '📌 Cara mendapatkan API Key?',
     labelBaseUrl: 'API URL (Base URL)', labelModelName: 'Nama Model', labelApiKey: 'API Key',
     showPw: 'Tampilkan', hidePw: 'Sembunyikan',
     keyStorageHint: 'Key hanya disimpan di USB, tidak diunggah ke server',
@@ -826,7 +838,7 @@ const i18n = {
     step1: 'Model', step2: 'Key', step3: 'Lancar',
     selectModel: 'Pilih AI Model', selectModelDesc: 'Pengguna antarabangsa disyorkan: OpenAI / Claude / Groq',
     nextStep: 'Seterusnya →', back: '← Kembali',
-    tagRecommended: 'Disyorkan', tagChina: 'CN', tagFast: 'Pantas', tagCheap: 'Murah', tagStrong: 'Kuat', tagUltraFast: 'Sangat Pantas', tagFree: 'Percuma', tagOpenAICompatible: 'OpenAI Compatible',
+    tagRecommended: 'Disyorkan', tagChina: 'CN', tagFast: 'Pantas', tagCheap: 'Murah', tagStrong: 'Kuat', tagUltraFast: 'Sangat Pantas', tagFree: 'Percuma', tagOpenAICompatible: 'OpenAI Compatible', tagBuiltin: 'Terbina dalam',
     providerMinimax: 'MiniMax', descMinimax: 'MiniMax-Text-01, pantas dan jimat kos',
     providerKimi: 'Kimi (Moonshot)', descKimi: 'moonshot-v1-auto, pemilihan model pintar',
     providerDeepseek: 'DeepSeek', descDeepseek: 'deepseek-chat, harga sangat murah',
@@ -837,9 +849,10 @@ const i18n = {
     providerAnthropic: 'Claude', descAnthropic: 'Claude Sonnet 4, perlu VPN',
     providerGroq: 'Groq', descGroq: 'Llama 3.3 70B, inferens sangat pantas',
     providerSiliconflow: 'SiliconFlow', descSiliconflow: 'Agregasi pelbagai model, harga rendah',
+    providerOpenrouter: 'OpenRouter', descOpenrouter: 'Penghalaan pelbagai model, kredit percuma disertakan',
     providerCustom: '🔧 API Tersuai', descCustom: 'Masukkan API endpoint mana-mana yang serasi OpenAI',
     getKey: '→ Dapatkan API Key', enterApiKey: 'Masukkan API Key', fillApiKey: 'Sila masukkan API Key',
-    fillApiKeyFor: 'Sila masukkan API Key untuk {name}', howToGetKey: '📌 Cara dapatkan API Key?',
+    fillApiKeyFor: 'Sila masukkan API Key untuk {name}', builtinKeyHint: '{name} — API Key terbina dalam, tiada konfigurasi diperlukan', howToGetKey: '📌 Cara dapatkan API Key?',
     labelBaseUrl: 'API URL (Base URL)', labelModelName: 'Nama Model', labelApiKey: 'API Key',
     showPw: 'Tunjuk', hidePw: 'Sembunyi',
     keyStorageHint: 'Key hanya disimpan di USB, tidak dimuat naik ke pelayan',
@@ -960,6 +973,7 @@ function reapplyDynamicText(lang) {
 let selectedProvider = null;
 let selectedBase = '';
 let selectedModel = '';
+let builtinData = null;
 
 // --- Model cards ---
 document.querySelectorAll('#step1 .model-card').forEach(card => {
@@ -995,6 +1009,7 @@ const PROVIDER_NAMES = {
     zai: { en: 'GLM (Zhipu)', zh: '智谱 GLM' },
     qwen: { en: 'Qwen (Alibaba)', zh: '通义千问' },
     doubao: { en: 'Doubao (ByteDance)', zh: '豆包' },
+    openrouter: { en: 'OpenRouter', zh: 'OpenRouter' },
     openai: { en: 'OpenAI', zh: 'OpenAI' },
     anthropic: { en: 'Anthropic Claude', zh: 'Claude' },
     groq: { en: 'Groq', zh: 'Groq' },
@@ -1009,13 +1024,47 @@ function getProviderName(key) {
     return entry[lang] || entry.en || key;
 }
 
-function setupStep2() {
+async function setupStep2() {
     var isCustom = selectedProvider === 'custom';
     document.getElementById('customFields').style.display = isCustom ? 'block' : 'none';
 
     var name = getProviderName(selectedProvider);
-    var descEl = document.getElementById('step2desc');
-    descEl.textContent = t('fillApiKeyFor', { name: name });
+
+    // Check if this is a builtin provider (OpenRouter)
+    var isBuiltin = selectedProvider === 'openrouter';
+    if (isBuiltin) {
+        document.getElementById('step2desc').textContent = t('builtinKeyHint', { name: name });
+        document.getElementById('buyInfo').style.display = 'none';
+
+        // Load builtin tokens
+        try {
+            if (!builtinData) {
+                var res = await fetch('/api/builtin');
+                builtinData = await res.json();
+            }
+        } catch { builtinData = {}; }
+
+        var apiKeyInput = document.getElementById('apiKey');
+        var providerConfig = builtinData[selectedProvider];
+        if (providerConfig && providerConfig.token) {
+            apiKeyInput.value = providerConfig.token;
+            apiKeyInput.type = 'password';
+            apiKeyInput.readOnly = true;
+        } else {
+            // No builtin token — fall back to manual entry
+            apiKeyInput.value = '';
+            apiKeyInput.readOnly = false;
+            document.getElementById('step2desc').textContent = t('fillApiKeyFor', { name: name });
+            document.getElementById('buyInfo').style.display = '';
+        }
+        return;
+    }
+
+    // Regular provider handling
+    document.getElementById('buyInfo').style.display = '';
+    document.getElementById('step2desc').textContent = t('fillApiKeyFor', { name: name });
+    document.getElementById('apiKey').readOnly = false;
+    document.getElementById('apiKey').value = '';
 
     var card = document.querySelector('#step1 .model-card[data-provider="' + selectedProvider + '"]');
     var buyLink = card ? card.querySelector('.buy-link') : null;
@@ -1050,6 +1099,29 @@ function buildConfig(provider, base, model, apiKey) {
         return Object.assign({}, baseConfig, {
             env: { ZAI_API_KEY: apiKey },
             agents: { defaults: { model: { primary: 'zai/' + model } } }
+        });
+    }
+
+    // OpenRouter uses standard provider format
+    if (provider === 'openrouter') {
+        var providers = {};
+        providers.openrouter = {
+            baseUrl: base,
+            apiKey: apiKey,
+            api: 'openai-completions',
+            models: [{
+                id: model,
+                name: model,
+                reasoning: false,
+                input: ['text'],
+                cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+                contextWindow: 128000,
+                maxTokens: 8192
+            }]
+        };
+        return Object.assign({}, baseConfig, {
+            models: { mode: 'merge', providers: providers },
+            agents: { defaults: { model: { primary: 'openrouter/' + model } } }
         });
     }
 

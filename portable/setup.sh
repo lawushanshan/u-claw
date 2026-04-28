@@ -129,6 +129,35 @@ PKGJSON
     "$NODE_BIN" "$NPM_BIN" install --prefix "$CORE_DIR" --registry="$MIRROR"
 
     echo -e "  ${GREEN}✓${NC} OpenClaw installed"
+
+    # Fix package.json exports issues for Node.js v22 compatibility
+    echo -e "  ${CYAN}↓${NC} Applying Node.js v22 compatibility fixes..."
+    FIXED_COUNT=0
+
+    # Array of packages to fix
+    PACKAGES=(
+        "$CORE_DIR/node_modules/osc-progress/package.json"
+        "$CORE_DIR/node_modules/@mariozechner/pi-ai/package.json"
+        "$CORE_DIR/node_modules/@mariozechner/pi-coding-agent/package.json"
+    )
+
+    for pkg_json in "${PACKAGES[@]}"; do
+        if [ -f "$pkg_json" ]; then
+            # Check if package has "import" but missing "default"
+            if grep -q '"import"' "$pkg_json" && ! grep -q '"default"' "$pkg_json"; then
+                # Add "default" export for compatibility
+                sed -i.bak 's/"import": \([^,)]*\)/"import": \1,\n\t\t\t"default": \1/g' "$pkg_json" 2>/dev/null
+                rm -f "${pkg_json}.bak"
+                FIXED_COUNT=$((FIXED_COUNT + 1))
+            fi
+        fi
+    done
+
+    if [ $FIXED_COUNT -gt 0 ]; then
+        echo -e "  ${GREEN}✓${NC} Fixed $FIXED_COUNT package(s) for Node.js v22 compatibility"
+    else
+        echo -e "  ${GREEN}✓${NC} No compatibility fixes needed"
+    fi
 fi
 
 # ---- 3. Install QQ Plugin ----

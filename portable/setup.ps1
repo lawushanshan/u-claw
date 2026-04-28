@@ -11,7 +11,7 @@ $runtimeDir = Join-Path $appDir "runtime"
 
 $mirror = "https://registry.npmmirror.com"
 $nodeMirror = "https://npmmirror.com/mirrors/node"
-$nodeVersion = "v22.22.1"
+$nodeVersion = "v22.14.0"
 
 function Write-Step {
     param(
@@ -191,6 +191,32 @@ else {
     else {
         Write-Step "ERR" "OpenClaw installation failed." "Red"
         exit 1
+    }
+
+    # Fix package.json exports issues for Node.js v22 compatibility
+    Write-Step "->" "Applying Node.js v22 compatibility fixes..." "Cyan"
+    $packagesToFix = @(
+        "$coreDir/node_modules/osc-progress/package.json",
+        "$coreDir/node_modules/@mariozechner/pi-ai/package.json",
+        "$coreDir/node_modules/@mariozechner/pi-coding-agent/package.json"
+    )
+
+    $fixedCount = 0
+    foreach ($pkgJson in $packagesToFix) {
+        if (Test-Path -Path $pkgJson -PathType Leaf) {
+            $content = Get-Content $pkgJson -Raw
+            if ($content -match '"import"\s*:\s*"([^"]+)"' -and $content -notmatch '"default"') {
+                $content = $content -replace '"import"\s*:\s*"([^"]+)"', '"import": "$1", "default": "$1"'
+                Set-Content -Path $pkgJson -Value $content -NoNewline
+                $fixedCount++
+            }
+        }
+    }
+
+    if ($fixedCount -gt 0) {
+        Write-Step "OK" "Fixed $fixedCount package(s) for Node.js v22 compatibility." "Green"
+    } else {
+        Write-Step "OK" "No compatibility fixes needed." "Green"
     }
 }
 
