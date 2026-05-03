@@ -1640,7 +1640,25 @@ async function saveConfig() {
         if (!base || !model) { showToast(t('errFillBaseAndModel'), true); return; }
     }
 
+    // Load existing config to preserve OpenRouter
+    let existingConfig = {};
+    try {
+        const res = await fetch('/api/config');
+        existingConfig = await res.json();
+    } catch { }
+
+    // Build new config
     const openclawConfig = buildOpenClawConfig(selectedProvider, base, model, apiKey);
+
+    // Preserve OpenRouter configuration if it exists
+    if (existingConfig.models?.providers?.openrouter && selectedProvider !== 'openrouter') {
+        openclawConfig.models.providers.openrouter = existingConfig.models.providers.openrouter;
+    }
+
+    // Preserve plugins configuration to maintain performance optimizations
+    if (existingConfig.plugins?.entries) {
+        openclawConfig.plugins = { entries: existingConfig.plugins.entries };
+    }
 
     try {
         const res = await fetch('/api/config', {

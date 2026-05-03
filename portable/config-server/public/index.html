@@ -1161,7 +1161,27 @@ async function saveConfig() {
         if (!base || !model) { showToast(t('errFillBaseAndModel'), true); return; }
     }
 
+    // Load existing config to preserve OpenRouter
+    var existingConfig = {};
+    try {
+        var res = await fetch('/api/config');
+        existingConfig = await res.json();
+    } catch { }
+
+    // Build new config
     var config = buildConfig(selectedProvider, base, model, apiKey);
+
+    // Preserve OpenRouter configuration if it exists
+    if (existingConfig.models && existingConfig.models.providers && existingConfig.models.providers.openrouter && selectedProvider !== 'openrouter') {
+        if (!config.models) config.models = {};
+        if (!config.models.providers) config.models.providers = {};
+        config.models.providers.openrouter = existingConfig.models.providers.openrouter;
+    }
+
+    // Preserve plugins configuration to maintain performance optimizations
+    if (existingConfig.plugins && existingConfig.plugins.entries) {
+        config.plugins = { entries: existingConfig.plugins.entries };
+    }
 
     try {
         var res = await fetch('/api/config', {
